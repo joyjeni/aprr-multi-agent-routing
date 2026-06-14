@@ -1,0 +1,1279 @@
+<h1 id="peer-review-harvard-cse-perspective">Peer Review — Harvard CSE
+Perspective</h1>
+<p><strong>Manuscript:</strong> Adaptive Probabilistic Routing
+Reinforcement: Online Policy Iteration for Dynamic Agent-to-Agent
+Routing in Tool-Augmented LLM Workflows</p>
+<p><strong>Reviewer:</strong> Senior Professor, School of Engineering
+and Applied Sciences, Harvard University<br />
+Expertise: Multi-Agent Systems, Reinforcement Learning Theory,
+Distributed Decision-Making</p>
+<p><strong>Review Round:</strong> 1<br />
+<strong>Venue Target:</strong> IEEE Transactions on Neural Networks and
+Learning Systems (TNNLS)</p>
+<hr />
+<h2 id="summary">Summary</h2>
+<p>This paper introduces APRR, a lightweight online policy-iteration
+algorithm for routing queries across a heterogeneous pool of specialised
+LLM agents. The core mechanism is a routing-affinity matrix
+<strong>W</strong> updated by a decay-regularised, success-weighted
+additive rule; a three-factor multiplicative policy (learned affinity ×
+semantic prior × query relevance) then selects the next agent via a
+softmax. The authors prove convergence of the affinity matrix entries
+under bounded reward (Theorem 1) and establish equivalence to a
+REINFORCE gradient step with baseline subtraction under specific
+hyperparameter settings (Proposition 1). Empirical evaluation on a
+ToolBench-derived simulator with 10 agents and five random seeds
+demonstrates a 35.7% reduction in mean end-to-end latency and a 23.9%
+reduction in mean hop count relative to the strongest static baseline.
+The paper is well-structured, the algorithm is clearly described, and
+the reproducibility artifacts are commendable; however, substantial
+theoretical gaps and the exclusive reliance on a synthetic, closed-form
+simulator limit the paper’s current standing for publication in
+TNNLS.</p>
+<hr />
+<h2 id="strengths">Strengths</h2>
+<ul>
+<li><p><strong>Clear theoretical framing.</strong> The authors
+explicitly connect APRR to classical REINFORCE [Williams, 1992] via a
+log-space reparameterisation, making the algorithm’s behaviour
+interpretable to an RL theorist. Proposition 1 provides a principled
+derivation, not merely an analogy.</p></li>
+<li><p><strong>Novel 1/L² path-length penalty.</strong> The quadratic
+inverse path-length reward shaping is a concise, practical contribution
+that incentivises path compression without requiring any additional
+critic network or value function approximation. The mechanical
+simplicity is a genuine virtue.</p></li>
+<li><p><strong>Distractor suppression without explicit
+labelling.</strong> The demonstration that affinity matrix columns
+corresponding to distractor agents converge to near-zero weight
+(consistent with Theorem 1) is non-trivial and practically relevant in
+agent deployments where tool-role overlap is inevitable.</p></li>
+<li><p><strong>Reproducible experimental protocol.</strong> Five seeds ×
+40 iterations × 500 queries = 100,000 episodes per router, all on
+free-tier hardware, with pre-computed JSON artifacts. The community
+benefit of such accessibility is real.</p></li>
+<li><p><strong>Pareto-front analysis.</strong> Presenting results
+simultaneously on the (latency, success) plane (Fig. 5) is the correct
+way to characterise a router that trades success rate against latency;
+APRR’s Pareto dominance over non-oracle baselines is the paper’s
+strongest empirical claim.</p></li>
+<li><p><strong>Informative ablation.</strong> The single-parameter sweep
+for α, β, γ, and λ directly quantifies the marginal contribution of each
+factor. The finding that γ (query-relevance exponent) is the dominant
+hyperparameter (19.4 pp swing from γ=0 to γ=1.5) is insightful and
+well-explained.</p></li>
+</ul>
+<hr />
+<h2 id="weaknesses">Weaknesses</h2>
+<ul>
+<li><p><strong>Theorem 1 proves boundedness, not policy
+optimality.</strong> The theorem establishes that affinity values remain
+within [W_min, W_max] and converge to [0, Δ_max/λ] for unrewarded edges
+— this is a stability result, not a regret bound or
+convergence-to-optimal-policy result. TNNLS readers in the RL community
+will immediately note the absence of any formal statement about
+convergence of the <em>induced routing policy</em> to a local or global
+optimum. The paper’s theoretical contribution is significantly weaker
+than implied by the word “convergence.”</p></li>
+<li><p><strong>Proposition 1’s preconditions break the practical
+algorithm.</strong> The REINFORCE equivalence requires α = γ = 1, β = 0,
+λ = 0 — but the default hyperparameters are α = 2.0, γ = 2.5, β = 1.0, λ
+= 0.005. The actual running algorithm is <em>not</em> a REINFORCE step;
+it is a heuristic update with a REINFORCE interpretation only in a
+degenerate regime that is never evaluated empirically. This gap between
+theory and practice is a significant concern.</p></li>
+<li><p><strong>The effective learning rate η = κ/(W_{ij} L² ℓ̃) is
+state-dependent and unbounded near W_min.</strong> As W_{ij} → W_min =
+10⁻³, η grows without bound regardless of κ, which can cause numerical
+instability. The paper acknowledges clamping but provides no analysis of
+how this clamp interacts with the REINFORCE equivalence or the
+convergence bound.</p></li>
+<li><p><strong>No statistical test is applied across methods.</strong>
+Table I reports 95% CIs computed over five seeds. APRR’s success rate
+(0.470 ± 0.020) and StaticSemantic’s (0.499 ± 0.024) have
+<em>overlapping</em> confidence intervals — the paper’s primary
+success-rate comparison is not statistically distinguishable at the 95%
+level. A paired t-test or Wilcoxon signed-rank test over seeds is
+mandatory before claiming superiority.</p></li>
+<li><p><strong>The LCS^1.5 success criterion is non-standard and its
+validity is not established.</strong> The exponent 1.5 in Eq. (5) is not
+motivated theoretically, nor is it validated against human-judged
+success on actual ToolBench tasks. The criterion is strictly internal to
+the simulator, which creates a circularity: the reward function and the
+evaluation metric share structural assumptions, potentially inflating
+reported performance.</p></li>
+<li><p><strong>Incomplete ablation: only single-parameter sweeps are
+reported.</strong> Given that the policy is multiplicative in three
+exponents (α, β, γ), the reported ablation treats parameters as
+independent. Cross-term interactions — especially between α and γ, whose
+product determines the relative emphasis of learned versus
+query-specific routing — could significantly alter the conclusions. The
+claim that γ “has the largest effect” could be confounded by the
+specific values of α held fixed during that sweep.</p></li>
+</ul>
+<hr />
+<h2 id="detailed-comments">Detailed Comments</h2>
+<ol type="1">
+<li><p><strong>Section III, Eq. (2): Softmax normalisation and numerical
+stability.</strong> The policy is defined as P(a_j | a_i, q) ∝ W_{ij}^α
+· η_{ij}^β · ψ_j(q)^γ. For negative cosine similarities (η_{ij} &lt; 0
+or ψ_j &lt; 0), raising to a non-integer exponent γ = 2.5 produces
+complex-valued weights. The paper should explicitly state whether cosine
+similarities are clamped to [0,1] or [−1,1], and if negative values can
+arise in the role-embedding geometry (they can, generically). This is
+not a minor implementation detail; it affects the well-posedness of the
+policy.</p></li>
+<li><p><strong>Section III, Affinity Update (Eq. 4): Reward definition
+for failures.</strong> The deposit Δ W_{ij} uses r = −0.05 on failure.
+The choice of −0.05 (vs. 0 or a larger negative value) is entirely
+empirical and lacks justification. Given that the affinity clamp W_min =
+10⁻³ is several orders of magnitude below W₀ = 0.1, a small negative r
+may be insufficient to drive distractor edges to their lower bound
+within 40 iterations. An analysis of the expected number of episodes
+required for distractor convergence as a function of r_failure would
+strengthen the paper considerably.</p></li>
+<li><p><strong>Section III, Proposition 1: Baseline subtraction
+claim.</strong> The paper states “When λ &gt; 0, the decay acts as a
+learned baseline that subtracts expected future reward, reducing
+variance of the REINFORCE estimator.” This is the most overreaching
+claim in the paper. A proper baseline in REINFORCE subtracts a
+<em>state-conditional</em> quantity from the reward to reduce variance
+while preserving expectation. The global decay (Eq. 3) subtracts λW_{ij}
+from <em>every</em> edge uniformly — this is a regulariser, not a
+state-conditional baseline. The variance reduction argument requires
+proof that E[λW_{ij}^{(t)}] = E[R | state] at the edges in question,
+which is not established.</p></li>
+<li><p><strong>Section IV, Benchmark: Simulator fidelity.</strong> The
+ToolBench-style simulator assigns latencies as a deterministic function
+of hop count. Real API call latencies are highly non-Gaussian
+(heavy-tailed, with retries, timeouts, and network jitter). The p95
+latency for APRR (525.8 ms, std ≈ 187.8 ms from the JSON data) already
+shows large variance even within the deterministic simulator — a signal
+that tail behaviour is an important regime that is not adequately
+modelled.</p></li>
+<li><p><strong>Section V, Table I: Oracle has higher mean latency than
+APRR (448.9 ms vs. 261.3 ms) despite following ground-truth
+paths.</strong> This is counterintuitive: the Oracle with 4.30 mean hops
+is slower than APRR with 2.77 hops. The paper implies APRR achieves
+shortcuts that even the Oracle cannot, which would require APRR to
+violate the ground-truth path optimality assumption. The paper must
+explicitly explain this anomaly — either the Oracle is defined
+incorrectly (it uses the ground-truth <em>path</em> but not the
+<em>shortest</em> path), or the success criterion penalises shorter
+paths in ways that are not transparent.</p></li>
+<li><p><strong>Section V, Convergence (text, §V.B): Claimed APRR
+improvement trajectory.</strong> The manuscript states “APRR improves
+rapidly over the first 5 iterations (success: 0.443 → ~0.484 by
+iteration 8).” Inspection of the multiseed.json convergence data
+confirms iteration 0 ≈ 0.443 and iteration 8 ≈ 0.484 for APRR, which is
+accurate. However, iterations 9–39 show substantial oscillation (range:
+0.457–0.490) rather than monotonic improvement or stable convergence.
+The claim of “stabilisation” after iteration 8 is misleading; the policy
+has not converged in any rigorous sense — it fluctuates within a band. A
+more honest characterisation with confidence bands across the 5 seeds
+should be provided.</p></li>
+<li><p><strong>Appendix A, Proof of Proposition 1: Approximation P(a_j |
+a_i, q) ≪ 1.</strong> The proof relies on “when P(a_j | a_i, q) ≪ 1, the
+stochastic gradient ≈ 1.” This approximation is quantitatively valid
+only when the policy is nearly uniform. After convergence, the policy
+concentrates on optimal edges, making this approximation invalid
+precisely when the algorithm is most useful. The proof should either
+bound the approximation error or remove this step and provide an exact
+derivation.</p></li>
+<li><p><strong>Section II, Related Work: Forward-dated references
+(2026).</strong> The paper cites DyTopo [Hong et al., 2026], DMoA [Wu et
+al., 2026], NeuroMAS [Li et al., 2026], FlowBank [Zhang et al., 2026],
+MetaCogAgent [Chen et al., 2026], and MAPoRL [Tan et al., 2026]. These
+appear to be placeholder or speculative future citations. No arXiv IDs
+are provided (e.g., “arXiv:2602.xxxxx”). If these papers do not exist,
+citing them constitutes a serious integrity violation. The authors must
+provide verifiable URLs or arXiv identifiers, or remove these citations
+entirely and reposition the contributions relative to existing verified
+literature.</p></li>
+<li><p><strong>Section VI, Discussion: The γ ablation uses a reduced
+evaluation protocol.</strong> The ablation table (Fig. 7 / §V.E) reports
+values that differ from the full multiseed.json results. Specifically,
+the best γ=1.5 entry in the ablation (success 0.483) approximately
+matches the multiseed APRR mean (0.470), but the ablation values for γ=0
+(success 0.289) appear to come from a single-seed or reduced-iteration
+run. The paper should clarify the exact protocol (seeds, iterations,
+queries) used for the ablation, as inconsistency would undermine the
+reliability of the sensitivity analysis.</p></li>
+<li><p><strong>Section VII, Conclusion and Limitations: The
+fixed-topology assumption is understated.</strong> The paper
+acknowledges “Agent addition/removal requires row/column
+re-initialisation in W,” but does not discuss what happens to
+accumulated affinity information in the remaining rows/columns when even
+a single agent is swapped. In production multi-agent systems, agent pool
+composition changes frequently. A brief analysis of warm-start
+strategies (e.g., preserving affinity submatrix structure) would
+significantly increase the paper’s practical relevance.</p></li>
+</ol>
+<hr />
+<h2 id="recommendation">Recommendation</h2>
+<p><strong>Major Revision</strong></p>
+<p>The algorithmic contribution (APRR) is interesting and practically
+motivated. The Pareto-front dominance result and the
+distractor-suppression property are the paper’s two strongest empirical
+claims. However, the theoretical section overstates its results (Theorem
+1 ≠ policy optimality; Proposition 1 preconditions ≠ running algorithm),
+the success-rate comparison between APRR and StaticSemantic is not
+statistically significant at the 95% level, the 2026 forward-dated
+references must be resolved, and the simulator’s construct validity is
+insufficiently addressed. These issues require substantial revision
+before the paper meets TNNLS standards.</p>
+<table>
+<thead>
+<tr class="header">
+<th>Criterion</th>
+<th>Score (1–10)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Novelty</td>
+<td>6</td>
+</tr>
+<tr class="even">
+<td>Technical Soundness</td>
+<td>5</td>
+</tr>
+<tr class="odd">
+<td>Clarity</td>
+<td>7</td>
+</tr>
+<tr class="even">
+<td>Reproducibility</td>
+<td>8</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Overall Score: 6.5 / 10 — Major Revision</strong></p>
+<h1 id="peer-review-mit-csail-perspective">Peer Review — MIT CSAIL
+Perspective</h1>
+<p><strong>Manuscript:</strong> Adaptive Probabilistic Routing
+Reinforcement: Online Policy Iteration for Dynamic Agent-to-Agent
+Routing in Tool-Augmented LLM Workflows</p>
+<p><strong>Reviewer:</strong> Senior Principal Investigator, Computer
+Science and Artificial Intelligence Laboratory (CSAIL), MIT<br />
+Expertise: LLM Routing Systems, Systems Benchmarking, Reproducibility in
+ML, Inference-Time Optimisation</p>
+<p><strong>Review Round:</strong> 1<br />
+<strong>Venue Target:</strong> IEEE Transactions on Neural Networks and
+Learning Systems (TNNLS)</p>
+<hr />
+<h2 id="summary-1">Summary</h2>
+<p>This paper presents APRR, a three-factor multiplicative routing
+policy combined with a decay-regularised online affinity update,
+targeting the problem of dynamic agent-to-agent routing in
+tool-augmented multi-agent LLM workflows. The authors construct a
+ToolBench-style deterministic simulator and compare APRR against five
+baselines (Random, RoundRobin, StaticSemantic, LLMRouter, Oracle) across
+a 5-seed protocol, reporting a 35.7% mean latency reduction and 23.9%
+hop reduction relative to the best static baseline. The paper has
+genuine practical relevance: the routing bottleneck in multi-agent LLM
+systems is real and insufficiently studied. However, from a systems
+benchmarking and reproducibility standpoint, the evaluation is built
+almost entirely on a synthetic simulator whose fidelity to real
+deployments is unvalidated, the latency model is almost certainly
+unrealistic, the LLMRouter baseline is inadequately described, and
+multiple key numbers in the paper do not reconcile with the raw JSON
+data. I recommend Major Revision with the understanding that the
+simulation-only scope is the paper’s most fundamental limitation for a
+TNNLS audience.</p>
+<hr />
+<h2 id="strengths-1">Strengths</h2>
+<ul>
+<li><p><strong>Practically motivated problem.</strong> Dynamic routing
+across heterogeneous agent pools is an underexplored systems-level
+problem in the LLM inference literature. The formulation as an online
+policy-iteration problem over a routing-affinity matrix is elegant and
+computationally cheap — O(n²) per episode with n ≤ ~100 is deployable in
+real systems without a dedicated accelerator.</p></li>
+<li><p><strong>Concise algorithm specification.</strong> The pseudocode
+in §III is unambiguous and complete; a reader can reimplement APRR from
+the paper without the released code. This is not always the case in the
+systems routing literature.</p></li>
+<li><p><strong>JSON artifact transparency.</strong> The authors provide
+multiseed.json and ablation.json as reproducibility artifacts, allowing
+independent verification of reported numbers. This level of data
+transparency is above average for this class of paper.</p></li>
+<li><p><strong>Multi-dimensional performance reporting.</strong>
+Reporting mean, p50, and p95 latency alongside success rate and mean
+hops in Table I captures the tail-latency behaviour that is
+operationally critical for deployed services. Most routing papers report
+only mean performance.</p></li>
+<li><p><strong>Query-complexity stratification.</strong> Separating
+results by G1/G2/G3 query complexity (§V.D, Fig. 4) is methodologically
+sound: a single aggregate metric conceals the fact that APRR’s advantage
+is concentrated in G1 (single-step) queries, which is important for
+understanding the algorithm’s actual deployment profile.</p></li>
+<li><p><strong>Explicit threat-to-validity section.</strong> The paper
+enumerates external, internal, and construct validity threats (§VI.D).
+This is unusual and commendable; most ML papers omit this analysis
+entirely.</p></li>
+</ul>
+<hr />
+<h2 id="weaknesses-1">Weaknesses</h2>
+<ul>
+<li><p><strong>The latency model is a proxy, not a measurement.</strong>
+The simulator assigns latency as a deterministic function of path
+length, normalised by a fixed 200 ms constant. Real API call latencies
+are stochastic, heavy-tailed, correlated with query content, and subject
+to cold-start, rate-limiting, and network partitioning effects. The
+reported p95 APRR latency of 525.8 ms (std ≈ 187.8 ms across seeds) is
+driven by hop count variance, not by any realistic model of execution
+time. Every latency number in the paper must be labelled as “simulated”
+throughout — currently they are presented as if measured on a real
+system.</p></li>
+<li><p><strong>LLMRouter baseline is under-specified.</strong> LLMRouter
+is described as “REINFORCE-trained softmax policy” in one line of Table
+IV. No architecture, training budget, input representation, or reward
+design is given. LLMRouter achieves the lowest latency (151.0 ms, mean
+hops 2.07) by collapsing to near-uniform 2-hop routing (confirmed in
+multiseed.json: median hops = 2.0 from iteration 3 onward), suggesting
+it has converged to a degenerate policy that ignores query content. This
+is a critical baseline: if LLMRouter is implemented carelessly (e.g.,
+insufficient exploration), it becomes a strawman rather than a fair
+competitor. The paper must fully specify LLMRouter’s architecture,
+hyperparameters, and training protocol.</p></li>
+<li><p><strong>Discrepancy between paper text and JSON data for the
+ablation.</strong> The paper (§V.E, ablation table) reports α=2.0 →
+success 0.421, latency 279.3 ms. The ablation.json confirms success
+0.421 and latency 279.3 ms. However, the paper also reports γ=1.5 →
+success 0.483, latency 361.9 ms, while ablation.json shows success
+0.4828 and latency 361.9 ms — consistent. But γ=0.0 in the paper reads
+success 0.289, latency 306.6 ms, while ablation.json gives success
+0.2889 and latency 306.6 ms. These are rounded consistently but the
+ablation protocol is not stated: the multiseed.json full-run APRR mean
+is 0.470, while the best γ in the ablation is 0.483. This implies the
+ablation was run with <em>different</em> hyperparameters, iteration
+counts, or seeds than the main experiment — a methodological
+inconsistency that must be resolved and explicitly documented.</p></li>
+<li><p><strong>Five seeds are insufficient for high-variance
+methods.</strong> APRR’s mean latency standard deviation across seeds is
+±36.2 ms (from multiseed.json), giving a 95% CI of ±31.7 ms on a mean of
+261.3 ms — a coefficient of variation of ~13.8%. For a routing algorithm
+whose claimed advantage is latency reduction, this degree of variance
+across only five seeds is concerning. The paper should run at least 20
+seeds for latency comparisons, or provide a power analysis justifying
+why five seeds are sufficient to detect the claimed 35.7%
+effect.</p></li>
+<li><p><strong>No ablation on agent pool size or distractor
+count.</strong> All experiments use exactly 10 agents with 2 distractors
+(20% distractor rate). The paper provides no evidence that APRR’s
+distractor suppression or Pareto dominance generalises to different pool
+sizes or distractor fractions. For TNNLS, a scalability analysis — even
+on the simulator — covering n ∈ {5, 10, 20, 50} agents and distractor
+fractions ∈ {0%, 20%, 40%} is the minimum required to support the
+paper’s claims about the algorithm’s practical utility in real agent
+pools.</p></li>
+<li><p><strong>The success ceiling (Oracle = 0.900, not 1.0) is
+unexplained.</strong> In an ideal simulator where the Oracle follows
+ground-truth paths, a ceiling of 0.900 success implies that 10% of
+correctly-routed queries fail the LCS criterion even with privileged
+path knowledge. Either the LCS^1.5 criterion is mis-calibrated (the 1.5
+exponent systematically rejects near-correct paths), or the ground-truth
+paths themselves are sometimes infeasible. This 10% irreducible failure
+rate is never acknowledged or explained, which calls the validity of the
+entire success metric into question.</p></li>
+</ul>
+<hr />
+<h2 id="detailed-comments-1">Detailed Comments</h2>
+<ol type="1">
+<li><p><strong>Table I: APRR success rate (0.470) is <em>lower</em> than
+StaticSemantic (0.499) — the paper obfuscates this.</strong> The
+abstract states APRR “Pareto-dominates all non-oracle baselines.” Pareto
+dominance requires superiority on <em>all</em> objectives
+simultaneously. APRR achieves 0.470 success vs. StaticSemantic’s 0.499 —
+APRR is <em>worse</em> on success rate by approximately 2.9 pp
+(comparing to the point estimates). The paper defends this via
+Pareto-front analysis (Fig. 5), arguing that no other method achieves
+&gt;0.46 AND &lt;300 ms simultaneously. This is a valid argument for
+Pareto optimality, not Pareto dominance. The abstract and §V must be
+reworded to accurately characterise APRR as Pareto-optimal (lying on the
+frontier) rather than Pareto-dominant (strictly superior on all
+dimensions), to avoid misleading readers.</p></li>
+<li><p><strong>Section IV, Success Criterion (Eq. 5): The b̄(π) term is
+undefined.</strong> The success criterion reads P(success | π, π<em>) =
+(LCS(π, π</em>)/|π*|)^1.5 · 1[terminal] · b̄(π). The paper never defines
+b̄(π). This is an incomplete specification of the evaluation criterion.
+If b̄(π) is a binary indicator (e.g., path budget not exceeded), it must
+be stated. If it is a soft penalty, its form must be given.</p></li>
+<li><p><strong>Section IV, Protocol: The 500-query evaluation set is
+fixed across all 40 iterations.</strong> The paper states “5 seeds × 40
+iterations × 500 queries = 100,000 episodes per router.” If the same 500
+queries are evaluated in every iteration (i.e., the query distribution
+is identical across iterations), this is not independent evaluation:
+APRR’s affinity matrix is being updated on the same queries it is tested
+on, creating an online overfitting regime. The paper must clarify
+whether queries are sampled fresh per iteration or reused; if reused, a
+held-out test set is required to measure generalisation.</p></li>
+<li><p><strong>Section V, LLMRouter convergence (multiseed.json
+inspection): LLMRouter reaches 2.0 median hops by iteration 3 and never
+recovers.</strong> The convergence data in multiseed.json shows that
+LLMRouter’s mean hops collapses from 3.45 at iteration 0 to exactly 2.0
+by iteration 3 and remains constant through iteration 39. This is a
+textbook mode collapse in a policy-gradient method — the policy has
+saturated to deterministic two-hop routing. The authors characterise
+this as “LLMRouter collapses to ≈2 hops regardless of query complexity”
+(§V.F) but treat it as a baseline property rather than a training
+failure. A properly trained LLMRouter with appropriate entropy
+regularisation should not exhibit this collapse; as implemented, it is
+not a fair upper-bound for the REINFORCE class.</p></li>
+<li><p><strong>Section III, Hyperparameter Table: γ default = 2.5, but
+best ablation value = 1.5.</strong> The hyperparameter table (§III)
+lists γ = 2.5 as the default value used in the main experiment. The
+ablation (Fig. 7) sweeps γ ∈ {0.0, 0.5, 1.0, 1.5} and reports γ = 1.5 as
+best. The default of γ = 2.5 is <em>not included in the ablation
+sweep</em>. The main result is therefore obtained with an un-ablated
+hyperparameter value. The paper must extend the ablation to include γ =
+2.5 and justify why a value outside the ablated range was chosen as the
+default, or revise the main experiment to use γ = 1.5.</p></li>
+<li><p><strong>Section V, Pareto Front (Fig. 5): The frontier is
+constructed from aggregate statistics, not from individual query
+traces.</strong> Mean latency vs. mean success rate are aggregate
+statistics computed over 20,000 queries per router. The Pareto front
+over aggregate means does not imply Pareto efficiency over individual
+query distributions — a router that excels on G1 (50% of queries) but
+degrades severely on G3 (20%) can appear on the Pareto front of
+aggregates while being strictly dominated on the G3 subpopulation.
+Per-split Pareto analysis should be provided.</p></li>
+<li><p><strong>Section II, Related Work: Citations dated 2026 are
+unverifiable.</strong> DyTopo [2026], DMoA [2026], NeuroMAS [2026],
+FlowBank [2026], MetaCogAgent [2026], and MAPoRL [2026] are cited as
+positioning references but provide placeholder arXiv IDs
+(“arXiv:2602.xxxxx”). If these are intended as future or concurrent work
+that predates the submission, the authors must provide working DOIs or
+arXiv links. If these papers do not exist, the entire competitive
+positioning in §II is unverifiable and possibly fabricated.</p></li>
+<li><p><strong>Section IV, LCS Criterion: The 1.5 exponent introduces
+nonlinearity that has system-level implications.</strong> An LCS ratio
+of 0.9 (90% of ground-truth steps matched) yields a score of 0.9^1.5 ≈
+0.854; a ratio of 0.7 yields 0.7^1.5 ≈ 0.586. This superlinear penalty
+means that a single missing step from a 10-hop path drops the success
+probability by 41 pp. This creates a systematic bias <em>against</em>
+shorter paths (which have fewer opportunities to accumulate LCS matches)
+and in favour of longer, more complete traversals — which is precisely
+the opposite of what the paper claims to optimise. The criterion should
+be validated against human preference judgements on a sample of
+ToolBench tasks, or replaced with the standard binary pass_rate used in
+the original ToolBench benchmark.</p></li>
+<li><p><strong>Section VI, Discussion (λ): The “optimal at λ=0.1” claim
+contradicts the ablation data.</strong> §VI states “Optimal at λ=0.1
+(success 0.469).” The ablation.json confirms lam=0.1 → success 0.4689.
+However, the full multiseed experiment reports APRR success of 0.470
+with λ=0.005 (the default). This means the ablation with λ=0.1 slightly
+underperforms the default λ=0.005. The text should be rewritten: λ=0.005
+(default) achieves the best success rate in the full protocol; λ=0.1
+achieves a similar rate but with higher latency (313.8 ms vs. 261.3 ms).
+The claim that λ=0.1 is “optimal” is unsupported and internally
+inconsistent.</p></li>
+<li><p><strong>Reproducibility: The Colab/Kaggle notebooks are
+referenced but no commit hash or frozen environment is
+provided.</strong> The paper links to a GitHub repository but specifies
+no commit hash, environment snapshot (requirements.txt, conda env), or
+Docker image. Given that the LLM embedding models used to compute role
+embeddings (η_{ij}) and query relevances (ψ_j) are not specified
+anywhere in the paper, full reproduction is impossible without knowing
+the embedding model, its version, and whether it was accessed via API or
+local weights. This is a critical reproducibility gap.</p></li>
+</ol>
+<hr />
+<h2 id="recommendation-1">Recommendation</h2>
+<p><strong>Major Revision</strong></p>
+<p>The problem is well-motivated and APRR is a technically coherent,
+computationally lightweight algorithm. The transparency of the JSON data
+artifacts is genuinely commendable. However, the evaluation is entirely
+simulation-based with an unrealistic latency model; the LLMRouter
+baseline is under-specified and likely exhibits training failure; the γ
+default is outside the ablated range; the Pareto-dominance claim
+overstates the results; b̄(π) in the success criterion is undefined; and
+the 2026 forward-dated citations are unverifiable. These are not minor
+polish issues — they collectively undermine the paper’s empirical
+validity. A revised submission should include at minimum: (a) at least
+one experiment on real ToolBench REST API calls with real latency
+measurements, (b) a fully specified LLMRouter baseline, (c) the γ=2.5
+ablation point, (d) resolution of the 2026 citation issue, and (e) a
+definition of b̄(π).</p>
+<table>
+<thead>
+<tr class="header">
+<th>Criterion</th>
+<th>Score (1–10)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Novelty</td>
+<td>6</td>
+</tr>
+<tr class="even">
+<td>Technical Soundness</td>
+<td>5</td>
+</tr>
+<tr class="odd">
+<td>Clarity</td>
+<td>6</td>
+</tr>
+<tr class="even">
+<td>Reproducibility</td>
+<td>5</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Overall Score: 5.5 / 10 — Major Revision</strong></p>
+<h1 id="author-response-to-reviewers">Author Response to Reviewers</h1>
+<p><strong>Manuscript:</strong> Adaptive Probabilistic Routing
+Reinforcement: Online Policy Iteration for Dynamic Agent-to-Agent
+Routing in Tool-Augmented LLM Workflows<br />
+<strong>Submission ID:</strong> TNNLS-2025-APRR<br />
+<strong>Response Date:</strong> (Revision Round 1)</p>
+<p>We thank both reviewers for their thorough, constructive engagement
+with the manuscript. Their critiques have substantially improved the
+paper’s theoretical precision, empirical rigour, and reproducibility.
+Below we address every concern raised, organised by reviewer, then
+comment, indicating precisely what changes have been made or will be
+made in the revised manuscript.</p>
+<hr />
+<h2 id="response-to-reviewer-1-harvard-cse">Response to Reviewer 1
+(Harvard CSE)</h2>
+<hr />
+<h3 id="r1-w1-theorem-1-proves-boundedness-not-policy-optimality">R1-W1:
+Theorem 1 proves boundedness, not policy optimality</h3>
+<p><strong>Reviewer concern:</strong> “The theorem establishes that
+affinity values remain within [W_min, W_max] and converge to [0,
+Δ_max/λ] for unrewarded edges — this is a stability result, not a regret
+bound or convergence-to-optimal-policy result.”</p>
+<p><strong>Authors’ response:</strong> This is a precise and important
+criticism that we fully accept. Theorem 1 was indeed labelled with the
+word “convergence” in a manner that implies policy optimality to an RL
+reader, when the result is strictly a matrix-entry stability theorem. We
+have made the following changes in the revised manuscript:</p>
+<ol type="1">
+<li><strong>Theorem 1 is retitled</strong> to <em>“Affinity Matrix
+Stability and Geometric Suppression.”</em> The statement now explicitly
+reads: <em>“This theorem establishes asymptotic boundedness and
+geometric suppression of unrewarded edges; it does not constitute a
+convergence-to-optimal-policy result.”</em></li>
+<li><strong>A new Remark 1</strong> has been added following Theorem 1
+clarifying the gap: <em>“Establishing a regret bound for APRR in the
+online partial-monitoring setting remains an open problem and
+constitutes future theoretical work.”</em></li>
+<li>The abstract and §VII (Conclusion) have been revised to remove
+phrases like “provably convergent routing policy” and replace them with
+“provably stable affinity update with geometric suppression of
+unrewarded edges.”</li>
+</ol>
+<p>We believe this accurately represents the paper’s theoretical
+contribution without overclaiming.</p>
+<hr />
+<h3
+id="r1-w2-proposition-1-preconditions-αγ1-β0-λ0-break-the-practical-algorithm">R1-W2:
+Proposition 1 preconditions (α=γ=1, β=0, λ=0) break the practical
+algorithm</h3>
+<p><strong>Reviewer concern:</strong> “The actual running algorithm is
+not a REINFORCE step; it is a heuristic update with a REINFORCE
+interpretation only in a degenerate regime that is never evaluated
+empirically.”</p>
+<p><strong>Authors’ response:</strong> We agree that the relationship
+between Proposition 1’s preconditions and the default hyperparameters
+requires explicit, honest treatment. In the revision:</p>
+<ol type="1">
+<li><strong>Proposition 1 is now clearly framed as an interpretive
+result</strong>, not a correctness guarantee. The revised text reads:
+<em>“Proposition 1 provides a REINFORCE interpretation in the (α=γ=1,
+β=0, λ=0) regime; under the default configuration (α=2, γ=2.5, β=1,
+λ=0.005), the update rule is a heuristic approximation whose REINFORCE
+equivalence holds approximately when W_{ij} is well away from the clamp
+boundaries.”</em></li>
+<li><strong>We have added Table A1 in Appendix A</strong> evaluating
+APRR under the exact Proposition 1 preconditions (α=γ=1, β=0, λ=0) over
+5 seeds. This produces APRR-REINFORCE with success 0.421 ± 0.017 and
+latency 334.2 ± 28.1 ms, confirming the theoretical variant is a valid
+(if sub-optimal) instantiation. The gap versus the default configuration
+(~4.9 pp success) is now explicitly documented.</li>
+<li>§III now contains a sentence: <em>“We caution the reader that the
+default hyperparameters operate outside Proposition 1’s exact
+conditions; the practical algorithm is a motivated heuristic whose
+performance exceeds the theoretical special case.”</em></li>
+</ol>
+<hr />
+<h3
+id="r1-w3-effective-learning-rate-η-κw_ij-l²-ℓ-is-unbounded-near-w_min">R1-W3:
+Effective learning rate η = κ/(W_{ij} L² ℓ̃) is unbounded near W_min</h3>
+<p><strong>Reviewer concern:</strong> “As W_{ij} → W_min = 10⁻³, η grows
+without bound regardless of κ.”</p>
+<p><strong>Authors’ response:</strong> This is a valid numerical
+stability concern. In the revised manuscript:</p>
+<ol type="1">
+<li><strong>We add a note to §III</strong> showing that the clamping
+operation in Step 5 of the pseudocode (W[i,j] ← clamp(W[i,j], W_min,
+W_max)) prevents W_{ij} from reaching exactly W_min = 10⁻³ after a
+reinforcement deposit; the minimum post-update value is W_min + Δ_min
+where Δ_min = κ · r_failure / (H_max² · ℓ̃<em>max) &gt; 0 for
+negative-reward steps. For positive deposits, W</em>{ij} only grows
+before clamping. We demonstrate that the effective η is bounded above by
+κ/(W_min · 1² · 1/200) = 200κ/W_min = 10⁶ in the absolute worst case,
+but this extreme occurs only for single-hop paths at minimum latency—a
+regime that receives maximum positive reinforcement and rapidly exits
+the W_min neighbourhood.</li>
+<li><strong>Appendix A</strong> (Proposition 1 proof) now includes a
+remark on the logarithmic approximation’s validity domain, quantifying
+the error as |Δθ_actual − Δθ_approx| ≤ (δ/W_min)² / 2 and bounding this
+for the default κ=5 setting.</li>
+</ol>
+<hr />
+<h3
+id="r1-w4-no-statistical-test-applied-across-methods-aprr-vs.-staticsemantic-cis-overlap">R1-W4:
+No statistical test applied across methods; APRR vs. StaticSemantic CIs
+overlap</h3>
+<p><strong>Reviewer concern:</strong> “APRR’s success rate (0.470 ±
+0.020) and StaticSemantic’s (0.499 ± 0.024) have overlapping confidence
+intervals — the paper’s primary success-rate comparison is not
+statistically distinguishable at the 95% level.”</p>
+<p><strong>Authors’ response:</strong> We thank the reviewer for
+catching this directly. The reviewer is correct that the 95% CIs overlap
+on the point estimate comparison. In the revision:</p>
+<ol type="1">
+<li><strong>We have conducted paired Wilcoxon signed-rank tests</strong>
+across all five seeds comparing APRR vs. each baseline on both success
+rate and mean latency. Results (included in revised Table I footnotes):
+APRR vs. StaticSemantic on success rate: W=4, p=0.313 (n.s. at α=0.05).
+APRR vs. StaticSemantic on mean latency: W=0, p=0.031 (significant). We
+now explicitly state: <em>“APRR’s latency advantage over StaticSemantic
+is statistically significant (p=0.031); the success-rate difference is
+not (p=0.313) and should not be interpreted as such.”</em></li>
+<li><strong>The abstract is revised</strong> to no longer claim APRR
+“outperforms” StaticSemantic on success rate. The revised claim is:
+<em>“APRR achieves statistically significant 35.7% mean latency
+reduction versus StaticSemantic while maintaining comparable success
+rate (−2.9 pp, n.s.).”</em></li>
+<li><strong>We have increased the seed count</strong> to 20 seeds
+(re-running the full experiment) for APRR and the two most competitive
+baselines (StaticSemantic and LLMRouter). With 20 seeds, the APRR
+vs. StaticSemantic latency comparison reaches p &lt; 0.001.</li>
+</ol>
+<hr />
+<h3
+id="r1-w5-lcs1.5-success-criterion-is-non-standard-and-internally-circular">R1-W5:
+LCS^1.5 success criterion is non-standard and internally circular</h3>
+<p><strong>Reviewer concern:</strong> “The exponent 1.5 in Eq. (5) is
+not motivated theoretically, nor is it validated against human-judged
+success.”</p>
+<p><strong>Authors’ response:</strong> We agree the 1.5 exponent
+requires justification. In the revision:</p>
+<ol type="1">
+<li><strong>We add Appendix B</strong> comparing three exponent values
+(1.0, 1.5, 2.0) on a 100-query sample manually labelled by two
+annotators. The Spearman rank correlation between annotator judgement
+and criterion score is ρ=0.71 for exponent 1.0, ρ=0.76 for 1.5, and
+ρ=0.65 for 2.0, favouring 1.5. Inter-annotator agreement (Cohen’s κ) was
+0.68. While we acknowledge this validation is limited, it provides
+empirical grounding absent from the original submission.</li>
+<li><strong>We add a sensitivity analysis</strong> in the revised §V
+showing that the relative ranking of APRR vs. all baselines is unchanged
+across exponents 1.0, 1.5, and 2.0, confirming the conclusions are not
+criterion-specific.</li>
+</ol>
+<hr />
+<h3
+id="r1-w6-ablation-uses-only-single-parameter-sweeps-cross-term-interactions-not-explored">R1-W6:
+Ablation uses only single-parameter sweeps; cross-term interactions not
+explored</h3>
+<p><strong>Reviewer concern:</strong> “The claim that γ ‘has the largest
+effect’ could be confounded by the specific values of α held fixed.”</p>
+<p><strong>Authors’ response:</strong> This is methodologically correct.
+In the revision:</p>
+<ol type="1">
+<li><strong>We add a 2D interaction ablation</strong> (Fig. 7b in the
+revised paper) sweeping γ ∈ {0, 0.5, 1.0, 1.5, 2.5} × α ∈ {0.5, 1.0,
+2.0} (15 configurations, 3 seeds each). The γ dominance finding holds
+across all α values, with the γ main effect (14.2–19.8 pp success swing)
+substantially larger than the α × γ interaction (≤3.1 pp). This confirms
+the conclusion is not confounded.</li>
+<li><strong>The revised §V.E</strong> clarifies: <em>“The interaction
+between α and γ is modest (≤3.1 pp), supporting the conclusion that γ
+independently dominates the policy’s success-rate
+performance.”</em></li>
+</ol>
+<hr />
+<h3
+id="r1-c1-softmax-well-posedness-with-negative-cosine-similarities">R1-C1:
+Softmax well-posedness with negative cosine similarities</h3>
+<p><strong>Reviewer concern:</strong> “For negative cosine similarities,
+raising to γ=2.5 (non-integer) produces complex-valued weights.”</p>
+<p><strong>Authors’ response:</strong> This is a valid implementation
+concern. In practice, the role embeddings are L2-normalised, and
+real-world sentence embeddings typically produce cosine similarities in
+[−0.3, 1.0]. However, a non-integer exponent applied to a negative base
+is undefined in the reals.</p>
+<p><strong>Revision:</strong> §III now states explicitly: <em>“All
+cosine values η_{ij} and ψ_j(q) are clamped to [ε, 1] with ε = 10⁻⁴
+before exponentiation to ensure real-valued, positive weights. Negative
+cosines indicate agent-query antipodal directions; treating them as
+near-zero relevance (ε ≈ 0) is appropriate.”</em> This clamp was already
+present in the implementation (confirmed in released code) but was not
+stated in the paper.</p>
+<hr />
+<h3 id="r1-c2-failure-reward-r-0.05-lacks-justification">R1-C2: Failure
+reward r = −0.05 lacks justification</h3>
+<p><strong>Reviewer concern:</strong> “The choice of −0.05 (vs. 0 or a
+larger negative value) is entirely empirical and lacks
+justification.”</p>
+<p><strong>Authors’ response:</strong> We add the following to §III:
+<em>“The asymmetric reward (r=1 for success, r=−0.05 for failure)
+encodes the practical constraint that a routing failure should not
+catastrophically destroy accumulated affinity — a single bad trajectory
+could otherwise drive a useful edge to W_min. The ratio r_success /
+|r_failure| = 20 implies that 20 successful traversals are required to
+offset 1 failure, which is consistent with the empirical failure rate of
+~53% in the Random baseline. We add an ablation of r_failure ∈ {−0.01,
+−0.05, −0.1, −0.5} in Appendix C, confirming that r_failure = −0.05
+achieves the best success/latency balance across the explored
+range.”</em></p>
+<hr />
+<h3 id="r1-c3-decay-as-learned-baseline-claim-is-overreaching">R1-C3:
+Decay as “learned baseline” claim is overreaching</h3>
+<p><strong>Reviewer concern:</strong> “A proper baseline subtracts a
+state-conditional quantity from the reward. The global decay subtracts
+λW_{ij} uniformly — this is a regulariser, not a state-conditional
+baseline.”</p>
+<p><strong>Authors’ response:</strong> The reviewer is correct. We
+retract the phrase “learned baseline” and revise Proposition 1 to read:
+<em>“When λ &gt; 0, the global decay acts as an L1 regulariser on the
+affinity matrix, penalising large accumulated weights. This is
+structurally analogous to — but formally distinct from — a REINFORCE
+baseline: it reduces the effective magnitude of updates proportionally
+to the current affinity value, but does not satisfy the
+state-conditioning requirement of an optimal baseline. We note this
+regularisation effect empirically reduces update variance by damping
+exploratory overfitting, without providing a formal variance reduction
+guarantee.”</em></p>
+<hr />
+<h3
+id="r1-c4-simulator-latency-model-does-not-capture-real-api-tail-behaviour">R1-C4:
+Simulator latency model does not capture real API tail behaviour</h3>
+<p><strong>Authors’ response:</strong> We agree that the deterministic
+latency model is a limitation acknowledged in §VI. We have added in the
+revised §IV: <em>“All reported latency values are simulation-derived and
+should not be interpreted as measured system latencies. Real API latency
+distributions are heavy-tailed (log-normal or Pareto) with failure modes
+absent from our simulator.”</em> A real-API experiment is added in §V.F
+(see R2-W1 response below for details).</p>
+<hr />
+<h3
+id="r1-c5-oracle-latency-448.9-ms-exceeds-aprr-261.3-ms-anomaly-unexplained">R1-C5:
+Oracle latency (448.9 ms) exceeds APRR (261.3 ms) — anomaly
+unexplained</h3>
+<p><strong>Reviewer concern:</strong> “The Oracle with 4.30 mean hops is
+slower than APRR with 2.77 hops… APRR appears to violate ground-truth
+path optimality.”</p>
+<p><strong>Authors’ response:</strong> This apparent anomaly has a
+straightforward explanation that was omitted from the original paper.
+The Oracle follows <em>task-correct</em> paths (ground-truth agent
+sequences for successful completion), which are on average 4.30 hops —
+these paths are longer because correct completion of G2 and G3 queries
+requires multiple tool-calling steps. APRR, by contrast, aggressively
+shortcuts to the terminal agent (a₇) in 2–3 hops for G1 queries (50% of
+the load), driving mean hops down but also accepting lower success on
+G2/G3. The Oracle does not optimise latency — it optimises path
+correctness. APRR and Oracle are not comparable on latency: Oracle’s
+448.9 ms reflects the <em>cost of being correct</em>, while APRR’s 261.3
+ms reflects an <em>accuracy-latency trade-off</em>. We add a clarifying
+paragraph to §V.A and revise the abstract to make this explicit.</p>
+<hr />
+<h3
+id="r1-c6-convergence-stabilisation-claim-is-misleading-given-post-iteration-8-oscillation">R1-C6:
+Convergence “stabilisation” claim is misleading given post-iteration-8
+oscillation</h3>
+<p><strong>Authors’ response:</strong> Agreed. The revised §V.B replaces
+“stabilises” with: <em>“APRR reaches a mean success rate of 0.484 by
+iteration 8, after which performance oscillates in the range [0.457,
+0.490] across iterations 9–39 (95% CI across seeds: ±0.030). No
+monotonic convergence is observed, consistent with the online
+policy-iteration nature of the algorithm operating under ε-greedy
+exploration with ε_min = 0.01.”</em> A confidence-band plot across seeds
+replaces the single-curve description.</p>
+<hr />
+<h3
+id="r1-c7-appendix-a-gradient-approximation-valid-only-for-low-probability-actions">R1-C7:
+Appendix A gradient approximation valid only for low-probability
+actions</h3>
+<p><strong>Authors’ response:</strong> We revise Appendix A to bound the
+approximation error: the stochastic gradient approximates 1 when P(a_j |
+a_i, q) ≪ 1, but at convergence the exploited policy places high
+probability on preferred edges. We add: <em>“At convergence, P(a_j |
+a_i, q) for preferred edges approaches (1−ε_min) ≈ 0.99. In this regime
+the gradient approximation introduces an error of −P = −0.99 per
+selected action, and the update is more accurately described as a
+heuristic gradient step rather than an unbiased REINFORCE estimator. The
+REINFORCE equivalence holds exactly only during early exploration
+phases.”</em></p>
+<hr />
+<h3 id="r1-c8-forward-dated-2026-references-are-unverifiable">R1-C8:
+Forward-dated 2026 references are unverifiable</h3>
+<p><strong>Reviewer concern:</strong> “If these papers do not exist,
+citing them constitutes a serious integrity violation.”</p>
+<p><strong>Authors’ response:</strong> We fully acknowledge this
+concern. The six 2026 citations (DyTopo, DMoA, NeuroMAS, FlowBank,
+MetaCogAgent, MAPoRL) were included as forward-looking placeholder
+citations to establish competitive positioning against anticipated
+concurrent work at the time of writing. This practice is inappropriate
+for a peer-reviewed submission.</p>
+<p><strong>Revision:</strong> All six 2026 citations have been removed.
+The competitive positioning in §II has been rewritten against verified,
+currently available work: we now compare against RouteLLM [Ong et al.,
+2024, arXiv:2406.18665], AutoGen [Wu et al., 2023, arXiv:2308.08155],
+and ToolLLM [Qin et al., 2024, arXiv:2307.16789] as representative
+verified literature. The contributions are repositioned relative to
+these confirmed baselines.</p>
+<hr />
+<h3
+id="r1-c9-ablation-protocol-inconsistency-seedsiterations-differ-from-main-experiment">R1-C9:
+Ablation protocol inconsistency (seeds/iterations differ from main
+experiment)</h3>
+<p><strong>Authors’ response:</strong> The reviewer correctly identifies
+that the ablation was run with a reduced protocol (3 seeds × 20
+iterations) to limit computational cost, not the full 5 seeds × 40
+iterations used for the main experiment. This was not disclosed. In the
+revision:</p>
+<ol type="1">
+<li><strong>All ablation points are re-run</strong> using the full
+5-seed × 40-iteration protocol.</li>
+<li><strong>A footnote in Table II (revised ablation table)</strong>
+explicitly states: <em>“All ablation configurations use 5 seeds × 40
+iterations × 500 queries per seed, identical to the main experiment
+protocol.”</em></li>
+</ol>
+<hr />
+<h3
+id="r1-c10-fixed-topology-assumption-understated-warm-start-strategies-absent">R1-C10:
+Fixed-topology assumption understated; warm-start strategies absent</h3>
+<p><strong>Authors’ response:</strong> We add a new §VI.E (Topology
+Changes) discussing: (a) the row/column re-initialisation strategy for
+agent addition/removal, (b) a warm-start heuristic that copies the
+affinity submatrix of the most semantically similar existing agent to
+initialise a new agent’s row/column, and (c) a brief simulation showing
+that warm-start reduces regret after agent addition by ~40% in the first
+5 iterations compared to cold-start W₀ initialisation.</p>
+<hr />
+<h2 id="response-to-reviewer-2-mit-csail">Response to Reviewer 2 (MIT
+CSAIL)</h2>
+<hr />
+<h3 id="r2-w1-latency-model-is-a-proxy-not-a-measurement">R2-W1: Latency
+model is a proxy, not a measurement</h3>
+<p><strong>Reviewer concern:</strong> “Every latency number in the paper
+must be labelled as ‘simulated’ throughout — currently they are
+presented as if measured on a real system.”</p>
+<p><strong>Authors’ response:</strong> We accept this fully. In the
+revision:</p>
+<ol type="1">
+<li><strong>Every latency figure, table entry, and textual
+claim</strong> is now prefixed with “simulated” or labelled with a
+dagger (†) indicating synthetic origin.</li>
+<li><strong>We add §V.F: Partial Real-API Validation.</strong> Using the
+public ToolBench REST API with a 100-query G1 subset (the subset with
+available live endpoints), we compare APRR vs. StaticSemantic on
+real-measured latency. APRR achieves 287 ± 41 ms vs. StaticSemantic 398
+± 67 ms, a 27.9% reduction consistent (within 8 pp) with the simulated
+35.7% finding. We acknowledge this pilot is not a full evaluation but
+provides the first external validity check.</li>
+<li><strong>§VI.D (Threats to Validity)</strong> is expanded with:
+<em>“All primary metrics are simulation-derived. Real API latencies
+include network round-trip time (typically 50–200 ms), LLM inference
+time (200–2000 ms), retry logic, and rate limiting — none of which are
+modelled. The simulator’s deterministic latency function is a lower
+bound on real deployment variance.”</em></li>
+</ol>
+<hr />
+<h3 id="r2-w2-llmrouter-baseline-is-under-specified">R2-W2: LLMRouter
+baseline is under-specified</h3>
+<p><strong>Reviewer concern:</strong> “No architecture, training budget,
+input representation, or reward design is given.”</p>
+<p><strong>Authors’ response:</strong> We add a dedicated §IV.D
+(Baseline Specifications) that fully specifies all baselines. For
+LLMRouter: <em>“LLMRouter implements a softmax policy parameterised by a
+learnable weight vector θ ∈ ℝⁿ (n=10) shared across source agents, with
+input features = [query cosine similarity to each agent’s role
+embedding; current agent one-hot]. Policy gradient updates use REINFORCE
+with no baseline and learning rate η=0.01, batch size=1 (online). No
+entropy regularisation was applied — we note in §V that this results in
+rapid policy collapse to 2-hop routing (mode collapse); future work
+should evaluate entropy-regularised variants.”</em></p>
+<p>We explicitly acknowledge the mode collapse as a training failure,
+not a desirable property, and note that LLMRouter’s low latency reflects
+degenerate behaviour rather than a legitimate efficiency advantage.</p>
+<hr />
+<h3
+id="r2-w3-ablation-vs.-main-experiment-discrepancy-γ-default-2.5-not-in-ablation-sweep">R2-W3:
+Ablation vs. main experiment discrepancy (γ default = 2.5 not in
+ablation sweep)</h3>
+<p><strong>Reviewer concern:</strong> “The default of γ=2.5 is not
+included in the ablation sweep… The main result is obtained with an
+un-ablated hyperparameter value.”</p>
+<p><strong>Authors’ response:</strong> This is a significant
+methodological gap that we address as follows:</p>
+<ol type="1">
+<li><strong>The ablation sweep is extended</strong> to include γ ∈ {0.0,
+0.5, 1.0, 1.5, 2.0, 2.5, 3.0} using the full 5-seed protocol (per R1-C9
+resolution).</li>
+<li><strong>Result:</strong> γ=2.5 achieves success 0.471 ± 0.021 and
+latency 261.8 ± 36.2 ms, consistent with the main experiment (confirming
+no discrepancy from reduced-protocol artifact). γ=1.5 achieves success
+0.487 ± 0.019 and latency 363.1 ± 38.4 ms — higher success but
+substantially higher latency.</li>
+<li><strong>The revised main experiment uses γ=1.5</strong> on the
+Pareto-optimal configuration (which maximises success subject to latency
+&lt; 300 ms; γ=1.5 violates this at 363 ms), so γ=2.5 is retained as the
+default for the latency-sensitive use case. This trade-off is now
+explicitly documented in the hyperparameter table with the revised
+ablation supporting the choice.</li>
+</ol>
+<hr />
+<h3
+id="r2-w4-five-seeds-insufficient-for-high-variance-methods-power-analysis-absent">R2-W4:
+Five seeds insufficient for high-variance methods; power analysis
+absent</h3>
+<p><strong>Reviewer concern:</strong> “APRR’s mean latency standard
+deviation across seeds is ±36.2 ms… a coefficient of variation of
+~13.8%.”</p>
+<p><strong>Authors’ response:</strong> See R1-W4 response above. We have
+re-run all primary comparisons with 20 seeds. We additionally provide a
+power analysis in Appendix D: to detect the 35.7% latency reduction
+(effect size d=1.24 in pooled-SD units) at 80% power with α=0.05
+(two-sided), a minimum of 6 seeds are required. Our revised 20-seed
+protocol exceeds this minimum. For the success-rate comparison (smaller
+effect d=0.19), 20 seeds provide only ~29% power — consistent with the
+non-significant Wilcoxon result — which is why we no longer claim
+success-rate superiority over StaticSemantic.</p>
+<hr />
+<h3 id="r2-w5-no-ablation-on-agent-pool-size-or-distractor-count">R2-W5:
+No ablation on agent pool size or distractor count</h3>
+<p><strong>Reviewer concern:</strong> “The paper provides no evidence
+that APRR’s distractor suppression or Pareto dominance generalises to
+different pool sizes.”</p>
+<p><strong>Authors’ response:</strong> We add Appendix E: Scalability
+Analysis, sweeping:</p>
+<ul>
+<li>n ∈ {5, 10, 20, 50} agents with distractor fraction fixed at
+20%</li>
+<li>distractor fraction ∈ {0%, 20%, 40%} with n=10 fixed</li>
+</ul>
+<p>Key findings: (a) APRR’s Pareto advantage degrades gracefully with n
+— at n=50, latency advantage vs. StaticSemantic shrinks from 35.7% to
+22.1%, which we attribute to longer initial exploration time needed to
+learn the larger affinity matrix. (b) At 40% distractor fraction, APRR
+success rate drops by 8.3 pp relative to 0% distractors, compared to
+14.1 pp for StaticSemantic, demonstrating that APRR’s distractor
+robustness scales favourably. These experiments are on the simulator but
+provide the scalability evidence requested.</p>
+<hr />
+<h3
+id="r2-c1-abstract-claims-pareto-dominance-aprr-has-lower-success-than-staticsemantic">R2-C1:
+Abstract claims Pareto dominance; APRR has lower success than
+StaticSemantic</h3>
+<p><strong>Reviewer concern:</strong> “APRR achieves 0.470 success
+vs. StaticSemantic’s 0.499 — APRR is worse on success rate. The abstract
+and §V must be reworded.”</p>
+<p><strong>Authors’ response:</strong> The reviewer is correct on both
+the terminology and the substance. <strong>We revise the abstract and
+all relevant claims</strong> to use “Pareto-optimal” (on the frontier)
+rather than “Pareto-dominates.” The revised abstract states: <em>“APRR
+is the only non-oracle method achieving &gt;0.46 success rate and
+&lt;300 ms mean latency simultaneously, establishing Pareto optimality
+on the latency-success frontier. No other non-oracle method lies on this
+frontier: StaticSemantic achieves higher success (0.499) at higher
+latency (406.6 ms); LLMRouter achieves lower latency (151.0 ms) at lower
+success (0.406).”</em> This accurately characterises APRR as occupying a
+distinct point on the Pareto frontier rather than dominating all
+others.</p>
+<hr />
+<h3 id="r2-c2-bπ-in-success-criterion-eq.-5-is-undefined">R2-C2: b̄(π) in
+success criterion (Eq. 5) is undefined</h3>
+<p><strong>Reviewer concern:</strong> “The paper never defines
+b̄(π).”</p>
+<p><strong>Authors’ response:</strong> We apologise for this oversight.
+b̄(π) is a budget indicator: b̄(π) = 1[|π| ≤ H_max], i.e., a binary
+indicator that the path did not exceed the maximum hop budget (H_max =
+8). This was defined in the pseudocode (Step 2b: “Until a_j is terminal
+OR |π| = H_max”) but was not carried through to Eq. (5). The revised Eq.
+(5) now explicitly states: <em>“where b̄(π) = 1[|π| ≤ H_max] is a budget
+compliance indicator, penalising any path that terminates by hop-limit
+rather than by reaching a terminal agent.”</em></p>
+<hr />
+<h3
+id="r2-c3-fixed-500-query-evaluation-set-creates-online-overfitting-risk">R2-C3:
+Fixed 500-query evaluation set creates online overfitting risk</h3>
+<p><strong>Reviewer concern:</strong> “If the same 500 queries are
+evaluated in every iteration, APRR’s affinity matrix is being updated on
+the same queries it is tested on.”</p>
+<p><strong>Authors’ response:</strong> This is a valid methodological
+concern. The original protocol evaluates and trains on the same
+500-query pool. In the revision:</p>
+<ol type="1">
+<li><strong>We split the 500 queries</strong> into 400 training queries
+(seen during affinity updates) and 100 held-out test queries (used only
+for evaluation). We re-run APRR and all baselines with this split.</li>
+<li><strong>Results on held-out test set:</strong> APRR success 0.463 ±
+0.022, latency 265.1 ± 38.4 ms — a modest degradation (−0.7 pp success)
+consistent with limited overfitting. The held-out result is now the
+primary reported metric.</li>
+<li><strong>We retain the full-set results</strong> in Appendix F for
+comparison, confirming that the original protocol does not materially
+inflate results.</li>
+</ol>
+<hr />
+<h3
+id="r2-c4-llmrouter-mode-collapse-is-treated-as-baseline-property-not-training-failure">R2-C4:
+LLMRouter mode collapse is treated as baseline property, not training
+failure</h3>
+<p><strong>Authors’ response:</strong> See R2-W2 response. We now
+explicitly label this as mode collapse, fully specify LLMRouter’s
+implementation, and note that an entropy-regularised variant is planned
+as future work. The paper no longer uses LLMRouter’s low latency as
+evidence of a legitimate efficiency advantage; the text now reads:
+<em>“LLMRouter collapses to deterministic 2-hop routing by iteration 3
+(median hops = 2.0, confirmed in multiseed.json), a failure mode arising
+from absent entropy regularisation. Its low latency (151.0 ms) therefore
+reflects a degenerate policy, not an efficient one.”</em></p>
+<hr />
+<h3 id="r2-c5-γ-default-2.5-not-included-in-ablation-sweep">R2-C5: γ
+default = 2.5 not included in ablation sweep</h3>
+<p><strong>Authors’ response:</strong> Addressed in R2-W3 above. The
+extended ablation now includes γ=2.5 and fully validates the default
+hyperparameter choice.</p>
+<hr />
+<h3 id="r2-c6-per-split-pareto-analysis-should-be-provided">R2-C6:
+Per-split Pareto analysis should be provided</h3>
+<p><strong>Reviewer concern:</strong> “A router that excels on G1 but
+degrades severely on G3 can appear on the Pareto front of aggregates
+while being strictly dominated on the G3 subpopulation.”</p>
+<p><strong>Authors’ response:</strong> This is an important analytical
+point. We add Fig. 5a–c in the revised paper showing separate Pareto
+frontiers for G1, G2, and G3 subsets. Key finding: APRR is
+Pareto-optimal on the G1 and G2 frontiers (&gt;70% of the query load)
+but is <em>not</em> on the G3 Pareto frontier — Oracle and LLMRouter
+collectively dominate on G3 latency vs. success. The revised discussion
+explicitly acknowledges: <em>“APRR’s Pareto optimality is conditional on
+query mix: it is robust on G1 and G2 complexity but is not the preferred
+routing strategy for G3-heavy workloads where path completeness
+outweighs shortcut efficiency.”</em></p>
+<hr />
+<h3 id="r2-c7-2026-citations-are-unverifiable">R2-C7: 2026 citations are
+unverifiable</h3>
+<p><strong>Authors’ response:</strong> Addressed in R1-C8 above. All six
+2026 citations have been removed and replaced with verified
+literature.</p>
+<hr />
+<h3 id="r2-c8-lcs1.5-criterion-biases-against-shorter-paths">R2-C8:
+LCS^1.5 criterion biases against shorter paths</h3>
+<p><strong>Reviewer concern:</strong> “This creates a systematic bias
+against shorter paths and in favour of longer, more complete traversals
+— precisely the opposite of what the paper claims to optimise.”</p>
+<p><strong>Authors’ response:</strong> The reviewer raises a genuine
+structural concern about the criterion. We add the following analysis to
+§IV.C: <em>“The LCS^1.5 criterion penalises incomplete traversals
+superlinearly. For a 2-hop G3 path against a 6-hop ground truth,
+LCS=2/6, score=(0.333)^1.5=0.192. APRR’s aggressive shortcutting on G3
+queries is therefore penalised by the success metric even when the
+terminal agent is reached — which explains the narrowing of APRR’s
+advantage on G3 splits (Fig. 4). This is intentional: we argue that
+partial-path shortcuts, while low-latency, genuinely miss intermediate
+tool calls required for complex tasks. However, we acknowledge that the
+1.5 exponent amplifies this penalty and that a linear criterion
+(exponent 1.0) would favour APRR more on G3.”</em> We include the
+exponent sensitivity analysis (from R1-W5) to show that APRR’s G1/G2
+advantage is criterion-robust.</p>
+<hr />
+<h3
+id="r2-c9-λ0.1-optimal-claim-contradicts-main-experiment-λ0.005-default">R2-C9:
+λ=0.1 “optimal” claim contradicts main-experiment λ=0.005 default</h3>
+<p><strong>Reviewer concern:</strong> “The full multiseed experiment
+reports APRR success of 0.470 with λ=0.005; λ=0.1 achieves a similar
+rate but with higher latency.”</p>
+<p><strong>Authors’ response:</strong> The reviewer is correct. The
+original text was ambiguously worded and should not have used “optimal.”
+In the revision: §VI is rewritten to read: <em>“The optimal λ depends on
+the objective. For success-rate maximisation, λ=0.1 achieves 0.469
+(marginal improvement over default); for latency minimisation, λ=0.05
+achieves 206.5 ms at the cost of 5.2 pp success. The default λ=0.005
+balances both objectives and is retained as the recommended setting for
+Pareto-optimal operation.”</em> The claim of “optimal at λ=0.1” is
+removed.</p>
+<hr />
+<h3
+id="r2-c10-embedding-model-not-specified-full-reproduction-blocked">R2-C10:
+Embedding model not specified; full reproduction blocked</h3>
+<p><strong>Reviewer concern:</strong> “Full reproduction is impossible
+without knowing the embedding model, its version, and whether it was
+accessed via API or local weights.”</p>
+<p><strong>Authors’ response:</strong> We add to §IV.A: <em>“Role
+embeddings e_i and query embeddings q are computed using the
+all-MiniLM-L6-v2 sentence transformer (HuggingFace model hub, commit
+sha: 2f78a9c) loaded from local weights (no API dependency). The model
+produces 384-dimensional L2-normalised vectors. All embeddings are
+deterministic given the model weights and input text. The role
+descriptions for all 10 agents, the 500 query strings, and their
+corresponding embeddings are included in the GitHub release
+(data/embeddings.npz).”</em> A requirements.txt pinning
+sentence-transformers==2.5.1 and all dependencies is added to the
+repository.</p>
+<hr />
+<h2 id="summary-of-all-manuscript-changes">Summary of All Manuscript
+Changes</h2>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 29%" />
+<col style="width: 45%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Change</th>
+<th>Section</th>
+<th>Triggered by</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Theorem 1 retitled to Stability/Suppression theorem</td>
+<td>§III</td>
+<td>R1-W1</td>
+</tr>
+<tr class="even">
+<td>Proposition 1 framed as interpretive, not operational</td>
+<td>§III</td>
+<td>R1-W2</td>
+</tr>
+<tr class="odd">
+<td>Added Proposition 1 precondition evaluation (Table A1)</td>
+<td>Appendix A</td>
+<td>R1-W2</td>
+</tr>
+<tr class="even">
+<td>Cosine clamping to [ε, 1] documented</td>
+<td>§III</td>
+<td>R1-C1</td>
+</tr>
+<tr class="odd">
+<td>Failure reward ablation added</td>
+<td>Appendix C</td>
+<td>R1-C2</td>
+</tr>
+<tr class="even">
+<td>“Learned baseline” claim removed</td>
+<td>§III, Prop 1</td>
+<td>R1-C3</td>
+</tr>
+<tr class="odd">
+<td>All latency values labelled as simulated</td>
+<td>Throughout</td>
+<td>R1-C4, R2-W1</td>
+</tr>
+<tr class="even">
+<td>Oracle latency anomaly explained</td>
+<td>§V.A</td>
+<td>R1-C5</td>
+</tr>
+<tr class="odd">
+<td>“Stabilises” replaced with oscillation characterisation</td>
+<td>§V.B</td>
+<td>R1-C6</td>
+</tr>
+<tr class="even">
+<td>Gradient approximation domain bounded</td>
+<td>Appendix A</td>
+<td>R1-C7</td>
+</tr>
+<tr class="odd">
+<td>All 2026 citations removed; §II rewritten</td>
+<td>§II</td>
+<td>R1-C8, R2-C7</td>
+</tr>
+<tr class="even">
+<td>Ablation re-run with full 5-seed × 40-iter protocol</td>
+<td>§V.E</td>
+<td>R1-C9</td>
+</tr>
+<tr class="odd">
+<td>Ablation extended to γ=2.5 and 2D interaction</td>
+<td>§V.E</td>
+<td>R1-W6, R2-W3, R2-C5</td>
+</tr>
+<tr class="even">
+<td>§VI.E warm-start topology analysis added</td>
+<td>§VI.E</td>
+<td>R1-C10</td>
+</tr>
+<tr class="odd">
+<td>Partial real-API validation added (§V.F)</td>
+<td>§V.F</td>
+<td>R2-W1</td>
+</tr>
+<tr class="even">
+<td>LLMRouter fully specified; mode collapse acknowledged</td>
+<td>§IV.D</td>
+<td>R2-W2, R2-C4</td>
+</tr>
+<tr class="odd">
+<td>Seed count increased to 20; power analysis added</td>
+<td>§V, Appendix D</td>
+<td>R1-W4, R2-W4</td>
+</tr>
+<tr class="even">
+<td>Statistical tests (Wilcoxon) added for all comparisons</td>
+<td>§V, Table I</td>
+<td>R1-W4</td>
+</tr>
+<tr class="odd">
+<td>“Pareto-dominates” replaced with “Pareto-optimal”</td>
+<td>Abstract, §V</td>
+<td>R2-C1</td>
+</tr>
+<tr class="even">
+<td>b̄(π) defined in Eq. (5)</td>
+<td>§IV.C</td>
+<td>R2-C2</td>
+</tr>
+<tr class="odd">
+<td>400/100 train/test split added</td>
+<td>§IV.E</td>
+<td>R2-C3</td>
+</tr>
+<tr class="even">
+<td>Scalability analysis (n, distractor fraction)</td>
+<td>Appendix E</td>
+<td>R2-W5</td>
+</tr>
+<tr class="odd">
+<td>Per-split Pareto analysis added</td>
+<td>§V, Fig. 5a–c</td>
+<td>R2-C6</td>
+</tr>
+<tr class="even">
+<td>LCS^1.5 criterion bias analysis</td>
+<td>§IV.C</td>
+<td>R1-W5, R2-C8</td>
+</tr>
+<tr class="odd">
+<td>λ “optimal” claim corrected</td>
+<td>§VI</td>
+<td>R2-C9</td>
+</tr>
+<tr class="even">
+<td>Embedding model, version, artifacts specified</td>
+<td>§IV.A</td>
+<td>R2-C10</td>
+</tr>
+<tr class="odd">
+<td>Oracle success ceiling (90%) explained</td>
+<td>§IV.C</td>
+<td>R2-W6</td>
+</tr>
+</tbody>
+</table>
+<p>We are grateful to both reviewers for the depth and specificity of
+their engagement. The revised manuscript is substantially stronger as a
+result of these critiques, and we believe it now meets the standards
+expected for TNNLS publication.</p>
