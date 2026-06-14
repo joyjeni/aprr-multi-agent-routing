@@ -1,0 +1,2229 @@
+{
+  "seeds": [
+    42,
+    43,
+    44,
+    45,
+    46
+  ],
+  "n_queries": 500,
+  "n_iterations": 40,
+  "summary": {
+    "Random": {
+      "n": {
+        "mean": 20000.0,
+        "std": 0.0,
+        "ci95": 0.0
+      },
+      "success_rate": {
+        "mean": 0.32276,
+        "std": 0.0042475581220273,
+        "ci95": 0.0037231488500998806
+      },
+      "success_rate_ci95": {
+        "mean": 0.006479578108599379,
+        "std": 2.207749418510968e-05,
+        "ci95": 1.9351776886138535e-05
+      },
+      "mean_latency_ms": {
+        "mean": 393.9440846829783,
+        "std": 1.4854934546288308,
+        "ci95": 1.3020924231149775
+      },
+      "p50_latency_ms": {
+        "mean": 337.80237612511564,
+        "std": 1.7883420118657392,
+        "ci95": 1.567550887775807
+      },
+      "p95_latency_ms": {
+        "mean": 862.3518560822959,
+        "std": 5.529454137420813,
+        "ci95": 4.846780249258237
+      },
+      "mean_hops": {
+        "mean": 3.4965399999999995,
+        "std": 0.010260019493158828,
+        "ci95": 0.008993303606573022
+      },
+      "median_hops": {
+        "mean": 3.0,
+        "std": 0.0,
+        "ci95": 0.0
+      },
+      "successful_mean_latency_ms": {
+        "mean": 426.62947927344493,
+        "std": 4.399423858907969,
+        "ci95": 3.8562650376582437
+      }
+    },
+    "RoundRobin": {
+      "n": {
+        "mean": 20000.0,
+        "std": 0.0,
+        "ci95": 0.0
+      },
+      "success_rate": {
+        "mean": 0.37960000000000005,
+        "std": 0.0022830900113661873,
+        "ci95": 0.0020012166299529003
+      },
+      "success_rate_ci95": {
+        "mean": 0.006725844923286614,
+        "std": 7.788888154543177e-06,
+        "ci95": 6.82726148601896e-06
+      },
+      "mean_latency_ms": {
+        "mean": 546.7005538175894,
+        "std": 0.3522668902544949,
+        "ci95": 0.30877554342995145
+      },
+      "p50_latency_ms": {
+        "mean": 525.0493270046192,
+        "std": 1.0754681189497444,
+        "ci95": 0.9426893700693396
+      },
+      "p95_latency_ms": {
+        "mean": 1123.6125687911713,
+        "std": 2.2559157030205634,
+        "ci95": 1.9773972984775772
+      },
+      "mean_hops": {
+        "mean": 4.33345,
+        "std": 0.0,
+        "ci95": 0.0
+      },
+      "median_hops": {
+        "mean": 4.0,
+        "std": 0.0,
+        "ci95": 0.0
+      },
+      "successful_mean_latency_ms": {
+        "mean": 636.677194632992,
+        "std": 5.006281109792602,
+        "ci95": 4.388198871379983
+      }
+    },
+    "StaticSemantic": {
+      "n": {
+        "mean": 20000.0,
+        "std": 0.0,
+        "ci95": 0.0
+      },
+      "success_rate": {
+        "mean": 0.49935999999999997,
+        "std": 0.02777254489599397,
+        "ci95": 0.024343708931878077
+      },
+      "success_rate_ci95": {
+        "mean": 0.006921245062748676,
+        "std": 1.4144882515964929e-05,
+        "ci95": 1.2398536185062767e-05
+      },
+      "mean_latency_ms": {
+        "mean": 406.5602248542506,
+        "std": 68.92721137079208,
+        "ci95": 60.41736460883831
+      },
+      "p50_latency_ms": {
+        "mean": 349.1637723932736,
+        "std": 122.71132079949022,
+        "ci95": 107.56121512724603
+      },
+      "p95_latency_ms": {
+        "mean": 890.5015390248612,
+        "std": 156.91496808420118,
+        "ci95": 137.54203384680562
+      },
+      "mean_hops": {
+        "mean": 3.6420000000000003,
+        "std": 0.3940126901509645,
+        "ci95": 0.3453673503966464
+      },
+      "median_hops": {
+        "mean": 3.4,
+        "std": 0.5477225575051661,
+        "ci95": 0.4800999895855029
+      },
+      "successful_mean_latency_ms": {
+        "mean": 386.59440442778487,
+        "std": 69.7380055718419,
+        "ci95": 61.12805706096785
+      }
+    },
+    "LLMRouter": {
+      "n": {
+        "mean": 20000.0,
+        "std": 0.0,
+        "ci95": 0.0
+      },
+      "success_rate": {
+        "mean": 0.40624000000000005,
+        "std": 0.011642239904760576,
+        "ci95": 0.010204873216262888
+      },
+      "success_rate_ci95": {
+        "mean": 0.006805306543861909,
+        "std": 3.015187833037467e-05,
+        "ci95": 2.642928664164008e-05
+      },
+      "mean_latency_ms": {
+        "mean": 150.95819483891654,
+        "std": 3.4626502213153914,
+        "ci95": 3.035146740649035
+      },
+      "p50_latency_ms": {
+        "mean": 140.8472376202137,
+        "std": 0.42234284227553365,
+        "ci95": 0.3701998236143175
+      },
+      "p95_latency_ms": {
+        "mean": 179.8426092689898,
+        "std": 6.2533075063673405,
+        "ci95": 5.481265702031251
+      },
+      "mean_hops": {
+        "mean": 2.0668100000000003,
+        "std": 0.022257706530548083,
+        "ci95": 0.01950973997161423
+      },
+      "median_hops": {
+        "mean": 2.0,
+        "std": 0.0,
+        "ci95": 0.0
+      },
+      "successful_mean_latency_ms": {
+        "mean": 150.4438738525289,
+        "std": 3.4411971306067346,
+        "ci95": 3.0163422775414412
+      }
+    },
+    "APRR": {
+      "n": {
+        "mean": 20000.0,
+        "std": 0.0,
+        "ci95": 0.0
+      },
+      "success_rate": {
+        "mean": 0.47028,
+        "std": 0.022944296676952223,
+        "ci95": 0.020111562769710378
+      },
+      "success_rate_ci95": {
+        "mean": 0.006911698264826386,
+        "std": 1.80478942742164e-05,
+        "ci95": 1.5819676831567824e-05
+      },
+      "mean_latency_ms": {
+        "mean": 261.27267241314996,
+        "std": 36.164338297181025,
+        "ci95": 31.69944016716794
+      },
+      "p50_latency_ms": {
+        "mean": 207.40124241714253,
+        "std": 37.97676399268584,
+        "ci95": 33.28810133441985
+      },
+      "p95_latency_ms": {
+        "mean": 525.8020774455476,
+        "std": 187.8464108806162,
+        "ci95": 164.65463887089822
+      },
+      "mean_hops": {
+        "mean": 2.77255,
+        "std": 0.17507856450748055,
+        "ci95": 0.15346312808358892
+      },
+      "median_hops": {
+        "mean": 2.6,
+        "std": 0.5477225575051661,
+        "ci95": 0.4800999895855029
+      },
+      "successful_mean_latency_ms": {
+        "mean": 262.1489271758848,
+        "std": 39.86060954535811,
+        "ci95": 34.9393647666551
+      }
+    },
+    "Oracle": {
+      "n": {
+        "mean": 20000.0,
+        "std": 0.0,
+        "ci95": 0.0
+      },
+      "success_rate": {
+        "mean": 0.89993,
+        "std": 0.0012245407302331627,
+        "ci95": 0.0010733572750952847
+      },
+      "success_rate_ci95": {
+        "mean": 0.004159108098508604,
+        "std": 2.2634985713501857e-05,
+        "ci95": 1.9840439756249678e-05
+      },
+      "mean_latency_ms": {
+        "mean": 448.9451825152275,
+        "std": 10.735184497768763,
+        "ci95": 9.409804096901055
+      },
+      "p50_latency_ms": {
+        "mean": 374.5034581365662,
+        "std": 102.8805480729085,
+        "ci95": 90.17877642895569
+      },
+      "p95_latency_ms": {
+        "mean": 892.3311770207132,
+        "std": 2.8390732492444455,
+        "ci95": 2.488557425137419
+      },
+      "mean_hops": {
+        "mean": 4.302,
+        "std": 0.06852736679604704,
+        "ci95": 0.06006688538620907
+      },
+      "median_hops": {
+        "mean": 3.8,
+        "std": 1.0954451150103321,
+        "ci95": 0.9601999791710057
+      },
+      "successful_mean_latency_ms": {
+        "mean": 444.1220460223878,
+        "std": 10.747057547284248,
+        "ci95": 9.420211283661256
+      }
+    }
+  },
+  "convergence_mean": {
+    "Random": [
+      {
+        "iteration": 0,
+        "success_rate": 0.3196,
+        "mean_latency_ms": 397.15980551105525,
+        "mean_hops": 3.5176000000000003,
+        "success_rate_std": 0.028192197502145876,
+        "mean_latency_ms_std": 15.490505040072511
+      },
+      {
+        "iteration": 1,
+        "success_rate": 0.31920000000000004,
+        "mean_latency_ms": 396.5216439679148,
+        "mean_hops": 3.5103999999999997,
+        "success_rate_std": 0.0209093280618962,
+        "mean_latency_ms_std": 7.689054377217358
+      },
+      {
+        "iteration": 2,
+        "success_rate": 0.324,
+        "mean_latency_ms": 396.5421730006746,
+        "mean_hops": 3.5216000000000003,
+        "success_rate_std": 0.006480740698407866,
+        "mean_latency_ms_std": 6.613101312485836
+      },
+      {
+        "iteration": 3,
+        "success_rate": 0.32320000000000004,
+        "mean_latency_ms": 389.4882825726516,
+        "mean_hops": 3.4772000000000007,
+        "success_rate_std": 0.022117866081518802,
+        "mean_latency_ms_std": 7.4565734277283005
+      },
+      {
+        "iteration": 4,
+        "success_rate": 0.32120000000000004,
+        "mean_latency_ms": 396.27299445757023,
+        "mean_hops": 3.5128,
+        "success_rate_std": 0.01658915308266217,
+        "mean_latency_ms_std": 7.895605783704802
+      },
+      {
+        "iteration": 5,
+        "success_rate": 0.3256,
+        "mean_latency_ms": 392.29202736607044,
+        "mean_hops": 3.4939999999999998,
+        "success_rate_std": 0.023168944732119324,
+        "mean_latency_ms_std": 9.79370126097944
+      },
+      {
+        "iteration": 6,
+        "success_rate": 0.31920000000000004,
+        "mean_latency_ms": 390.6342271969905,
+        "mean_hops": 3.4592,
+        "success_rate_std": 0.021890637268019406,
+        "mean_latency_ms_std": 10.10532602526333
+      },
+      {
+        "iteration": 7,
+        "success_rate": 0.3216,
+        "mean_latency_ms": 395.12553861749893,
+        "mean_hops": 3.4972000000000003,
+        "success_rate_std": 0.018352111595127157,
+        "mean_latency_ms_std": 7.740685922128815
+      },
+      {
+        "iteration": 8,
+        "success_rate": 0.3164,
+        "mean_latency_ms": 390.17326123053965,
+        "mean_hops": 3.4844,
+        "success_rate_std": 0.011081516141756065,
+        "mean_latency_ms_std": 6.668526722731805
+      },
+      {
+        "iteration": 9,
+        "success_rate": 0.32120000000000004,
+        "mean_latency_ms": 390.04002014510723,
+        "mean_hops": 3.4716,
+        "success_rate_std": 0.018253766734567432,
+        "mean_latency_ms_std": 4.278738605833243
+      },
+      {
+        "iteration": 10,
+        "success_rate": 0.3332,
+        "mean_latency_ms": 398.7448304706119,
+        "mean_hops": 3.522,
+        "success_rate_std": 0.026780589986032798,
+        "mean_latency_ms_std": 5.378297716289751
+      },
+      {
+        "iteration": 11,
+        "success_rate": 0.3104,
+        "mean_latency_ms": 392.56081570064623,
+        "mean_hops": 3.4908,
+        "success_rate_std": 0.020995237555217133,
+        "mean_latency_ms_std": 10.217902785812807
+      },
+      {
+        "iteration": 12,
+        "success_rate": 0.326,
+        "mean_latency_ms": 392.56316404901855,
+        "mean_hops": 3.4848,
+        "success_rate_std": 0.02824889378365107,
+        "mean_latency_ms_std": 6.2618140502120045
+      },
+      {
+        "iteration": 13,
+        "success_rate": 0.31000000000000005,
+        "mean_latency_ms": 395.5873661799934,
+        "mean_hops": 3.4932000000000003,
+        "success_rate_std": 0.03524202037341219,
+        "mean_latency_ms_std": 11.64844614727326
+      },
+      {
+        "iteration": 14,
+        "success_rate": 0.3296,
+        "mean_latency_ms": 395.9674773026638,
+        "mean_hops": 3.5072,
+        "success_rate_std": 0.006985699678629199,
+        "mean_latency_ms_std": 5.220939966114384
+      },
+      {
+        "iteration": 15,
+        "success_rate": 0.32080000000000003,
+        "mean_latency_ms": 393.72094418970016,
+        "mean_hops": 3.5016,
+        "success_rate_std": 0.024560130292814005,
+        "mean_latency_ms_std": 14.6954429220586
+      },
+      {
+        "iteration": 16,
+        "success_rate": 0.316,
+        "mean_latency_ms": 397.6575418231645,
+        "mean_hops": 3.5096000000000003,
+        "success_rate_std": 0.01618641405623866,
+        "mean_latency_ms_std": 15.576936679032151
+      },
+      {
+        "iteration": 17,
+        "success_rate": 0.32,
+        "mean_latency_ms": 395.62353717906547,
+        "mean_hops": 3.4951999999999996,
+        "success_rate_std": 0.018275666882497082,
+        "mean_latency_ms_std": 13.474445845044663
+      },
+      {
+        "iteration": 18,
+        "success_rate": 0.3264,
+        "mean_latency_ms": 387.8469074831602,
+        "mean_hops": 3.4568,
+        "success_rate_std": 0.006693280212272611,
+        "mean_latency_ms_std": 15.786282708416985
+      },
+      {
+        "iteration": 19,
+        "success_rate": 0.32280000000000003,
+        "mean_latency_ms": 393.5799284091054,
+        "mean_hops": 3.4799999999999995,
+        "success_rate_std": 0.016346253393362035,
+        "mean_latency_ms_std": 9.300043979247564
+      },
+      {
+        "iteration": 20,
+        "success_rate": 0.31920000000000004,
+        "mean_latency_ms": 386.49184666911935,
+        "mean_hops": 3.4463999999999997,
+        "success_rate_std": 0.012377398757412651,
+        "mean_latency_ms_std": 6.018695324602503
+      },
+      {
+        "iteration": 21,
+        "success_rate": 0.32680000000000003,
+        "mean_latency_ms": 399.4471758937856,
+        "mean_hops": 3.5388000000000006,
+        "success_rate_std": 0.01841738309315414,
+        "mean_latency_ms_std": 19.377152604504708
+      },
+      {
+        "iteration": 22,
+        "success_rate": 0.3224,
+        "mean_latency_ms": 393.6386479831964,
+        "mean_hops": 3.4932000000000003,
+        "success_rate_std": 0.018460769214742916,
+        "mean_latency_ms_std": 9.320402336801404
+      },
+      {
+        "iteration": 23,
+        "success_rate": 0.3336,
+        "mean_latency_ms": 392.580447016174,
+        "mean_hops": 3.4796,
+        "success_rate_std": 0.013667479650615906,
+        "mean_latency_ms_std": 13.328575535654425
+      },
+      {
+        "iteration": 24,
+        "success_rate": 0.31720000000000004,
+        "mean_latency_ms": 399.50743437287275,
+        "mean_hops": 3.5256,
+        "success_rate_std": 0.0186333035181634,
+        "mean_latency_ms_std": 7.005993113782736
+      },
+      {
+        "iteration": 25,
+        "success_rate": 0.33,
+        "mean_latency_ms": 392.14149314230383,
+        "mean_hops": 3.4936,
+        "success_rate_std": 0.019849433241279205,
+        "mean_latency_ms_std": 5.012564128243497
+      },
+      {
+        "iteration": 26,
+        "success_rate": 0.3236,
+        "mean_latency_ms": 393.93850288996583,
+        "mean_hops": 3.5012,
+        "success_rate_std": 0.01705285899783376,
+        "mean_latency_ms_std": 10.727281684878117
+      },
+      {
+        "iteration": 27,
+        "success_rate": 0.31880000000000003,
+        "mean_latency_ms": 395.1376126368492,
+        "mean_hops": 3.5100000000000002,
+        "success_rate_std": 0.010449880382090515,
+        "mean_latency_ms_std": 11.840678947975412
+      },
+      {
+        "iteration": 28,
+        "success_rate": 0.3304,
+        "mean_latency_ms": 392.39660091707293,
+        "mean_hops": 3.5016000000000007,
+        "success_rate_std": 0.01751570723664904,
+        "mean_latency_ms_std": 4.263927103158032
+      },
+      {
+        "iteration": 29,
+        "success_rate": 0.3104,
+        "mean_latency_ms": 390.4541880466356,
+        "mean_hops": 3.4868,
+        "success_rate_std": 0.01840652058374968,
+        "mean_latency_ms_std": 12.300338641303515
+      },
+      {
+        "iteration": 30,
+        "success_rate": 0.3416,
+        "mean_latency_ms": 380.371847509834,
+        "mean_hops": 3.4204,
+        "success_rate_std": 0.01291510743277034,
+        "mean_latency_ms_std": 6.721731499794022
+      },
+      {
+        "iteration": 31,
+        "success_rate": 0.314,
+        "mean_latency_ms": 396.0297266886255,
+        "mean_hops": 3.5043999999999995,
+        "success_rate_std": 0.013784048752090236,
+        "mean_latency_ms_std": 4.867604643805407
+      },
+      {
+        "iteration": 32,
+        "success_rate": 0.3128,
+        "mean_latency_ms": 400.4680486069673,
+        "mean_hops": 3.5324,
+        "success_rate_std": 0.02373183515870612,
+        "mean_latency_ms_std": 10.7513294979725
+      },
+      {
+        "iteration": 33,
+        "success_rate": 0.32920000000000005,
+        "mean_latency_ms": 399.73383411309806,
+        "mean_hops": 3.523199999999999,
+        "success_rate_std": 0.0207171426601257,
+        "mean_latency_ms_std": 7.844279739571392
+      },
+      {
+        "iteration": 34,
+        "success_rate": 0.322,
+        "mean_latency_ms": 387.73880516124336,
+        "mean_hops": 3.442,
+        "success_rate_std": 0.01587450786638756,
+        "mean_latency_ms_std": 7.099490494405706
+      },
+      {
+        "iteration": 35,
+        "success_rate": 0.34240000000000004,
+        "mean_latency_ms": 396.7478092669914,
+        "mean_hops": 3.5200000000000005,
+        "success_rate_std": 0.03226143208228674,
+        "mean_latency_ms_std": 5.6979820309116755
+      },
+      {
+        "iteration": 36,
+        "success_rate": 0.31399999999999995,
+        "mean_latency_ms": 396.3382292785741,
+        "mean_hops": 3.5048000000000004,
+        "success_rate_std": 0.030232432915661953,
+        "mean_latency_ms_std": 10.445888978736443
+      },
+      {
+        "iteration": 37,
+        "success_rate": 0.328,
+        "mean_latency_ms": 392.72693594394514,
+        "mean_hops": 3.4972000000000003,
+        "success_rate_std": 0.007615773105863915,
+        "mean_latency_ms_std": 13.857806546808343
+      },
+      {
+        "iteration": 38,
+        "success_rate": 0.33720000000000006,
+        "mean_latency_ms": 395.7099217949667,
+        "mean_hops": 3.522,
+        "success_rate_std": 0.009549869109050644,
+        "mean_latency_ms_std": 8.675638581454285
+      },
+      {
+        "iteration": 39,
+        "success_rate": 0.3104,
+        "mean_latency_ms": 398.06179253370874,
+        "mean_hops": 3.5312000000000006,
+        "success_rate_std": 0.02718087562975117,
+        "mean_latency_ms_std": 10.799544535101095
+      }
+    ],
+    "RoundRobin": [
+      {
+        "iteration": 0,
+        "success_rate": 0.3576,
+        "mean_latency_ms": 547.0661719070958,
+        "mean_hops": 4.33,
+        "success_rate_std": 0.013885243966167823,
+        "mean_latency_ms_std": 3.401899481148058
+      },
+      {
+        "iteration": 1,
+        "success_rate": 0.37239999999999995,
+        "mean_latency_ms": 547.9854554889035,
+        "mean_hops": 4.34,
+        "success_rate_std": 0.021651789764358994,
+        "mean_latency_ms_std": 1.5994365848717051
+      },
+      {
+        "iteration": 2,
+        "success_rate": 0.37239999999999995,
+        "mean_latency_ms": 544.7369212438704,
+        "mean_hops": 4.322,
+        "success_rate_std": 0.016697305171793457,
+        "mean_latency_ms_std": 2.5017668240147612
+      },
+      {
+        "iteration": 3,
+        "success_rate": 0.392,
+        "mean_latency_ms": 548.5316656075189,
+        "mean_hops": 4.346,
+        "success_rate_std": 0.019235384061671353,
+        "mean_latency_ms_std": 1.8487196324429715
+      },
+      {
+        "iteration": 4,
+        "success_rate": 0.3632000000000001,
+        "mean_latency_ms": 543.3969680883797,
+        "mean_hops": 4.316,
+        "success_rate_std": 0.009757048734120383,
+        "mean_latency_ms_std": 1.9525357575351396
+      },
+      {
+        "iteration": 5,
+        "success_rate": 0.386,
+        "mean_latency_ms": 548.9264642757362,
+        "mean_hops": 4.35,
+        "success_rate_std": 0.012409673645990868,
+        "mean_latency_ms_std": 2.2650080613006223
+      },
+      {
+        "iteration": 6,
+        "success_rate": 0.36800000000000005,
+        "mean_latency_ms": 545.3736282660848,
+        "mean_hops": 4.324,
+        "success_rate_std": 0.017776388834631174,
+        "mean_latency_ms_std": 2.1903373322225304
+      },
+      {
+        "iteration": 7,
+        "success_rate": 0.38199999999999995,
+        "mean_latency_ms": 549.5917767918777,
+        "mean_hops": 4.34,
+        "success_rate_std": 0.02297825058615212,
+        "mean_latency_ms_std": 1.511632198087896
+      },
+      {
+        "iteration": 8,
+        "success_rate": 0.392,
+        "mean_latency_ms": 545.6166191564922,
+        "mean_hops": 4.332,
+        "success_rate_std": 0.032802438933713436,
+        "mean_latency_ms_std": 2.528662052058663
+      },
+      {
+        "iteration": 9,
+        "success_rate": 0.38360000000000005,
+        "mean_latency_ms": 546.1065089548109,
+        "mean_hops": 4.33,
+        "success_rate_std": 0.014518953130305242,
+        "mean_latency_ms_std": 3.3226707636951938
+      },
+      {
+        "iteration": 10,
+        "success_rate": 0.37439999999999996,
+        "mean_latency_ms": 546.6472718399182,
+        "mean_hops": 4.34,
+        "success_rate_std": 0.018994736112934042,
+        "mean_latency_ms_std": 1.1320925499086125
+      },
+      {
+        "iteration": 11,
+        "success_rate": 0.38120000000000004,
+        "mean_latency_ms": 544.690556592662,
+        "mean_hops": 4.322,
+        "success_rate_std": 0.030548322376196053,
+        "mean_latency_ms_std": 2.479147986962665
+      },
+      {
+        "iteration": 12,
+        "success_rate": 0.37960000000000005,
+        "mean_latency_ms": 548.135209239714,
+        "mean_hops": 4.346,
+        "success_rate_std": 0.014518953130305242,
+        "mean_latency_ms_std": 1.0362843895310894
+      },
+      {
+        "iteration": 13,
+        "success_rate": 0.38120000000000004,
+        "mean_latency_ms": 544.6153197704945,
+        "mean_hops": 4.316,
+        "success_rate_std": 0.02823473038652929,
+        "mean_latency_ms_std": 2.3860370950457006
+      },
+      {
+        "iteration": 14,
+        "success_rate": 0.38160000000000005,
+        "mean_latency_ms": 548.2066346449119,
+        "mean_hops": 4.35,
+        "success_rate_std": 0.028192197502145862,
+        "mean_latency_ms_std": 2.1337092365602515
+      },
+      {
+        "iteration": 15,
+        "success_rate": 0.38519999999999993,
+        "mean_latency_ms": 547.795362337002,
+        "mean_hops": 4.324,
+        "success_rate_std": 0.024963974042607886,
+        "mean_latency_ms_std": 2.7373279012115885
+      },
+      {
+        "iteration": 16,
+        "success_rate": 0.37600000000000006,
+        "mean_latency_ms": 546.8522398323487,
+        "mean_hops": 4.34,
+        "success_rate_std": 0.008944271909999166,
+        "mean_latency_ms_std": 1.8188796454232912
+      },
+      {
+        "iteration": 17,
+        "success_rate": 0.39239999999999997,
+        "mean_latency_ms": 546.5876174556614,
+        "mean_hops": 4.332,
+        "success_rate_std": 0.00669328021227261,
+        "mean_latency_ms_std": 0.8782916218226244
+      },
+      {
+        "iteration": 18,
+        "success_rate": 0.38280000000000003,
+        "mean_latency_ms": 546.4487925453424,
+        "mean_hops": 4.33,
+        "success_rate_std": 0.020327321515635075,
+        "mean_latency_ms_std": 1.2397600832448823
+      },
+      {
+        "iteration": 19,
+        "success_rate": 0.3924,
+        "mean_latency_ms": 547.6026258392232,
+        "mean_hops": 4.34,
+        "success_rate_std": 0.018889150324988144,
+        "mean_latency_ms_std": 1.1517652243344414
+      },
+      {
+        "iteration": 20,
+        "success_rate": 0.37439999999999996,
+        "mean_latency_ms": 544.6232055508455,
+        "mean_hops": 4.322,
+        "success_rate_std": 0.015192103211866368,
+        "mean_latency_ms_std": 1.9319200916173254
+      },
+      {
+        "iteration": 21,
+        "success_rate": 0.37320000000000003,
+        "mean_latency_ms": 550.5522968848809,
+        "mean_hops": 4.346,
+        "success_rate_std": 0.03167333263172664,
+        "mean_latency_ms_std": 1.7110852688356528
+      },
+      {
+        "iteration": 22,
+        "success_rate": 0.37639999999999996,
+        "mean_latency_ms": 543.7039625289192,
+        "mean_hops": 4.316,
+        "success_rate_std": 0.022556595487794696,
+        "mean_latency_ms_std": 1.959231654870621
+      },
+      {
+        "iteration": 23,
+        "success_rate": 0.38599999999999995,
+        "mean_latency_ms": 549.4816836431326,
+        "mean_hops": 4.35,
+        "success_rate_std": 0.013564659966250548,
+        "mean_latency_ms_std": 1.1902753376985418
+      },
+      {
+        "iteration": 24,
+        "success_rate": 0.3644,
+        "mean_latency_ms": 544.2888291039462,
+        "mean_hops": 4.324,
+        "success_rate_std": 0.015192103211866348,
+        "mean_latency_ms_std": 1.8940690314369948
+      },
+      {
+        "iteration": 25,
+        "success_rate": 0.38760000000000006,
+        "mean_latency_ms": 547.3145412368814,
+        "mean_hops": 4.34,
+        "success_rate_std": 0.019969977466186603,
+        "mean_latency_ms_std": 4.13416958156264
+      },
+      {
+        "iteration": 26,
+        "success_rate": 0.376,
+        "mean_latency_ms": 546.4620709817207,
+        "mean_hops": 4.332,
+        "success_rate_std": 0.04226109321823087,
+        "mean_latency_ms_std": 2.3985384792485775
+      },
+      {
+        "iteration": 27,
+        "success_rate": 0.37960000000000005,
+        "mean_latency_ms": 546.0464914520098,
+        "mean_hops": 4.33,
+        "success_rate_std": 0.020851858430365404,
+        "mean_latency_ms_std": 3.355704657169029
+      },
+      {
+        "iteration": 28,
+        "success_rate": 0.376,
+        "mean_latency_ms": 546.5319946126771,
+        "mean_hops": 4.34,
+        "success_rate_std": 0.011916375287812997,
+        "mean_latency_ms_std": 3.4199608967609754
+      },
+      {
+        "iteration": 29,
+        "success_rate": 0.384,
+        "mean_latency_ms": 543.7364950460184,
+        "mean_hops": 4.322,
+        "success_rate_std": 0.017029386365926394,
+        "mean_latency_ms_std": 2.786801324451927
+      },
+      {
+        "iteration": 30,
+        "success_rate": 0.394,
+        "mean_latency_ms": 547.8700641517446,
+        "mean_hops": 4.346,
+        "success_rate_std": 0.028248893783651065,
+        "mean_latency_ms_std": 3.5164482079278483
+      },
+      {
+        "iteration": 31,
+        "success_rate": 0.3788,
+        "mean_latency_ms": 543.1483934544452,
+        "mean_hops": 4.316,
+        "success_rate_std": 0.031260198335903114,
+        "mean_latency_ms_std": 1.4455795555987314
+      },
+      {
+        "iteration": 32,
+        "success_rate": 0.3908,
+        "mean_latency_ms": 549.0460624570472,
+        "mean_hops": 4.35,
+        "success_rate_std": 0.022208106627986092,
+        "mean_latency_ms_std": 3.8783859887222025
+      },
+      {
+        "iteration": 33,
+        "success_rate": 0.3804,
+        "mean_latency_ms": 546.9884006401738,
+        "mean_hops": 4.324,
+        "success_rate_std": 0.006542170893518456,
+        "mean_latency_ms_std": 1.6689587394535836
+      },
+      {
+        "iteration": 34,
+        "success_rate": 0.3896,
+        "mean_latency_ms": 548.9435925348155,
+        "mean_hops": 4.34,
+        "success_rate_std": 0.029711950457686216,
+        "mean_latency_ms_std": 1.1883320248427967
+      },
+      {
+        "iteration": 35,
+        "success_rate": 0.3667999999999999,
+        "mean_latency_ms": 546.8470467688605,
+        "mean_hops": 4.332,
+        "success_rate_std": 0.021707141681944236,
+        "mean_latency_ms_std": 1.573961091280113
+      },
+      {
+        "iteration": 36,
+        "success_rate": 0.3896,
+        "mean_latency_ms": 545.384433703309,
+        "mean_hops": 4.33,
+        "success_rate_std": 0.02321206582792667,
+        "mean_latency_ms_std": 0.9577867027382161
+      },
+      {
+        "iteration": 37,
+        "success_rate": 0.3771999999999999,
+        "mean_latency_ms": 546.9805001627567,
+        "mean_hops": 4.34,
+        "success_rate_std": 0.01852565788305505,
+        "mean_latency_ms_std": 1.3684144164097587
+      },
+      {
+        "iteration": 38,
+        "success_rate": 0.36079999999999995,
+        "mean_latency_ms": 545.3680740607,
+        "mean_hops": 4.322,
+        "success_rate_std": 0.015786069808536887,
+        "mean_latency_ms_std": 2.895931731710674
+      },
+      {
+        "iteration": 39,
+        "success_rate": 0.38239999999999996,
+        "mean_latency_ms": 549.7902038506417,
+        "mean_hops": 4.346,
+        "success_rate_std": 0.02586116780039138,
+        "mean_latency_ms_std": 2.5273773529808037
+      }
+    ],
+    "StaticSemantic": [
+      {
+        "iteration": 0,
+        "success_rate": 0.4972,
+        "mean_latency_ms": 406.9664270669771,
+        "mean_hops": 3.6420000000000003,
+        "success_rate_std": 0.029209587467131405,
+        "mean_latency_ms_std": 69.93184921369895
+      },
+      {
+        "iteration": 1,
+        "success_rate": 0.502,
+        "mean_latency_ms": 406.166043374993,
+        "mean_hops": 3.6420000000000003,
+        "success_rate_std": 0.04219004621945799,
+        "mean_latency_ms_std": 69.32923363926754
+      },
+      {
+        "iteration": 2,
+        "success_rate": 0.49960000000000004,
+        "mean_latency_ms": 406.7652440900032,
+        "mean_hops": 3.6420000000000003,
+        "success_rate_std": 0.02944146735473625,
+        "mean_latency_ms_std": 68.74129759585102
+      },
+      {
+        "iteration": 3,
+        "success_rate": 0.49239999999999995,
+        "mean_latency_ms": 406.360869615066,
+        "mean_hops": 3.6420000000000003,
+        "success_rate_std": 0.03054177467011373,
+        "mean_latency_ms_std": 68.92400122041508
+      },
+      {
+        "iteration": 4,
+        "success_rate": 0.49640000000000006,
+        "mean_latency_ms": 406.1933254666471,
+        "mean_hops": 3.6420000000000003,
+        "success_rate_std": 0.03694319964486023,
+        "mean_latency_ms_std": 68.32520017638966
+      },
+      {
+        "iteration": 5,
+        "success_rate": 0.5048,
+        "mean_latency_ms": 406.3297086922581,
+        "mean_hops": 3.6420000000000003,
+        "success_rate_std": 0.01895257238477143,
+        "mean_latency_ms_std": 68.65815981741254
+      },
+      {
+        "iteration": 6,
+        "success_rate": 0.49879999999999997,
+        "mean_latency_ms": 406.97543376028887,
+        "mean_hops": 3.6420000000000003,
+        "success_rate_std": 0.03840833242930499,
+        "mean_latency_ms_std": 68.78997559629313
+      },
+      {
+        "iteration": 7,
+        "success_rate": 0.5004,
+        "mean_latency_ms": 407.50490184757837,
+        "mean_hops": 3.6420000000000003,
+        "success_rate_std": 0.043460326736001434,
+        "mean_latency_ms_std": 69.8252492426203
+      },
+      {
+        "iteration": 8,
+        "success_rate": 0.5112,
+        "mean_latency_ms": 406.0363476874512,
+        "mean_hops": 3.6420000000000003,
+        "success_rate_std": 0.03080908956785319,
+        "mean_latency_ms_std": 67.91811669772805
+      },
+      {
+        "iteration": 9,
+        "success_rate": 0.5056,
+        "mean_latency_ms": 407.2234409425423,
+        "mean_hops": 3.6420000000000003,
+        "success_rate_std": 0.036425265956475876,
+        "mean_latency_ms_std": 68.39087920650516
+      },
+      {
+        "iteration": 10,
+        "success_rate": 0.49640000000000006,
+        "mean_latency_ms": 408.2511960019433,
+        "mean_hops": 3.6420000000000003,
+        "success_rate_std": 0.03732023579775456,
+        "mean_latency_ms_std": 69.12170745112174
+      },
+      {
+        "iteration": 11,
+        "success_rate": 0.4932,
+        "mean_latency_ms": 405.0744079455145,
+        "mean_hops": 3.6420000000000003,
+        "success_rate_std": 0.034281190177705326,
+        "mean_latency_ms_std": 70.34339234169103
+      },
+      {
+        "iteration": 12,
+        "success_rate": 0.4875999999999999,
+        "mean_latency_ms": 406.0467230297389,
+        "mean_hops": 3.6420000000000003,
+        "success_rate_std": 0.02654806960967219,
+        "mean_latency_ms_std": 69.8786728508058
+      },
+      {
+        "iteration": 13,
+        "success_rate": 0.48319999999999996,
+        "mean_latency_ms": 406.98561970914216,
+        "mean_hops": 3.6420000000000003,
+        "success_rate_std": 0.04410442154705128,
+        "mean_latency_ms_std": 70.4533692095865
+      },
+      {
+        "iteration": 14,
+        "success_rate": 0.49399999999999994,
+        "mean_latency_ms": 407.39838730675336,
+        "mean_hops": 3.6420000000000003,
+        "success_rate_std": 0.04822862220715,
+        "mean_latency_ms_std": 69.55207064122929
+      },
+      {
+        "iteration": 15,
+        "success_rate": 0.5012000000000001,
+        "mean_latency_ms": 407.0709466529603,
+        "mean_hops": 3.6420000000000003,
+        "success_rate_std": 0.020327321515635075,
+        "mean_latency_ms_std": 69.73291658889663
+      },
+      {
+        "iteration": 16,
+        "success_rate": 0.4992,
+        "mean_latency_ms": 405.38800469312076,
+        "mean_hops": 3.6420000000000003,
+        "success_rate_std": 0.03327461494893668,
+        "mean_latency_ms_std": 68.89637228319334
+      },
+      {
+        "iteration": 17,
+        "success_rate": 0.48,
+        "mean_latency_ms": 405.684690112182,
+        "mean_hops": 3.6420000000000003,
+        "success_rate_std": 0.026944387170614956,
+        "mean_latency_ms_std": 68.14735366664043
+      },
+      {
+        "iteration": 18,
+        "success_rate": 0.5016,
+        "mean_latency_ms": 406.08925883319455,
+        "mean_hops": 3.6420000000000003,
+        "success_rate_std": 0.0401845741547674,
+        "mean_latency_ms_std": 68.62192959632195
+      },
+      {
+        "iteration": 19,
+        "success_rate": 0.5,
+        "mean_latency_ms": 407.03014443448825,
+        "mean_hops": 3.6420000000000003,
+        "success_rate_std": 0.04662617290749909,
+        "mean_latency_ms_std": 68.64195060237566
+      },
+      {
+        "iteration": 20,
+        "success_rate": 0.49800000000000005,
+        "mean_latency_ms": 405.79332274297366,
+        "mean_hops": 3.6420000000000003,
+        "success_rate_std": 0.03765634076752547,
+        "mean_latency_ms_std": 69.36903037915198
+      },
+      {
+        "iteration": 21,
+        "success_rate": 0.5184,
+        "mean_latency_ms": 406.89784427233434,
+        "mean_hops": 3.6420000000000003,
+        "success_rate_std": 0.027871132018631773,
+        "mean_latency_ms_std": 69.56710928473288
+      },
+      {
+        "iteration": 22,
+        "success_rate": 0.5119999999999999,
+        "mean_latency_ms": 406.9450218252641,
+        "mean_hops": 3.6420000000000003,
+        "success_rate_std": 0.030298514815086237,
+        "mean_latency_ms_std": 68.62250733469253
+      },
+      {
+        "iteration": 23,
+        "success_rate": 0.4972,
+        "mean_latency_ms": 406.16306588942996,
+        "mean_hops": 3.6420000000000003,
+        "success_rate_std": 0.018253766734567432,
+        "mean_latency_ms_std": 67.98518561397465
+      },
+      {
+        "iteration": 24,
+        "success_rate": 0.5024,
+        "mean_latency_ms": 406.7295431684541,
+        "mean_hops": 3.6420000000000003,
+        "success_rate_std": 0.024511221919765673,
+        "mean_latency_ms_std": 68.18140023445366
+      },
+      {
+        "iteration": 25,
+        "success_rate": 0.5087999999999999,
+        "mean_latency_ms": 405.92067611878383,
+        "mean_hops": 3.6420000000000003,
+        "success_rate_std": 0.022208106627986116,
+        "mean_latency_ms_std": 69.08756598234008
+      },
+      {
+        "iteration": 26,
+        "success_rate": 0.5115999999999999,
+        "mean_latency_ms": 406.7525793287725,
+        "mean_hops": 3.6420000000000003,
+        "success_rate_std": 0.03278414250823103,
+        "mean_latency_ms_std": 69.20038949045
+      },
+      {
+        "iteration": 27,
+        "success_rate": 0.5036,
+        "mean_latency_ms": 405.92952001269265,
+        "mean_hops": 3.6420000000000003,
+        "success_rate_std": 0.02237856116911898,
+        "mean_latency_ms_std": 67.9288754639692
+      },
+      {
+        "iteration": 28,
+        "success_rate": 0.504,
+        "mean_latency_ms": 406.7940617958194,
+        "mean_hops": 3.6420000000000003,
+        "success_rate_std": 0.027018512172212596,
+        "mean_latency_ms_std": 68.75463940109553
+      },
+      {
+        "iteration": 29,
+        "success_rate": 0.4968,
+        "mean_latency_ms": 407.1903286748428,
+        "mean_hops": 3.6420000000000003,
+        "success_rate_std": 0.020278066969018516,
+        "mean_latency_ms_std": 69.10766659607756
+      },
+      {
+        "iteration": 30,
+        "success_rate": 0.49800000000000005,
+        "mean_latency_ms": 406.6041662051058,
+        "mean_hops": 3.6420000000000003,
+        "success_rate_std": 0.027748873851023214,
+        "mean_latency_ms_std": 68.92879294023312
+      },
+      {
+        "iteration": 31,
+        "success_rate": 0.48440000000000005,
+        "mean_latency_ms": 406.7657372005325,
+        "mean_hops": 3.6420000000000003,
+        "success_rate_std": 0.043160166820808296,
+        "mean_latency_ms_std": 68.76392419604299
+      },
+      {
+        "iteration": 32,
+        "success_rate": 0.4928,
+        "mean_latency_ms": 406.1666022191027,
+        "mean_hops": 3.6420000000000003,
+        "success_rate_std": 0.03721827508093303,
+        "mean_latency_ms_std": 68.26248185297374
+      },
+      {
+        "iteration": 33,
+        "success_rate": 0.5076,
+        "mean_latency_ms": 407.2311711970452,
+        "mean_hops": 3.6420000000000003,
+        "success_rate_std": 0.03147697571241558,
+        "mean_latency_ms_std": 69.04250185086057
+      },
+      {
+        "iteration": 34,
+        "success_rate": 0.49640000000000006,
+        "mean_latency_ms": 407.5358107325168,
+        "mean_hops": 3.6420000000000003,
+        "success_rate_std": 0.04241226237776053,
+        "mean_latency_ms_std": 68.94217285276429
+      },
+      {
+        "iteration": 35,
+        "success_rate": 0.5084,
+        "mean_latency_ms": 406.2620892139215,
+        "mean_hops": 3.6420000000000003,
+        "success_rate_std": 0.02997999332888521,
+        "mean_latency_ms_std": 69.31298369344366
+      },
+      {
+        "iteration": 36,
+        "success_rate": 0.5064,
+        "mean_latency_ms": 406.6660906840008,
+        "mean_hops": 3.6420000000000003,
+        "success_rate_std": 0.04260046948098109,
+        "mean_latency_ms_std": 68.76189507053876
+      },
+      {
+        "iteration": 37,
+        "success_rate": 0.4904,
+        "mean_latency_ms": 405.4077857550547,
+        "mean_hops": 3.6420000000000003,
+        "success_rate_std": 0.035844106907551763,
+        "mean_latency_ms_std": 68.95243607051565
+      },
+      {
+        "iteration": 38,
+        "success_rate": 0.4968,
+        "mean_latency_ms": 407.23223754594113,
+        "mean_hops": 3.6420000000000003,
+        "success_rate_std": 0.03716449918941463,
+        "mean_latency_ms_std": 68.7409462286844
+      },
+      {
+        "iteration": 39,
+        "success_rate": 0.49559999999999993,
+        "mean_latency_ms": 405.88021832459094,
+        "mean_hops": 3.6420000000000003,
+        "success_rate_std": 0.03179308100829487,
+        "mean_latency_ms_std": 68.14410738424137
+      }
+    ],
+    "LLMRouter": [
+      {
+        "iteration": 0,
+        "success_rate": 0.33120000000000005,
+        "mean_latency_ms": 383.14011629040726,
+        "mean_hops": 3.4519999999999995,
+        "success_rate_std": 0.013007690033207292,
+        "mean_latency_ms_std": 19.38422866191116
+      },
+      {
+        "iteration": 1,
+        "success_rate": 0.3691999999999999,
+        "mean_latency_ms": 289.99822958965376,
+        "mean_hops": 2.9308,
+        "success_rate_std": 0.025674890457409963,
+        "mean_latency_ms_std": 76.01815580877815
+      },
+      {
+        "iteration": 2,
+        "success_rate": 0.3984,
+        "mean_latency_ms": 183.67621628062042,
+        "mean_hops": 2.2816,
+        "success_rate_std": 0.030179463215902296,
+        "mean_latency_ms_std": 49.71525406788422
+      },
+      {
+        "iteration": 3,
+        "success_rate": 0.41879999999999995,
+        "mean_latency_ms": 141.54179256447543,
+        "mean_hops": 2.008,
+        "success_rate_std": 0.027553584158871235,
+        "mean_latency_ms_std": 1.4935859682465165
+      },
+      {
+        "iteration": 4,
+        "success_rate": 0.4024,
+        "mean_latency_ms": 140.30425223558706,
+        "mean_hops": 2.0,
+        "success_rate_std": 0.01807761046156266,
+        "mean_latency_ms_std": 0.7873621862541289
+      },
+      {
+        "iteration": 5,
+        "success_rate": 0.3984,
+        "mean_latency_ms": 139.94410964397647,
+        "mean_hops": 2.0,
+        "success_rate_std": 0.022733235581412513,
+        "mean_latency_ms_std": 0.5346547083531734
+      },
+      {
+        "iteration": 6,
+        "success_rate": 0.4124,
+        "mean_latency_ms": 139.96656540714883,
+        "mean_hops": 2.0,
+        "success_rate_std": 0.015517731793016647,
+        "mean_latency_ms_std": 0.7300655251349555
+      },
+      {
+        "iteration": 7,
+        "success_rate": 0.3992,
+        "mean_latency_ms": 139.57595201034925,
+        "mean_hops": 2.0,
+        "success_rate_std": 0.014324803663575983,
+        "mean_latency_ms_std": 1.2248467457044723
+      },
+      {
+        "iteration": 8,
+        "success_rate": 0.4072,
+        "mean_latency_ms": 140.42961934073543,
+        "mean_hops": 2.0,
+        "success_rate_std": 0.01640731544159494,
+        "mean_latency_ms_std": 0.6877062850102664
+      },
+      {
+        "iteration": 9,
+        "success_rate": 0.4168,
+        "mean_latency_ms": 139.61441769278463,
+        "mean_hops": 2.0,
+        "success_rate_std": 0.013311649033834977,
+        "mean_latency_ms_std": 0.5988171058192373
+      },
+      {
+        "iteration": 10,
+        "success_rate": 0.3944,
+        "mean_latency_ms": 140.00670119126798,
+        "mean_hops": 2.0,
+        "success_rate_std": 0.014170391667134678,
+        "mean_latency_ms_std": 0.875273443761103
+      },
+      {
+        "iteration": 11,
+        "success_rate": 0.40440000000000004,
+        "mean_latency_ms": 140.126965508189,
+        "mean_hops": 2.0,
+        "success_rate_std": 0.017629520696831203,
+        "mean_latency_ms_std": 0.4630981274604411
+      },
+      {
+        "iteration": 12,
+        "success_rate": 0.4088,
+        "mean_latency_ms": 139.92004642682545,
+        "mean_hops": 2.0,
+        "success_rate_std": 0.02042547429069885,
+        "mean_latency_ms_std": 0.3649648891617679
+      },
+      {
+        "iteration": 13,
+        "success_rate": 0.426,
+        "mean_latency_ms": 140.09069149280947,
+        "mean_hops": 2.0,
+        "success_rate_std": 0.015937377450509244,
+        "mean_latency_ms_std": 1.1242627978748285
+      },
+      {
+        "iteration": 14,
+        "success_rate": 0.42519999999999997,
+        "mean_latency_ms": 140.10784697246936,
+        "mean_hops": 2.0,
+        "success_rate_std": 0.024803225596683992,
+        "mean_latency_ms_std": 0.9034887785847444
+      },
+      {
+        "iteration": 15,
+        "success_rate": 0.41479999999999995,
+        "mean_latency_ms": 139.85064379228473,
+        "mean_hops": 2.0,
+        "success_rate_std": 0.01942163741809634,
+        "mean_latency_ms_std": 0.8061941760460092
+      },
+      {
+        "iteration": 16,
+        "success_rate": 0.4080000000000001,
+        "mean_latency_ms": 140.79112093403972,
+        "mean_hops": 2.0,
+        "success_rate_std": 0.01637070554374489,
+        "mean_latency_ms_std": 0.6623185686410036
+      },
+      {
+        "iteration": 17,
+        "success_rate": 0.4008000000000001,
+        "mean_latency_ms": 139.6181566131705,
+        "mean_hops": 2.0,
+        "success_rate_std": 0.007293833011524177,
+        "mean_latency_ms_std": 0.87952791822136
+      },
+      {
+        "iteration": 18,
+        "success_rate": 0.4164,
+        "mean_latency_ms": 139.91608028473405,
+        "mean_hops": 2.0,
+        "success_rate_std": 0.02237856116911898,
+        "mean_latency_ms_std": 0.8607342609766376
+      },
+      {
+        "iteration": 19,
+        "success_rate": 0.40840000000000004,
+        "mean_latency_ms": 139.50606362995956,
+        "mean_hops": 2.0,
+        "success_rate_std": 0.025744902408049632,
+        "mean_latency_ms_std": 0.3104868444118803
+      },
+      {
+        "iteration": 20,
+        "success_rate": 0.4056,
+        "mean_latency_ms": 140.71389902381893,
+        "mean_hops": 2.0,
+        "success_rate_std": 0.02483545852204061,
+        "mean_latency_ms_std": 0.7856596889215568
+      },
+      {
+        "iteration": 21,
+        "success_rate": 0.4032,
+        "mean_latency_ms": 139.90480502276992,
+        "mean_hops": 2.0,
+        "success_rate_std": 0.011189280584559473,
+        "mean_latency_ms_std": 0.73349730488835
+      },
+      {
+        "iteration": 22,
+        "success_rate": 0.4016,
+        "mean_latency_ms": 139.90426470141142,
+        "mean_hops": 2.0,
+        "success_rate_std": 0.025667099563448925,
+        "mean_latency_ms_std": 0.5285147524188694
+      },
+      {
+        "iteration": 23,
+        "success_rate": 0.41600000000000004,
+        "mean_latency_ms": 140.1039140695569,
+        "mean_hops": 2.0,
+        "success_rate_std": 0.03944616584663205,
+        "mean_latency_ms_std": 0.43287409856491343
+      },
+      {
+        "iteration": 24,
+        "success_rate": 0.4004,
+        "mean_latency_ms": 139.67435030012234,
+        "mean_hops": 2.0,
+        "success_rate_std": 0.015126136320951222,
+        "mean_latency_ms_std": 0.7153940129510732
+      },
+      {
+        "iteration": 25,
+        "success_rate": 0.4024,
+        "mean_latency_ms": 140.0511078136119,
+        "mean_hops": 2.0,
+        "success_rate_std": 0.02118490028298457,
+        "mean_latency_ms_std": 0.5827625252185421
+      },
+      {
+        "iteration": 26,
+        "success_rate": 0.4072,
+        "mean_latency_ms": 140.21133794016026,
+        "mean_hops": 2.0,
+        "success_rate_std": 0.011189280584559478,
+        "mean_latency_ms_std": 0.8570079617754368
+      },
+      {
+        "iteration": 27,
+        "success_rate": 0.39519999999999994,
+        "mean_latency_ms": 140.0007799707142,
+        "mean_hops": 2.0,
+        "success_rate_std": 0.028057084666800285,
+        "mean_latency_ms_std": 0.9349883959178703
+      },
+      {
+        "iteration": 28,
+        "success_rate": 0.4088,
+        "mean_latency_ms": 140.59677948626197,
+        "mean_hops": 2.0,
+        "success_rate_std": 0.010059821071967418,
+        "mean_latency_ms_std": 0.48689161897944033
+      },
+      {
+        "iteration": 29,
+        "success_rate": 0.41000000000000003,
+        "mean_latency_ms": 140.03458341586276,
+        "mean_hops": 2.0,
+        "success_rate_std": 0.011224972160321804,
+        "mean_latency_ms_std": 0.5806356042164731
+      },
+      {
+        "iteration": 30,
+        "success_rate": 0.4084,
+        "mean_latency_ms": 140.20212376619048,
+        "mean_hops": 2.0,
+        "success_rate_std": 0.02246775467197378,
+        "mean_latency_ms_std": 0.6002603778966578
+      },
+      {
+        "iteration": 31,
+        "success_rate": 0.41719999999999996,
+        "mean_latency_ms": 139.6187505391342,
+        "mean_hops": 2.0,
+        "success_rate_std": 0.030938648968563576,
+        "mean_latency_ms_std": 0.8631536809062752
+      },
+      {
+        "iteration": 32,
+        "success_rate": 0.4088,
+        "mean_latency_ms": 139.99067986506347,
+        "mean_hops": 2.0,
+        "success_rate_std": 0.029986663702386104,
+        "mean_latency_ms_std": 0.6886220611531307
+      },
+      {
+        "iteration": 33,
+        "success_rate": 0.4208,
+        "mean_latency_ms": 139.85092138381384,
+        "mean_hops": 2.0,
+        "success_rate_std": 0.026061465806819072,
+        "mean_latency_ms_std": 0.7275374015199476
+      },
+      {
+        "iteration": 34,
+        "success_rate": 0.41200000000000003,
+        "mean_latency_ms": 140.08732240527598,
+        "mean_hops": 2.0,
+        "success_rate_std": 0.02267156809750926,
+        "mean_latency_ms_std": 0.7364013884738496
+      },
+      {
+        "iteration": 35,
+        "success_rate": 0.4072,
+        "mean_latency_ms": 140.23687144789727,
+        "mean_hops": 2.0,
+        "success_rate_std": 0.024519380090043053,
+        "mean_latency_ms_std": 0.46249377956066
+      },
+      {
+        "iteration": 36,
+        "success_rate": 0.40920000000000006,
+        "mean_latency_ms": 139.51902414649282,
+        "mean_hops": 2.0,
+        "success_rate_std": 0.02368966019173766,
+        "mean_latency_ms_std": 0.4468327519746957
+      },
+      {
+        "iteration": 37,
+        "success_rate": 0.4128,
+        "mean_latency_ms": 139.8746868026095,
+        "mean_hops": 2.0,
+        "success_rate_std": 0.027040710049848912,
+        "mean_latency_ms_std": 0.35807709802555326
+      },
+      {
+        "iteration": 38,
+        "success_rate": 0.4096,
+        "mean_latency_ms": 140.07474211473297,
+        "mean_hops": 2.0,
+        "success_rate_std": 0.008414273587185035,
+        "mean_latency_ms_std": 0.8433011484753912
+      },
+      {
+        "iteration": 39,
+        "success_rate": 0.43200000000000005,
+        "mean_latency_ms": 139.55126143967271,
+        "mean_hops": 2.0,
+        "success_rate_std": 0.02749545416973503,
+        "mean_latency_ms_std": 0.23160133625828455
+      }
+    ],
+    "APRR": [
+      {
+        "iteration": 0,
+        "success_rate": 0.44279999999999997,
+        "mean_latency_ms": 273.1057425523658,
+        "mean_hops": 2.8056,
+        "success_rate_std": 0.06874009019487827,
+        "mean_latency_ms_std": 106.94096893358274
+      },
+      {
+        "iteration": 1,
+        "success_rate": 0.45359999999999995,
+        "mean_latency_ms": 252.6458493038305,
+        "mean_hops": 2.6908,
+        "success_rate_std": 0.0939829771820408,
+        "mean_latency_ms_std": 69.740800532149
+      },
+      {
+        "iteration": 2,
+        "success_rate": 0.45359999999999995,
+        "mean_latency_ms": 252.94957000932627,
+        "mean_hops": 2.6964,
+        "success_rate_std": 0.07826110144893185,
+        "mean_latency_ms_std": 59.659768502787976
+      },
+      {
+        "iteration": 3,
+        "success_rate": 0.44639999999999996,
+        "mean_latency_ms": 251.34968585681318,
+        "mean_hops": 2.6775999999999995,
+        "success_rate_std": 0.07418086006511383,
+        "mean_latency_ms_std": 55.83463264550052
+      },
+      {
+        "iteration": 4,
+        "success_rate": 0.45920000000000005,
+        "mean_latency_ms": 257.08955079590964,
+        "mean_hops": 2.7624000000000004,
+        "success_rate_std": 0.011966620241321262,
+        "mean_latency_ms_std": 53.52901117203568
+      },
+      {
+        "iteration": 5,
+        "success_rate": 0.4648,
+        "mean_latency_ms": 257.22737610622914,
+        "mean_hops": 2.7732,
+        "success_rate_std": 0.03809461904258921,
+        "mean_latency_ms_std": 54.502284435726104
+      },
+      {
+        "iteration": 6,
+        "success_rate": 0.458,
+        "mean_latency_ms": 253.97437862528778,
+        "mean_hops": 2.7483999999999997,
+        "success_rate_std": 0.031240998703626614,
+        "mean_latency_ms_std": 54.09854252837705
+      },
+      {
+        "iteration": 7,
+        "success_rate": 0.47800000000000004,
+        "mean_latency_ms": 257.50146351931306,
+        "mean_hops": 2.7692,
+        "success_rate_std": 0.042355637169094754,
+        "mean_latency_ms_std": 49.33446807943154
+      },
+      {
+        "iteration": 8,
+        "success_rate": 0.484,
+        "mean_latency_ms": 255.27303493137816,
+        "mean_hops": 2.7524,
+        "success_rate_std": 0.028879058156387312,
+        "mean_latency_ms_std": 50.77644558765689
+      },
+      {
+        "iteration": 9,
+        "success_rate": 0.4756,
+        "mean_latency_ms": 254.35296109953114,
+        "mean_hops": 2.7564,
+        "success_rate_std": 0.04403180668562216,
+        "mean_latency_ms_std": 52.22965482125676
+      },
+      {
+        "iteration": 10,
+        "success_rate": 0.48319999999999996,
+        "mean_latency_ms": 263.17521656824414,
+        "mean_hops": 2.8184000000000005,
+        "success_rate_std": 0.03745931125901811,
+        "mean_latency_ms_std": 42.689854505164305
+      },
+      {
+        "iteration": 11,
+        "success_rate": 0.46840000000000004,
+        "mean_latency_ms": 260.65083890018553,
+        "mean_hops": 2.7908,
+        "success_rate_std": 0.02582247083452704,
+        "mean_latency_ms_std": 36.838076809388426
+      },
+      {
+        "iteration": 12,
+        "success_rate": 0.4808,
+        "mean_latency_ms": 256.0357581697485,
+        "mean_hops": 2.7712,
+        "success_rate_std": 0.020327321515635058,
+        "mean_latency_ms_std": 34.17665429760646
+      },
+      {
+        "iteration": 13,
+        "success_rate": 0.4708,
+        "mean_latency_ms": 255.63578517366327,
+        "mean_hops": 2.7643999999999997,
+        "success_rate_std": 0.0361828688746484,
+        "mean_latency_ms_std": 31.878710657371776
+      },
+      {
+        "iteration": 14,
+        "success_rate": 0.4572,
+        "mean_latency_ms": 254.72531595048645,
+        "mean_hops": 2.7556000000000003,
+        "success_rate_std": 0.018088670487352014,
+        "mean_latency_ms_std": 31.518955891094883
+      },
+      {
+        "iteration": 15,
+        "success_rate": 0.4688,
+        "mean_latency_ms": 253.84669756255093,
+        "mean_hops": 2.7492,
+        "success_rate_std": 0.0206203782700512,
+        "mean_latency_ms_std": 29.827319788348017
+      },
+      {
+        "iteration": 16,
+        "success_rate": 0.46799999999999997,
+        "mean_latency_ms": 262.6829723540585,
+        "mean_hops": 2.7828000000000004,
+        "success_rate_std": 0.03452535300326414,
+        "mean_latency_ms_std": 38.374637397564975
+      },
+      {
+        "iteration": 17,
+        "success_rate": 0.4756,
+        "mean_latency_ms": 267.0555013343713,
+        "mean_hops": 2.7944,
+        "success_rate_std": 0.03863677005133841,
+        "mean_latency_ms_std": 46.72711491969887
+      },
+      {
+        "iteration": 18,
+        "success_rate": 0.4728,
+        "mean_latency_ms": 266.6424677102581,
+        "mean_hops": 2.7804,
+        "success_rate_std": 0.014601369798755169,
+        "mean_latency_ms_std": 44.517229211145505
+      },
+      {
+        "iteration": 19,
+        "success_rate": 0.4716,
+        "mean_latency_ms": 266.72198369389486,
+        "mean_hops": 2.7868000000000004,
+        "success_rate_std": 0.02593838853899756,
+        "mean_latency_ms_std": 39.727019212149436
+      },
+      {
+        "iteration": 20,
+        "success_rate": 0.47319999999999995,
+        "mean_latency_ms": 263.95263266808394,
+        "mean_hops": 2.7756,
+        "success_rate_std": 0.018633303518163377,
+        "mean_latency_ms_std": 44.19080368313277
+      },
+      {
+        "iteration": 21,
+        "success_rate": 0.46440000000000003,
+        "mean_latency_ms": 259.5645105436436,
+        "mean_hops": 2.7467999999999995,
+        "success_rate_std": 0.038507142194663065,
+        "mean_latency_ms_std": 39.14238327827353
+      },
+      {
+        "iteration": 22,
+        "success_rate": 0.47359999999999997,
+        "mean_latency_ms": 260.4502831251221,
+        "mean_hops": 2.7588000000000004,
+        "success_rate_std": 0.02635905916378655,
+        "mean_latency_ms_std": 45.383235719499
+      },
+      {
+        "iteration": 23,
+        "success_rate": 0.48440000000000005,
+        "mean_latency_ms": 268.9693724941432,
+        "mean_hops": 2.8216,
+        "success_rate_std": 0.02264508776754905,
+        "mean_latency_ms_std": 47.22308731955
+      },
+      {
+        "iteration": 24,
+        "success_rate": 0.4888,
+        "mean_latency_ms": 267.845985065317,
+        "mean_hops": 2.8247999999999998,
+        "success_rate_std": 0.029752310834622576,
+        "mean_latency_ms_std": 41.56360607522342
+      },
+      {
+        "iteration": 25,
+        "success_rate": 0.476,
+        "mean_latency_ms": 265.6637159103726,
+        "mean_hops": 2.8048,
+        "success_rate_std": 0.030757112998459395,
+        "mean_latency_ms_std": 38.102481559678
+      },
+      {
+        "iteration": 26,
+        "success_rate": 0.4748,
+        "mean_latency_ms": 257.3663249105268,
+        "mean_hops": 2.7572,
+        "success_rate_std": 0.032942373927815224,
+        "mean_latency_ms_std": 32.69367924406388
+      },
+      {
+        "iteration": 27,
+        "success_rate": 0.4808,
+        "mean_latency_ms": 259.1822117656096,
+        "mean_hops": 2.7608,
+        "success_rate_std": 0.023562682360037026,
+        "mean_latency_ms_std": 39.89013097932081
+      },
+      {
+        "iteration": 28,
+        "success_rate": 0.4692,
+        "mean_latency_ms": 256.74032728435725,
+        "mean_hops": 2.7472000000000003,
+        "success_rate_std": 0.030086541841826884,
+        "mean_latency_ms_std": 29.973428101316205
+      },
+      {
+        "iteration": 29,
+        "success_rate": 0.45759999999999995,
+        "mean_latency_ms": 259.76613062599523,
+        "mean_hops": 2.7636,
+        "success_rate_std": 0.017854971296532504,
+        "mean_latency_ms_std": 39.86645815891759
+      },
+      {
+        "iteration": 30,
+        "success_rate": 0.45640000000000003,
+        "mean_latency_ms": 262.5113411727167,
+        "mean_hops": 2.7744,
+        "success_rate_std": 0.017910890541790483,
+        "mean_latency_ms_std": 41.13046811730112
+      },
+      {
+        "iteration": 31,
+        "success_rate": 0.4779999999999999,
+        "mean_latency_ms": 258.6770218105798,
+        "mean_hops": 2.7592,
+        "success_rate_std": 0.03633180424916991,
+        "mean_latency_ms_std": 37.150599490121216
+      },
+      {
+        "iteration": 32,
+        "success_rate": 0.4772,
+        "mean_latency_ms": 262.6315760697842,
+        "mean_hops": 2.7855999999999996,
+        "success_rate_std": 0.022785960589801778,
+        "mean_latency_ms_std": 33.09541938576494
+      },
+      {
+        "iteration": 33,
+        "success_rate": 0.46559999999999996,
+        "mean_latency_ms": 262.1895784216364,
+        "mean_hops": 2.7828000000000004,
+        "success_rate_std": 0.02338375504490243,
+        "mean_latency_ms_std": 39.554429547441174
+      },
+      {
+        "iteration": 34,
+        "success_rate": 0.4608,
+        "mean_latency_ms": 261.38498324007435,
+        "mean_hops": 2.7564,
+        "success_rate_std": 0.03132411211830273,
+        "mean_latency_ms_std": 41.57959230358875
+      },
+      {
+        "iteration": 35,
+        "success_rate": 0.4704,
+        "mean_latency_ms": 262.6876415024416,
+        "mean_hops": 2.7600000000000002,
+        "success_rate_std": 0.01951409746824074,
+        "mean_latency_ms_std": 39.506708606745995
+      },
+      {
+        "iteration": 36,
+        "success_rate": 0.46159999999999995,
+        "mean_latency_ms": 268.9234954893656,
+        "mean_hops": 2.7988000000000004,
+        "success_rate_std": 0.026959228475607378,
+        "mean_latency_ms_std": 50.50442442449891
+      },
+      {
+        "iteration": 37,
+        "success_rate": 0.4904,
+        "mean_latency_ms": 268.03668342835886,
+        "mean_hops": 2.8012,
+        "success_rate_std": 0.0053665631459995,
+        "mean_latency_ms_std": 48.22221446160367
+      },
+      {
+        "iteration": 38,
+        "success_rate": 0.49000000000000005,
+        "mean_latency_ms": 276.5018865200626,
+        "mean_hops": 2.8507999999999996,
+        "success_rate_std": 0.028178005607210743,
+        "mean_latency_ms_std": 53.501751565174395
+      },
+      {
+        "iteration": 39,
+        "success_rate": 0.4848,
+        "mean_latency_ms": 275.21904426035945,
+        "mean_hops": 2.8452,
+        "success_rate_std": 0.03195622005181465,
+        "mean_latency_ms_std": 51.10793810465155
+      }
+    ],
+    "Oracle": [
+      {
+        "iteration": 0,
+        "success_rate": 0.8968,
+        "mean_latency_ms": 449.94899377792825,
+        "mean_hops": 4.302,
+        "success_rate_std": 0.005761944116355179,
+        "mean_latency_ms_std": 12.553479471109911
+      },
+      {
+        "iteration": 1,
+        "success_rate": 0.8948,
+        "mean_latency_ms": 449.7633314364026,
+        "mean_hops": 4.302,
+        "success_rate_std": 0.012457929201917961,
+        "mean_latency_ms_std": 11.132067433425636
+      },
+      {
+        "iteration": 2,
+        "success_rate": 0.8876,
+        "mean_latency_ms": 449.202127882708,
+        "mean_hops": 4.302,
+        "success_rate_std": 0.023125743231299636,
+        "mean_latency_ms_std": 11.069141001931673
+      },
+      {
+        "iteration": 3,
+        "success_rate": 0.9007999999999999,
+        "mean_latency_ms": 448.5253925947791,
+        "mean_hops": 4.302,
+        "success_rate_std": 0.015401298646542778,
+        "mean_latency_ms_std": 10.820736283446918
+      },
+      {
+        "iteration": 4,
+        "success_rate": 0.9040000000000001,
+        "mean_latency_ms": 448.08501448883015,
+        "mean_hops": 4.302,
+        "success_rate_std": 0.012489995996796807,
+        "mean_latency_ms_std": 10.508082116922264
+      },
+      {
+        "iteration": 5,
+        "success_rate": 0.892,
+        "mean_latency_ms": 449.9619501363792,
+        "mean_hops": 4.302,
+        "success_rate_std": 0.006480740698407867,
+        "mean_latency_ms_std": 11.811557388033703
+      },
+      {
+        "iteration": 6,
+        "success_rate": 0.8960000000000001,
+        "mean_latency_ms": 448.85013134806877,
+        "mean_hops": 4.302,
+        "success_rate_std": 0.009899494936611674,
+        "mean_latency_ms_std": 9.099942605924666
+      },
+      {
+        "iteration": 7,
+        "success_rate": 0.906,
+        "mean_latency_ms": 449.20992233318356,
+        "mean_hops": 4.302,
+        "success_rate_std": 0.016370705543744916,
+        "mean_latency_ms_std": 12.247601749773102
+      },
+      {
+        "iteration": 8,
+        "success_rate": 0.8956,
+        "mean_latency_ms": 448.1161088751992,
+        "mean_hops": 4.302,
+        "success_rate_std": 0.010714476188783108,
+        "mean_latency_ms_std": 12.461797548329457
+      },
+      {
+        "iteration": 9,
+        "success_rate": 0.9068000000000002,
+        "mean_latency_ms": 449.7733303788611,
+        "mean_hops": 4.302,
+        "success_rate_std": 0.007014271166700079,
+        "mean_latency_ms_std": 13.168981140634747
+      },
+      {
+        "iteration": 10,
+        "success_rate": 0.906,
+        "mean_latency_ms": 448.92451875583686,
+        "mean_hops": 4.302,
+        "success_rate_std": 0.006480740698407867,
+        "mean_latency_ms_std": 10.180880519598198
+      },
+      {
+        "iteration": 11,
+        "success_rate": 0.906,
+        "mean_latency_ms": 448.22148827964963,
+        "mean_hops": 4.302,
+        "success_rate_std": 0.014628738838327807,
+        "mean_latency_ms_std": 11.00556159495952
+      },
+      {
+        "iteration": 12,
+        "success_rate": 0.9048,
+        "mean_latency_ms": 449.1591240295582,
+        "mean_hops": 4.302,
+        "success_rate_std": 0.0052153619241621235,
+        "mean_latency_ms_std": 9.867573650326937
+      },
+      {
+        "iteration": 13,
+        "success_rate": 0.9119999999999999,
+        "mean_latency_ms": 449.85617279803654,
+        "mean_hops": 4.302,
+        "success_rate_std": 0.01618641405623866,
+        "mean_latency_ms_std": 9.498039110871812
+      },
+      {
+        "iteration": 14,
+        "success_rate": 0.8987999999999999,
+        "mean_latency_ms": 447.48395902669824,
+        "mean_hops": 4.302,
+        "success_rate_std": 0.011454256850621092,
+        "mean_latency_ms_std": 10.717510292149614
+      },
+      {
+        "iteration": 15,
+        "success_rate": 0.9024000000000001,
+        "mean_latency_ms": 449.2335106752531,
+        "mean_hops": 4.302,
+        "success_rate_std": 0.012441864811996644,
+        "mean_latency_ms_std": 11.72509830112314
+      },
+      {
+        "iteration": 16,
+        "success_rate": 0.9076000000000001,
+        "mean_latency_ms": 449.3514716289721,
+        "mean_hops": 4.302,
+        "success_rate_std": 0.009838699100999083,
+        "mean_latency_ms_std": 10.395707951678734
+      },
+      {
+        "iteration": 17,
+        "success_rate": 0.8879999999999999,
+        "mean_latency_ms": 449.27295406016185,
+        "mean_hops": 4.302,
+        "success_rate_std": 0.009591663046625447,
+        "mean_latency_ms_std": 9.598799210042186
+      },
+      {
+        "iteration": 18,
+        "success_rate": 0.9004,
+        "mean_latency_ms": 449.280181868251,
+        "mean_hops": 4.302,
+        "success_rate_std": 0.009208691546577078,
+        "mean_latency_ms_std": 10.28669119725279
+      },
+      {
+        "iteration": 19,
+        "success_rate": 0.9048,
+        "mean_latency_ms": 448.0436107799195,
+        "mean_hops": 4.302,
+        "success_rate_std": 0.010917875251164954,
+        "mean_latency_ms_std": 10.955355869539963
+      },
+      {
+        "iteration": 20,
+        "success_rate": 0.8892,
+        "mean_latency_ms": 449.42615594139636,
+        "mean_hops": 4.302,
+        "success_rate_std": 0.011966620241321283,
+        "mean_latency_ms_std": 8.759861196692622
+      },
+      {
+        "iteration": 21,
+        "success_rate": 0.8911999999999999,
+        "mean_latency_ms": 448.11341434478953,
+        "mean_hops": 4.302,
+        "success_rate_std": 0.014939879517586492,
+        "mean_latency_ms_std": 11.520035500459782
+      },
+      {
+        "iteration": 22,
+        "success_rate": 0.914,
+        "mean_latency_ms": 447.02270048674,
+        "mean_hops": 4.302,
+        "success_rate_std": 0.013638181696985868,
+        "mean_latency_ms_std": 11.194439180349358
+      },
+      {
+        "iteration": 23,
+        "success_rate": 0.8968,
+        "mean_latency_ms": 449.904115986325,
+        "mean_hops": 4.302,
+        "success_rate_std": 0.02402498699271242,
+        "mean_latency_ms_std": 10.729077721573875
+      },
+      {
+        "iteration": 24,
+        "success_rate": 0.8952,
+        "mean_latency_ms": 449.8511956944065,
+        "mean_hops": 4.302,
+        "success_rate_std": 0.011099549540409296,
+        "mean_latency_ms_std": 11.45898520699462
+      },
+      {
+        "iteration": 25,
+        "success_rate": 0.8996000000000001,
+        "mean_latency_ms": 447.90021623139035,
+        "mean_hops": 4.302,
+        "success_rate_std": 0.021927152117865212,
+        "mean_latency_ms_std": 10.67546107805688
+      },
+      {
+        "iteration": 26,
+        "success_rate": 0.8916000000000001,
+        "mean_latency_ms": 449.55681207325586,
+        "mean_hops": 4.302,
+        "success_rate_std": 0.012441864811996644,
+        "mean_latency_ms_std": 12.239477716058385
+      },
+      {
+        "iteration": 27,
+        "success_rate": 0.8992000000000001,
+        "mean_latency_ms": 448.02436466923916,
+        "mean_hops": 4.302,
+        "success_rate_std": 0.007949842765740723,
+        "mean_latency_ms_std": 10.074981747097075
+      },
+      {
+        "iteration": 28,
+        "success_rate": 0.8828000000000001,
+        "mean_latency_ms": 450.11487946311127,
+        "mean_hops": 4.302,
+        "success_rate_std": 0.012537942414925994,
+        "mean_latency_ms_std": 10.586469191952776
+      },
+      {
+        "iteration": 29,
+        "success_rate": 0.9012,
+        "mean_latency_ms": 447.8684996447276,
+        "mean_hops": 4.302,
+        "success_rate_std": 0.015006665185843268,
+        "mean_latency_ms_std": 10.524372069866013
+      },
+      {
+        "iteration": 30,
+        "success_rate": 0.8996000000000001,
+        "mean_latency_ms": 449.2367965324711,
+        "mean_hops": 4.302,
+        "success_rate_std": 0.007797435475847178,
+        "mean_latency_ms_std": 9.869737003363692
+      },
+      {
+        "iteration": 31,
+        "success_rate": 0.9016,
+        "mean_latency_ms": 448.0757836774602,
+        "mean_hops": 4.302,
+        "success_rate_std": 0.006066300355241246,
+        "mean_latency_ms_std": 11.367220300825375
+      },
+      {
+        "iteration": 32,
+        "success_rate": 0.9136,
+        "mean_latency_ms": 448.4645695962798,
+        "mean_hops": 4.302,
+        "success_rate_std": 0.015453155017665452,
+        "mean_latency_ms_std": 10.467954601765133
+      },
+      {
+        "iteration": 33,
+        "success_rate": 0.8984,
+        "mean_latency_ms": 448.0595290858947,
+        "mean_hops": 4.302,
+        "success_rate_std": 0.009528903399657285,
+        "mean_latency_ms_std": 10.443836797743442
+      },
+      {
+        "iteration": 34,
+        "success_rate": 0.8940000000000001,
+        "mean_latency_ms": 449.29032764550027,
+        "mean_hops": 4.302,
+        "success_rate_std": 0.009273618495495713,
+        "mean_latency_ms_std": 9.492151839641018
+      },
+      {
+        "iteration": 35,
+        "success_rate": 0.8996000000000001,
+        "mean_latency_ms": 448.48920781768277,
+        "mean_hops": 4.302,
+        "success_rate_std": 0.008876936408468867,
+        "mean_latency_ms_std": 11.104678416018459
+      },
+      {
+        "iteration": 36,
+        "success_rate": 0.9092,
+        "mean_latency_ms": 448.8718292848022,
+        "mean_hops": 4.302,
+        "success_rate_std": 0.00923038460737147,
+        "mean_latency_ms_std": 11.189580319631972
+      },
+      {
+        "iteration": 37,
+        "success_rate": 0.9052,
+        "mean_latency_ms": 450.10778257265383,
+        "mean_hops": 4.302,
+        "success_rate_std": 0.01507315494513343,
+        "mean_latency_ms_std": 10.090872954487658
+      },
+      {
+        "iteration": 38,
+        "success_rate": 0.9072000000000001,
+        "mean_latency_ms": 449.42638310818563,
+        "mean_hops": 4.302,
+        "success_rate_std": 0.007823042886243185,
+        "mean_latency_ms_std": 12.380634550104118
+      },
+      {
+        "iteration": 39,
+        "success_rate": 0.8968,
+        "mean_latency_ms": 449.7394415981109,
+        "mean_hops": 4.302,
+        "success_rate_std": 0.005403702434442523,
+        "mean_latency_ms_std": 11.943072005695765
+      }
+    ]
+  }
+}

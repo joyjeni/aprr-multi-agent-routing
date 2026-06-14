@@ -1,0 +1,2172 @@
+{
+  "config": {
+    "n_queries": 500,
+    "n_iterations": 40,
+    "seed": 45,
+    "elapsed_sec": 9.895435810089111,
+    "topology": {
+      "n_agents": 10,
+      "roles": [
+        "intent",
+        "search",
+        "retrieve",
+        "rerank",
+        "tool",
+        "compose",
+        "verify",
+        "respond",
+        "distractor_a",
+        "distractor_b"
+      ]
+    }
+  },
+  "aggregate": {
+    "Random": {
+      "n": 20000.0,
+      "success_rate": 0.31985,
+      "success_rate_ci95": 0.006464388662065324,
+      "mean_latency_ms": 393.422277838023,
+      "p50_latency_ms": 336.9059310323107,
+      "p95_latency_ms": 861.4667556332181,
+      "mean_hops": 3.49565,
+      "median_hops": 3.0,
+      "successful_mean_latency_ms": 426.88141263074505
+    },
+    "RoundRobin": {
+      "n": 20000.0,
+      "success_rate": 0.38335,
+      "success_rate_ci95": 0.0067385899958341865,
+      "mean_latency_ms": 547.0089046013795,
+      "p50_latency_ms": 525.9628365632302,
+      "p95_latency_ms": 1124.0696528539272,
+      "mean_hops": 4.33345,
+      "median_hops": 4.0,
+      "successful_mean_latency_ms": 641.3866879743149
+    },
+    "StaticSemantic": {
+      "n": 20000.0,
+      "success_rate": 0.50705,
+      "success_rate_ci95": 0.0069291308103173604,
+      "mean_latency_ms": 407.69435100415694,
+      "p50_latency_ms": 247.9694114240056,
+      "p95_latency_ms": 1055.7754241783732,
+      "mean_hops": 3.67,
+      "median_hops": 3.0,
+      "successful_mean_latency_ms": 422.4519041281211
+    },
+    "LLMRouter": {
+      "n": 20000.0,
+      "success_rate": 0.3929,
+      "success_rate_ci95": 0.006768977367367244,
+      "mean_latency_ms": 150.95454438076672,
+      "p50_latency_ms": 140.79061040423875,
+      "p95_latency_ms": 178.03228959896353,
+      "mean_hops": 2.0667,
+      "median_hops": 2.0,
+      "successful_mean_latency_ms": 150.7493894509922
+    },
+    "APRR": {
+      "n": 20000.0,
+      "success_rate": 0.4852,
+      "success_rate_ci95": 0.006926783222614277,
+      "mean_latency_ms": 240.33162751674587,
+      "p50_latency_ms": 171.3506329044023,
+      "p95_latency_ms": 611.0105312714069,
+      "mean_hops": 2.7347,
+      "median_hops": 2.0,
+      "successful_mean_latency_ms": 253.06347701938432
+    },
+    "Oracle": {
+      "n": 20000.0,
+      "success_rate": 0.9002,
+      "success_rate_ci95": 0.004154193349245933,
+      "mean_latency_ms": 463.91161107206585,
+      "p50_latency_ms": 514.4082235909857,
+      "p95_latency_ms": 894.4010756938089,
+      "mean_hops": 4.398,
+      "median_hops": 5.0,
+      "successful_mean_latency_ms": 459.02775005025353
+    }
+  },
+  "convergence": {
+    "Random": [
+      {
+        "iteration": 0,
+        "success_rate": 0.33,
+        "mean_latency_ms": 386.68290601228824,
+        "mean_hops": 3.438
+      },
+      {
+        "iteration": 1,
+        "success_rate": 0.292,
+        "mean_latency_ms": 407.88619440015486,
+        "mean_hops": 3.588
+      },
+      {
+        "iteration": 2,
+        "success_rate": 0.322,
+        "mean_latency_ms": 385.4577310690422,
+        "mean_hops": 3.466
+      },
+      {
+        "iteration": 3,
+        "success_rate": 0.304,
+        "mean_latency_ms": 385.11603979293454,
+        "mean_hops": 3.464
+      },
+      {
+        "iteration": 4,
+        "success_rate": 0.324,
+        "mean_latency_ms": 388.2494707498243,
+        "mean_hops": 3.482
+      },
+      {
+        "iteration": 5,
+        "success_rate": 0.318,
+        "mean_latency_ms": 389.17663884594737,
+        "mean_hops": 3.46
+      },
+      {
+        "iteration": 6,
+        "success_rate": 0.346,
+        "mean_latency_ms": 385.3919963058827,
+        "mean_hops": 3.424
+      },
+      {
+        "iteration": 7,
+        "success_rate": 0.31,
+        "mean_latency_ms": 398.09151410751963,
+        "mean_hops": 3.53
+      },
+      {
+        "iteration": 8,
+        "success_rate": 0.33,
+        "mean_latency_ms": 393.03455699850895,
+        "mean_hops": 3.498
+      },
+      {
+        "iteration": 9,
+        "success_rate": 0.29,
+        "mean_latency_ms": 396.33487470756097,
+        "mean_hops": 3.5
+      },
+      {
+        "iteration": 10,
+        "success_rate": 0.308,
+        "mean_latency_ms": 396.1351657219891,
+        "mean_hops": 3.494
+      },
+      {
+        "iteration": 11,
+        "success_rate": 0.278,
+        "mean_latency_ms": 406.1810886070875,
+        "mean_hops": 3.578
+      },
+      {
+        "iteration": 12,
+        "success_rate": 0.302,
+        "mean_latency_ms": 394.795577681318,
+        "mean_hops": 3.522
+      },
+      {
+        "iteration": 13,
+        "success_rate": 0.364,
+        "mean_latency_ms": 391.3996599285073,
+        "mean_hops": 3.474
+      },
+      {
+        "iteration": 14,
+        "success_rate": 0.326,
+        "mean_latency_ms": 398.15204604160346,
+        "mean_hops": 3.522
+      },
+      {
+        "iteration": 15,
+        "success_rate": 0.288,
+        "mean_latency_ms": 387.53038045190294,
+        "mean_hops": 3.48
+      },
+      {
+        "iteration": 16,
+        "success_rate": 0.288,
+        "mean_latency_ms": 385.6370266263231,
+        "mean_hops": 3.43
+      },
+      {
+        "iteration": 17,
+        "success_rate": 0.296,
+        "mean_latency_ms": 410.4426688372328,
+        "mean_hops": 3.606
+      },
+      {
+        "iteration": 18,
+        "success_rate": 0.328,
+        "mean_latency_ms": 368.39725389153745,
+        "mean_hops": 3.338
+      },
+      {
+        "iteration": 19,
+        "success_rate": 0.33,
+        "mean_latency_ms": 392.62924571573086,
+        "mean_hops": 3.462
+      },
+      {
+        "iteration": 20,
+        "success_rate": 0.328,
+        "mean_latency_ms": 387.2333510550434,
+        "mean_hops": 3.462
+      },
+      {
+        "iteration": 21,
+        "success_rate": 0.348,
+        "mean_latency_ms": 396.44562251344774,
+        "mean_hops": 3.512
+      },
+      {
+        "iteration": 22,
+        "success_rate": 0.322,
+        "mean_latency_ms": 401.8164989584441,
+        "mean_hops": 3.54
+      },
+      {
+        "iteration": 23,
+        "success_rate": 0.35,
+        "mean_latency_ms": 405.50974719208267,
+        "mean_hops": 3.57
+      },
+      {
+        "iteration": 24,
+        "success_rate": 0.338,
+        "mean_latency_ms": 402.1344230000725,
+        "mean_hops": 3.55
+      },
+      {
+        "iteration": 25,
+        "success_rate": 0.332,
+        "mean_latency_ms": 395.26460035454085,
+        "mean_hops": 3.538
+      },
+      {
+        "iteration": 26,
+        "success_rate": 0.306,
+        "mean_latency_ms": 408.67583305980895,
+        "mean_hops": 3.568
+      },
+      {
+        "iteration": 27,
+        "success_rate": 0.316,
+        "mean_latency_ms": 392.79215383229683,
+        "mean_hops": 3.47
+      },
+      {
+        "iteration": 28,
+        "success_rate": 0.316,
+        "mean_latency_ms": 397.26667679075746,
+        "mean_hops": 3.534
+      },
+      {
+        "iteration": 29,
+        "success_rate": 0.284,
+        "mean_latency_ms": 373.62742659834527,
+        "mean_hops": 3.388
+      },
+      {
+        "iteration": 30,
+        "success_rate": 0.344,
+        "mean_latency_ms": 376.2671092281327,
+        "mean_hops": 3.402
+      },
+      {
+        "iteration": 31,
+        "success_rate": 0.292,
+        "mean_latency_ms": 398.6582134320759,
+        "mean_hops": 3.472
+      },
+      {
+        "iteration": 32,
+        "success_rate": 0.308,
+        "mean_latency_ms": 412.9043541160314,
+        "mean_hops": 3.618
+      },
+      {
+        "iteration": 33,
+        "success_rate": 0.342,
+        "mean_latency_ms": 398.06070941304023,
+        "mean_hops": 3.534
+      },
+      {
+        "iteration": 34,
+        "success_rate": 0.304,
+        "mean_latency_ms": 389.08427320095575,
+        "mean_hops": 3.434
+      },
+      {
+        "iteration": 35,
+        "success_rate": 0.362,
+        "mean_latency_ms": 395.5465987435387,
+        "mean_hops": 3.5
+      },
+      {
+        "iteration": 36,
+        "success_rate": 0.362,
+        "mean_latency_ms": 398.4430634288944,
+        "mean_hops": 3.532
+      },
+      {
+        "iteration": 37,
+        "success_rate": 0.33,
+        "mean_latency_ms": 377.2018982223753,
+        "mean_hops": 3.438
+      },
+      {
+        "iteration": 38,
+        "success_rate": 0.328,
+        "mean_latency_ms": 393.9278816359122,
+        "mean_hops": 3.522
+      },
+      {
+        "iteration": 39,
+        "success_rate": 0.308,
+        "mean_latency_ms": 389.3086422522273,
+        "mean_hops": 3.486
+      }
+    ],
+    "RoundRobin": [
+      {
+        "iteration": 0,
+        "success_rate": 0.35,
+        "mean_latency_ms": 548.7040990698131,
+        "mean_hops": 4.33
+      },
+      {
+        "iteration": 1,
+        "success_rate": 0.364,
+        "mean_latency_ms": 550.293596503236,
+        "mean_hops": 4.34
+      },
+      {
+        "iteration": 2,
+        "success_rate": 0.396,
+        "mean_latency_ms": 544.3993038823281,
+        "mean_hops": 4.322
+      },
+      {
+        "iteration": 3,
+        "success_rate": 0.408,
+        "mean_latency_ms": 548.851174040936,
+        "mean_hops": 4.346
+      },
+      {
+        "iteration": 4,
+        "success_rate": 0.362,
+        "mean_latency_ms": 546.2330648281193,
+        "mean_hops": 4.316
+      },
+      {
+        "iteration": 5,
+        "success_rate": 0.398,
+        "mean_latency_ms": 548.9145471013239,
+        "mean_hops": 4.35
+      },
+      {
+        "iteration": 6,
+        "success_rate": 0.39,
+        "mean_latency_ms": 546.2603994349994,
+        "mean_hops": 4.324
+      },
+      {
+        "iteration": 7,
+        "success_rate": 0.412,
+        "mean_latency_ms": 548.8719881291979,
+        "mean_hops": 4.34
+      },
+      {
+        "iteration": 8,
+        "success_rate": 0.378,
+        "mean_latency_ms": 543.4747560705571,
+        "mean_hops": 4.332
+      },
+      {
+        "iteration": 9,
+        "success_rate": 0.402,
+        "mean_latency_ms": 546.8817585885217,
+        "mean_hops": 4.33
+      },
+      {
+        "iteration": 10,
+        "success_rate": 0.392,
+        "mean_latency_ms": 545.8686280169019,
+        "mean_hops": 4.34
+      },
+      {
+        "iteration": 11,
+        "success_rate": 0.394,
+        "mean_latency_ms": 544.9304080759518,
+        "mean_hops": 4.322
+      },
+      {
+        "iteration": 12,
+        "success_rate": 0.402,
+        "mean_latency_ms": 548.8880778932398,
+        "mean_hops": 4.346
+      },
+      {
+        "iteration": 13,
+        "success_rate": 0.37,
+        "mean_latency_ms": 545.8839364154676,
+        "mean_hops": 4.316
+      },
+      {
+        "iteration": 14,
+        "success_rate": 0.416,
+        "mean_latency_ms": 550.3184904316719,
+        "mean_hops": 4.35
+      },
+      {
+        "iteration": 15,
+        "success_rate": 0.36,
+        "mean_latency_ms": 548.5431258070062,
+        "mean_hops": 4.324
+      },
+      {
+        "iteration": 16,
+        "success_rate": 0.37,
+        "mean_latency_ms": 547.3861222064905,
+        "mean_hops": 4.34
+      },
+      {
+        "iteration": 17,
+        "success_rate": 0.384,
+        "mean_latency_ms": 547.5715747383609,
+        "mean_hops": 4.332
+      },
+      {
+        "iteration": 18,
+        "success_rate": 0.366,
+        "mean_latency_ms": 547.8972500494265,
+        "mean_hops": 4.33
+      },
+      {
+        "iteration": 19,
+        "success_rate": 0.366,
+        "mean_latency_ms": 546.1297592586246,
+        "mean_hops": 4.34
+      },
+      {
+        "iteration": 20,
+        "success_rate": 0.352,
+        "mean_latency_ms": 544.3938101691457,
+        "mean_hops": 4.322
+      },
+      {
+        "iteration": 21,
+        "success_rate": 0.398,
+        "mean_latency_ms": 553.4987203733705,
+        "mean_hops": 4.346
+      },
+      {
+        "iteration": 22,
+        "success_rate": 0.35,
+        "mean_latency_ms": 541.4265960090547,
+        "mean_hops": 4.316
+      },
+      {
+        "iteration": 23,
+        "success_rate": 0.384,
+        "mean_latency_ms": 548.2698807007234,
+        "mean_hops": 4.35
+      },
+      {
+        "iteration": 24,
+        "success_rate": 0.382,
+        "mean_latency_ms": 546.6276281632511,
+        "mean_hops": 4.324
+      },
+      {
+        "iteration": 25,
+        "success_rate": 0.406,
+        "mean_latency_ms": 547.1658518443785,
+        "mean_hops": 4.34
+      },
+      {
+        "iteration": 26,
+        "success_rate": 0.416,
+        "mean_latency_ms": 544.1389504218376,
+        "mean_hops": 4.332
+      },
+      {
+        "iteration": 27,
+        "success_rate": 0.4,
+        "mean_latency_ms": 551.3800483643676,
+        "mean_hops": 4.33
+      },
+      {
+        "iteration": 28,
+        "success_rate": 0.36,
+        "mean_latency_ms": 544.6964143895009,
+        "mean_hops": 4.34
+      },
+      {
+        "iteration": 29,
+        "success_rate": 0.374,
+        "mean_latency_ms": 544.9561271854986,
+        "mean_hops": 4.322
+      },
+      {
+        "iteration": 30,
+        "success_rate": 0.42,
+        "mean_latency_ms": 544.6589855802999,
+        "mean_hops": 4.346
+      },
+      {
+        "iteration": 31,
+        "success_rate": 0.41,
+        "mean_latency_ms": 544.0063484996381,
+        "mean_hops": 4.316
+      },
+      {
+        "iteration": 32,
+        "success_rate": 0.38,
+        "mean_latency_ms": 552.2892954868781,
+        "mean_hops": 4.35
+      },
+      {
+        "iteration": 33,
+        "success_rate": 0.378,
+        "mean_latency_ms": 546.650684082212,
+        "mean_hops": 4.324
+      },
+      {
+        "iteration": 34,
+        "success_rate": 0.348,
+        "mean_latency_ms": 547.4022140519298,
+        "mean_hops": 4.34
+      },
+      {
+        "iteration": 35,
+        "success_rate": 0.344,
+        "mean_latency_ms": 546.480922010679,
+        "mean_hops": 4.332
+      },
+      {
+        "iteration": 36,
+        "success_rate": 0.404,
+        "mean_latency_ms": 544.6669372781815,
+        "mean_hops": 4.33
+      },
+      {
+        "iteration": 37,
+        "success_rate": 0.376,
+        "mean_latency_ms": 547.1781703095762,
+        "mean_hops": 4.34
+      },
+      {
+        "iteration": 38,
+        "success_rate": 0.37,
+        "mean_latency_ms": 545.9300594437306,
+        "mean_hops": 4.322
+      },
+      {
+        "iteration": 39,
+        "success_rate": 0.402,
+        "mean_latency_ms": 548.2364791487537,
+        "mean_hops": 4.346
+      }
+    ],
+    "StaticSemantic": [
+      {
+        "iteration": 0,
+        "success_rate": 0.502,
+        "mean_latency_ms": 406.2599506381573,
+        "mean_hops": 3.67
+      },
+      {
+        "iteration": 1,
+        "success_rate": 0.488,
+        "mean_latency_ms": 407.5168150178196,
+        "mean_hops": 3.67
+      },
+      {
+        "iteration": 2,
+        "success_rate": 0.528,
+        "mean_latency_ms": 408.6125007078547,
+        "mean_hops": 3.67
+      },
+      {
+        "iteration": 3,
+        "success_rate": 0.482,
+        "mean_latency_ms": 406.32691786906787,
+        "mean_hops": 3.67
+      },
+      {
+        "iteration": 4,
+        "success_rate": 0.498,
+        "mean_latency_ms": 409.8363001962573,
+        "mean_hops": 3.67
+      },
+      {
+        "iteration": 5,
+        "success_rate": 0.524,
+        "mean_latency_ms": 407.2567532724652,
+        "mean_hops": 3.67
+      },
+      {
+        "iteration": 6,
+        "success_rate": 0.504,
+        "mean_latency_ms": 406.9359170886533,
+        "mean_hops": 3.67
+      },
+      {
+        "iteration": 7,
+        "success_rate": 0.492,
+        "mean_latency_ms": 406.1829542449785,
+        "mean_hops": 3.67
+      },
+      {
+        "iteration": 8,
+        "success_rate": 0.524,
+        "mean_latency_ms": 408.3337133153598,
+        "mean_hops": 3.67
+      },
+      {
+        "iteration": 9,
+        "success_rate": 0.544,
+        "mean_latency_ms": 411.6090895471215,
+        "mean_hops": 3.67
+      },
+      {
+        "iteration": 10,
+        "success_rate": 0.52,
+        "mean_latency_ms": 408.6655277410301,
+        "mean_hops": 3.67
+      },
+      {
+        "iteration": 11,
+        "success_rate": 0.512,
+        "mean_latency_ms": 404.528913206504,
+        "mean_hops": 3.67
+      },
+      {
+        "iteration": 12,
+        "success_rate": 0.48,
+        "mean_latency_ms": 405.86256426716176,
+        "mean_hops": 3.67
+      },
+      {
+        "iteration": 13,
+        "success_rate": 0.466,
+        "mean_latency_ms": 408.4430285867259,
+        "mean_hops": 3.67
+      },
+      {
+        "iteration": 14,
+        "success_rate": 0.52,
+        "mean_latency_ms": 405.5582654494913,
+        "mean_hops": 3.67
+      },
+      {
+        "iteration": 15,
+        "success_rate": 0.52,
+        "mean_latency_ms": 406.7025305178209,
+        "mean_hops": 3.67
+      },
+      {
+        "iteration": 16,
+        "success_rate": 0.482,
+        "mean_latency_ms": 403.19267769576095,
+        "mean_hops": 3.67
+      },
+      {
+        "iteration": 17,
+        "success_rate": 0.44,
+        "mean_latency_ms": 406.9202396730165,
+        "mean_hops": 3.67
+      },
+      {
+        "iteration": 18,
+        "success_rate": 0.54,
+        "mean_latency_ms": 407.6830539390652,
+        "mean_hops": 3.67
+      },
+      {
+        "iteration": 19,
+        "success_rate": 0.508,
+        "mean_latency_ms": 409.99172822911174,
+        "mean_hops": 3.67
+      },
+      {
+        "iteration": 20,
+        "success_rate": 0.492,
+        "mean_latency_ms": 407.7271730192087,
+        "mean_hops": 3.67
+      },
+      {
+        "iteration": 21,
+        "success_rate": 0.546,
+        "mean_latency_ms": 408.00626791112484,
+        "mean_hops": 3.67
+      },
+      {
+        "iteration": 22,
+        "success_rate": 0.512,
+        "mean_latency_ms": 411.79525474654395,
+        "mean_hops": 3.67
+      },
+      {
+        "iteration": 23,
+        "success_rate": 0.522,
+        "mean_latency_ms": 408.03119886782974,
+        "mean_hops": 3.67
+      },
+      {
+        "iteration": 24,
+        "success_rate": 0.494,
+        "mean_latency_ms": 408.21854059434094,
+        "mean_hops": 3.67
+      },
+      {
+        "iteration": 25,
+        "success_rate": 0.506,
+        "mean_latency_ms": 407.0886727531334,
+        "mean_hops": 3.67
+      },
+      {
+        "iteration": 26,
+        "success_rate": 0.51,
+        "mean_latency_ms": 408.8607008412081,
+        "mean_hops": 3.67
+      },
+      {
+        "iteration": 27,
+        "success_rate": 0.516,
+        "mean_latency_ms": 407.6422785043656,
+        "mean_hops": 3.67
+      },
+      {
+        "iteration": 28,
+        "success_rate": 0.514,
+        "mean_latency_ms": 408.3437793864641,
+        "mean_hops": 3.67
+      },
+      {
+        "iteration": 29,
+        "success_rate": 0.506,
+        "mean_latency_ms": 407.9498411535913,
+        "mean_hops": 3.67
+      },
+      {
+        "iteration": 30,
+        "success_rate": 0.516,
+        "mean_latency_ms": 409.4155710963578,
+        "mean_hops": 3.67
+      },
+      {
+        "iteration": 31,
+        "success_rate": 0.482,
+        "mean_latency_ms": 408.4391428782662,
+        "mean_hops": 3.67
+      },
+      {
+        "iteration": 32,
+        "success_rate": 0.484,
+        "mean_latency_ms": 409.4436123709212,
+        "mean_hops": 3.67
+      },
+      {
+        "iteration": 33,
+        "success_rate": 0.538,
+        "mean_latency_ms": 405.72528465500557,
+        "mean_hops": 3.67
+      },
+      {
+        "iteration": 34,
+        "success_rate": 0.534,
+        "mean_latency_ms": 407.8235773812565,
+        "mean_hops": 3.67
+      },
+      {
+        "iteration": 35,
+        "success_rate": 0.528,
+        "mean_latency_ms": 406.81886905691874,
+        "mean_hops": 3.67
+      },
+      {
+        "iteration": 36,
+        "success_rate": 0.5,
+        "mean_latency_ms": 407.0347103639137,
+        "mean_hops": 3.67
+      },
+      {
+        "iteration": 37,
+        "success_rate": 0.5,
+        "mean_latency_ms": 406.69717095688884,
+        "mean_hops": 3.67
+      },
+      {
+        "iteration": 38,
+        "success_rate": 0.494,
+        "mean_latency_ms": 408.98952007923685,
+        "mean_hops": 3.67
+      },
+      {
+        "iteration": 39,
+        "success_rate": 0.514,
+        "mean_latency_ms": 407.30343234627776,
+        "mean_hops": 3.67
+      }
+    ],
+    "LLMRouter": [
+      {
+        "iteration": 0,
+        "success_rate": 0.312,
+        "mean_latency_ms": 377.51148437757837,
+        "mean_hops": 3.408
+      },
+      {
+        "iteration": 1,
+        "success_rate": 0.348,
+        "mean_latency_ms": 320.47525990527674,
+        "mean_hops": 3.106
+      },
+      {
+        "iteration": 2,
+        "success_rate": 0.384,
+        "mean_latency_ms": 164.5652237842742,
+        "mean_hops": 2.154
+      },
+      {
+        "iteration": 3,
+        "success_rate": 0.396,
+        "mean_latency_ms": 141.14558156415907,
+        "mean_hops": 2.0
+      },
+      {
+        "iteration": 4,
+        "success_rate": 0.374,
+        "mean_latency_ms": 139.1189198813763,
+        "mean_hops": 2.0
+      },
+      {
+        "iteration": 5,
+        "success_rate": 0.412,
+        "mean_latency_ms": 140.51715924366803,
+        "mean_hops": 2.0
+      },
+      {
+        "iteration": 6,
+        "success_rate": 0.412,
+        "mean_latency_ms": 140.7655210825634,
+        "mean_hops": 2.0
+      },
+      {
+        "iteration": 7,
+        "success_rate": 0.402,
+        "mean_latency_ms": 139.2250197952437,
+        "mean_hops": 2.0
+      },
+      {
+        "iteration": 8,
+        "success_rate": 0.408,
+        "mean_latency_ms": 141.15164899635218,
+        "mean_hops": 2.0
+      },
+      {
+        "iteration": 9,
+        "success_rate": 0.404,
+        "mean_latency_ms": 138.82770243116875,
+        "mean_hops": 2.0
+      },
+      {
+        "iteration": 10,
+        "success_rate": 0.378,
+        "mean_latency_ms": 138.91208037678587,
+        "mean_hops": 2.0
+      },
+      {
+        "iteration": 11,
+        "success_rate": 0.406,
+        "mean_latency_ms": 139.54917870204366,
+        "mean_hops": 2.0
+      },
+      {
+        "iteration": 12,
+        "success_rate": 0.384,
+        "mean_latency_ms": 139.36504945838792,
+        "mean_hops": 2.0
+      },
+      {
+        "iteration": 13,
+        "success_rate": 0.414,
+        "mean_latency_ms": 138.8412685629847,
+        "mean_hops": 2.0
+      },
+      {
+        "iteration": 14,
+        "success_rate": 0.384,
+        "mean_latency_ms": 138.84344815300645,
+        "mean_hops": 2.0
+      },
+      {
+        "iteration": 15,
+        "success_rate": 0.426,
+        "mean_latency_ms": 140.41964796798317,
+        "mean_hops": 2.0
+      },
+      {
+        "iteration": 16,
+        "success_rate": 0.39,
+        "mean_latency_ms": 141.44964356247115,
+        "mean_hops": 2.0
+      },
+      {
+        "iteration": 17,
+        "success_rate": 0.406,
+        "mean_latency_ms": 140.77163260409787,
+        "mean_hops": 2.0
+      },
+      {
+        "iteration": 18,
+        "success_rate": 0.44,
+        "mean_latency_ms": 139.35086052802404,
+        "mean_hops": 2.0
+      },
+      {
+        "iteration": 19,
+        "success_rate": 0.386,
+        "mean_latency_ms": 139.49310976827738,
+        "mean_hops": 2.0
+      },
+      {
+        "iteration": 20,
+        "success_rate": 0.394,
+        "mean_latency_ms": 139.48789909351564,
+        "mean_hops": 2.0
+      },
+      {
+        "iteration": 21,
+        "success_rate": 0.392,
+        "mean_latency_ms": 140.37970406381956,
+        "mean_hops": 2.0
+      },
+      {
+        "iteration": 22,
+        "success_rate": 0.356,
+        "mean_latency_ms": 140.385311320209,
+        "mean_hops": 2.0
+      },
+      {
+        "iteration": 23,
+        "success_rate": 0.352,
+        "mean_latency_ms": 140.349363202851,
+        "mean_hops": 2.0
+      },
+      {
+        "iteration": 24,
+        "success_rate": 0.388,
+        "mean_latency_ms": 140.34439025945647,
+        "mean_hops": 2.0
+      },
+      {
+        "iteration": 25,
+        "success_rate": 0.374,
+        "mean_latency_ms": 140.57844719695595,
+        "mean_hops": 2.0
+      },
+      {
+        "iteration": 26,
+        "success_rate": 0.388,
+        "mean_latency_ms": 139.6496872278168,
+        "mean_hops": 2.0
+      },
+      {
+        "iteration": 27,
+        "success_rate": 0.372,
+        "mean_latency_ms": 139.4314663865492,
+        "mean_hops": 2.0
+      },
+      {
+        "iteration": 28,
+        "success_rate": 0.398,
+        "mean_latency_ms": 141.25288718510507,
+        "mean_hops": 2.0
+      },
+      {
+        "iteration": 29,
+        "success_rate": 0.404,
+        "mean_latency_ms": 139.80592234055217,
+        "mean_hops": 2.0
+      },
+      {
+        "iteration": 30,
+        "success_rate": 0.42,
+        "mean_latency_ms": 139.4761469919784,
+        "mean_hops": 2.0
+      },
+      {
+        "iteration": 31,
+        "success_rate": 0.43,
+        "mean_latency_ms": 138.25615093313908,
+        "mean_hops": 2.0
+      },
+      {
+        "iteration": 32,
+        "success_rate": 0.366,
+        "mean_latency_ms": 140.33904246625013,
+        "mean_hops": 2.0
+      },
+      {
+        "iteration": 33,
+        "success_rate": 0.434,
+        "mean_latency_ms": 139.0883797855263,
+        "mean_hops": 2.0
+      },
+      {
+        "iteration": 34,
+        "success_rate": 0.44,
+        "mean_latency_ms": 140.10739322011887,
+        "mean_hops": 2.0
+      },
+      {
+        "iteration": 35,
+        "success_rate": 0.398,
+        "mean_latency_ms": 140.39669311796212,
+        "mean_hops": 2.0
+      },
+      {
+        "iteration": 36,
+        "success_rate": 0.372,
+        "mean_latency_ms": 139.64752924741973,
+        "mean_hops": 2.0
+      },
+      {
+        "iteration": 37,
+        "success_rate": 0.37,
+        "mean_latency_ms": 140.21139026020188,
+        "mean_hops": 2.0
+      },
+      {
+        "iteration": 38,
+        "success_rate": 0.404,
+        "mean_latency_ms": 139.39884224859992,
+        "mean_hops": 2.0
+      },
+      {
+        "iteration": 39,
+        "success_rate": 0.398,
+        "mean_latency_ms": 139.29568793691877,
+        "mean_hops": 2.0
+      }
+    ],
+    "APRR": [
+      {
+        "iteration": 0,
+        "success_rate": 0.464,
+        "mean_latency_ms": 216.33124910114466,
+        "mean_hops": 2.538
+      },
+      {
+        "iteration": 1,
+        "success_rate": 0.518,
+        "mean_latency_ms": 247.12803613588127,
+        "mean_hops": 2.832
+      },
+      {
+        "iteration": 2,
+        "success_rate": 0.538,
+        "mean_latency_ms": 252.62284529128146,
+        "mean_hops": 2.878
+      },
+      {
+        "iteration": 3,
+        "success_rate": 0.51,
+        "mean_latency_ms": 256.50006456551,
+        "mean_hops": 2.904
+      },
+      {
+        "iteration": 4,
+        "success_rate": 0.456,
+        "mean_latency_ms": 235.21547427157088,
+        "mean_hops": 2.72
+      },
+      {
+        "iteration": 5,
+        "success_rate": 0.438,
+        "mean_latency_ms": 219.7389073362046,
+        "mean_hops": 2.612
+      },
+      {
+        "iteration": 6,
+        "success_rate": 0.44,
+        "mean_latency_ms": 217.51764683483998,
+        "mean_hops": 2.598
+      },
+      {
+        "iteration": 7,
+        "success_rate": 0.466,
+        "mean_latency_ms": 225.51332356073166,
+        "mean_hops": 2.678
+      },
+      {
+        "iteration": 8,
+        "success_rate": 0.524,
+        "mean_latency_ms": 242.21710042844435,
+        "mean_hops": 2.82
+      },
+      {
+        "iteration": 9,
+        "success_rate": 0.53,
+        "mean_latency_ms": 255.76343182988052,
+        "mean_hops": 2.896
+      },
+      {
+        "iteration": 10,
+        "success_rate": 0.532,
+        "mean_latency_ms": 259.8888380242587,
+        "mean_hops": 2.922
+      },
+      {
+        "iteration": 11,
+        "success_rate": 0.494,
+        "mean_latency_ms": 258.2685549190932,
+        "mean_hops": 2.898
+      },
+      {
+        "iteration": 12,
+        "success_rate": 0.492,
+        "mean_latency_ms": 233.13170661000407,
+        "mean_hops": 2.706
+      },
+      {
+        "iteration": 13,
+        "success_rate": 0.502,
+        "mean_latency_ms": 240.29665066997734,
+        "mean_hops": 2.734
+      },
+      {
+        "iteration": 14,
+        "success_rate": 0.452,
+        "mean_latency_ms": 239.5875922423908,
+        "mean_hops": 2.684
+      },
+      {
+        "iteration": 15,
+        "success_rate": 0.5,
+        "mean_latency_ms": 239.79906018725922,
+        "mean_hops": 2.684
+      },
+      {
+        "iteration": 16,
+        "success_rate": 0.488,
+        "mean_latency_ms": 246.42765198213002,
+        "mean_hops": 2.732
+      },
+      {
+        "iteration": 17,
+        "success_rate": 0.496,
+        "mean_latency_ms": 254.22400802444957,
+        "mean_hops": 2.78
+      },
+      {
+        "iteration": 18,
+        "success_rate": 0.486,
+        "mean_latency_ms": 245.69859469676857,
+        "mean_hops": 2.7
+      },
+      {
+        "iteration": 19,
+        "success_rate": 0.508,
+        "mean_latency_ms": 253.13212429895793,
+        "mean_hops": 2.778
+      },
+      {
+        "iteration": 20,
+        "success_rate": 0.486,
+        "mean_latency_ms": 238.5268508262189,
+        "mean_hops": 2.686
+      },
+      {
+        "iteration": 21,
+        "success_rate": 0.472,
+        "mean_latency_ms": 234.58737547370524,
+        "mean_hops": 2.656
+      },
+      {
+        "iteration": 22,
+        "success_rate": 0.446,
+        "mean_latency_ms": 225.84589986427505,
+        "mean_hops": 2.628
+      },
+      {
+        "iteration": 23,
+        "success_rate": 0.464,
+        "mean_latency_ms": 248.18474575421345,
+        "mean_hops": 2.838
+      },
+      {
+        "iteration": 24,
+        "success_rate": 0.516,
+        "mean_latency_ms": 252.04559632974025,
+        "mean_hops": 2.898
+      },
+      {
+        "iteration": 25,
+        "success_rate": 0.504,
+        "mean_latency_ms": 244.32604209578443,
+        "mean_hops": 2.806
+      },
+      {
+        "iteration": 26,
+        "success_rate": 0.452,
+        "mean_latency_ms": 234.9462045706086,
+        "mean_hops": 2.698
+      },
+      {
+        "iteration": 27,
+        "success_rate": 0.47,
+        "mean_latency_ms": 226.85433967172176,
+        "mean_hops": 2.648
+      },
+      {
+        "iteration": 28,
+        "success_rate": 0.448,
+        "mean_latency_ms": 233.95186837094434,
+        "mean_hops": 2.672
+      },
+      {
+        "iteration": 29,
+        "success_rate": 0.436,
+        "mean_latency_ms": 223.08276345539727,
+        "mean_hops": 2.638
+      },
+      {
+        "iteration": 30,
+        "success_rate": 0.464,
+        "mean_latency_ms": 233.66423728643036,
+        "mean_hops": 2.696
+      },
+      {
+        "iteration": 31,
+        "success_rate": 0.5,
+        "mean_latency_ms": 235.14269724863556,
+        "mean_hops": 2.724
+      },
+      {
+        "iteration": 32,
+        "success_rate": 0.48,
+        "mean_latency_ms": 255.3787755261084,
+        "mean_hops": 2.86
+      },
+      {
+        "iteration": 33,
+        "success_rate": 0.468,
+        "mean_latency_ms": 245.2842464626216,
+        "mean_hops": 2.804
+      },
+      {
+        "iteration": 34,
+        "success_rate": 0.48,
+        "mean_latency_ms": 240.14110693961106,
+        "mean_hops": 2.664
+      },
+      {
+        "iteration": 35,
+        "success_rate": 0.482,
+        "mean_latency_ms": 236.13376408338604,
+        "mean_hops": 2.624
+      },
+      {
+        "iteration": 36,
+        "success_rate": 0.472,
+        "mean_latency_ms": 240.19460356009472,
+        "mean_hops": 2.652
+      },
+      {
+        "iteration": 37,
+        "success_rate": 0.496,
+        "mean_latency_ms": 236.57239172579924,
+        "mean_hops": 2.658
+      },
+      {
+        "iteration": 38,
+        "success_rate": 0.498,
+        "mean_latency_ms": 241.3415119962398,
+        "mean_hops": 2.694
+      },
+      {
+        "iteration": 39,
+        "success_rate": 0.54,
+        "mean_latency_ms": 248.05721841751887,
+        "mean_hops": 2.75
+      }
+    ],
+    "Oracle": [
+      {
+        "iteration": 0,
+        "success_rate": 0.906,
+        "mean_latency_ms": 467.1299885229289,
+        "mean_hops": 4.398
+      },
+      {
+        "iteration": 1,
+        "success_rate": 0.906,
+        "mean_latency_ms": 466.7057602591711,
+        "mean_hops": 4.398
+      },
+      {
+        "iteration": 2,
+        "success_rate": 0.874,
+        "mean_latency_ms": 465.44857191899325,
+        "mean_hops": 4.398
+      },
+      {
+        "iteration": 3,
+        "success_rate": 0.92,
+        "mean_latency_ms": 462.6827304265846,
+        "mean_hops": 4.398
+      },
+      {
+        "iteration": 4,
+        "success_rate": 0.886,
+        "mean_latency_ms": 462.67163343732454,
+        "mean_hops": 4.398
+      },
+      {
+        "iteration": 5,
+        "success_rate": 0.884,
+        "mean_latency_ms": 465.92988322818724,
+        "mean_hops": 4.398
+      },
+      {
+        "iteration": 6,
+        "success_rate": 0.91,
+        "mean_latency_ms": 461.8153608517186,
+        "mean_hops": 4.398
+      },
+      {
+        "iteration": 7,
+        "success_rate": 0.904,
+        "mean_latency_ms": 465.3861021582164,
+        "mean_hops": 4.398
+      },
+      {
+        "iteration": 8,
+        "success_rate": 0.884,
+        "mean_latency_ms": 467.8881462209759,
+        "mean_hops": 4.398
+      },
+      {
+        "iteration": 9,
+        "success_rate": 0.902,
+        "mean_latency_ms": 469.1425946781002,
+        "mean_hops": 4.398
+      },
+      {
+        "iteration": 10,
+        "success_rate": 0.91,
+        "mean_latency_ms": 458.7866241744921,
+        "mean_hops": 4.398
+      },
+      {
+        "iteration": 11,
+        "success_rate": 0.922,
+        "mean_latency_ms": 464.5337980110507,
+        "mean_hops": 4.398
+      },
+      {
+        "iteration": 12,
+        "success_rate": 0.898,
+        "mean_latency_ms": 461.3212922368502,
+        "mean_hops": 4.398
+      },
+      {
+        "iteration": 13,
+        "success_rate": 0.916,
+        "mean_latency_ms": 463.94500383887726,
+        "mean_hops": 4.398
+      },
+      {
+        "iteration": 14,
+        "success_rate": 0.884,
+        "mean_latency_ms": 462.36348857989975,
+        "mean_hops": 4.398
+      },
+      {
+        "iteration": 15,
+        "success_rate": 0.908,
+        "mean_latency_ms": 465.724551608373,
+        "mean_hops": 4.398
+      },
+      {
+        "iteration": 16,
+        "success_rate": 0.916,
+        "mean_latency_ms": 462.6544763363334,
+        "mean_hops": 4.398
+      },
+      {
+        "iteration": 17,
+        "success_rate": 0.88,
+        "mean_latency_ms": 462.00942860995326,
+        "mean_hops": 4.398
+      },
+      {
+        "iteration": 18,
+        "success_rate": 0.902,
+        "mean_latency_ms": 463.8549812493715,
+        "mean_hops": 4.398
+      },
+      {
+        "iteration": 19,
+        "success_rate": 0.886,
+        "mean_latency_ms": 462.67327107934204,
+        "mean_hops": 4.398
+      },
+      {
+        "iteration": 20,
+        "success_rate": 0.888,
+        "mean_latency_ms": 462.6135692752901,
+        "mean_hops": 4.398
+      },
+      {
+        "iteration": 21,
+        "success_rate": 0.896,
+        "mean_latency_ms": 465.11406692700467,
+        "mean_hops": 4.398
+      },
+      {
+        "iteration": 22,
+        "success_rate": 0.932,
+        "mean_latency_ms": 461.60991141020935,
+        "mean_hops": 4.398
+      },
+      {
+        "iteration": 23,
+        "success_rate": 0.88,
+        "mean_latency_ms": 462.98844047387024,
+        "mean_hops": 4.398
+      },
+      {
+        "iteration": 24,
+        "success_rate": 0.878,
+        "mean_latency_ms": 466.4335578078147,
+        "mean_hops": 4.398
+      },
+      {
+        "iteration": 25,
+        "success_rate": 0.932,
+        "mean_latency_ms": 463.02120877279947,
+        "mean_hops": 4.398
+      },
+      {
+        "iteration": 26,
+        "success_rate": 0.906,
+        "mean_latency_ms": 467.3565187158046,
+        "mean_hops": 4.398
+      },
+      {
+        "iteration": 27,
+        "success_rate": 0.91,
+        "mean_latency_ms": 463.6131097388353,
+        "mean_hops": 4.398
+      },
+      {
+        "iteration": 28,
+        "success_rate": 0.862,
+        "mean_latency_ms": 464.1924701759681,
+        "mean_hops": 4.398
+      },
+      {
+        "iteration": 29,
+        "success_rate": 0.912,
+        "mean_latency_ms": 462.663837674547,
+        "mean_hops": 4.398
+      },
+      {
+        "iteration": 30,
+        "success_rate": 0.896,
+        "mean_latency_ms": 463.61204201055847,
+        "mean_hops": 4.398
+      },
+      {
+        "iteration": 31,
+        "success_rate": 0.9,
+        "mean_latency_ms": 462.32126412376533,
+        "mean_hops": 4.398
+      },
+      {
+        "iteration": 32,
+        "success_rate": 0.9,
+        "mean_latency_ms": 460.2779434632601,
+        "mean_hops": 4.398
+      },
+      {
+        "iteration": 33,
+        "success_rate": 0.894,
+        "mean_latency_ms": 459.38665814272497,
+        "mean_hops": 4.398
+      },
+      {
+        "iteration": 34,
+        "success_rate": 0.882,
+        "mean_latency_ms": 462.68107096125794,
+        "mean_hops": 4.398
+      },
+      {
+        "iteration": 35,
+        "success_rate": 0.914,
+        "mean_latency_ms": 464.19521693444784,
+        "mean_hops": 4.398
+      },
+      {
+        "iteration": 36,
+        "success_rate": 0.9,
+        "mean_latency_ms": 463.47344231269693,
+        "mean_hops": 4.398
+      },
+      {
+        "iteration": 37,
+        "success_rate": 0.924,
+        "mean_latency_ms": 464.14850305554177,
+        "mean_hops": 4.398
+      },
+      {
+        "iteration": 38,
+        "success_rate": 0.91,
+        "mean_latency_ms": 468.06041380741016,
+        "mean_hops": 4.398
+      },
+      {
+        "iteration": 39,
+        "success_rate": 0.894,
+        "mean_latency_ms": 466.0335096720828,
+        "mean_hops": 4.398
+      }
+    ]
+  },
+  "W_snapshots": [
+    {
+      "iteration": 0,
+      "W": [
+        [
+          0.0,
+          0.008157186144027846,
+          15.608070446233635,
+          0.007349685432573908,
+          0.06178019354365413,
+          0.001,
+          0.008157186144027846,
+          20.0,
+          0.0050161134512553005,
+          0.008157186144027846
+        ],
+        [
+          0.008157186144027846,
+          0.0,
+          0.008157186144027846,
+          0.013453237941030873,
+          0.008157186144027846,
+          0.007806385716697303,
+          0.13136544748510792,
+          0.02036955121232413,
+          0.06959416524089186,
+          0.008157186144027846
+        ],
+        [
+          0.008157186144027846,
+          0.008157186144027846,
+          0.0,
+          2.3437114334168263,
+          0.06889373975457554,
+          4.03567653507069,
+          0.008157186144027846,
+          9.184260296423624,
+          0.008157186144027846,
+          0.008157186144027846
+        ],
+        [
+          0.008157186144027846,
+          0.07300770821843226,
+          0.008157186144027846,
+          0.0,
+          0.18081456053002587,
+          0.008157186144027846,
+          0.007907999427585695,
+          2.1062906551925122,
+          0.012807805709932073,
+          0.007792156689471896
+        ],
+        [
+          0.008157186144027846,
+          0.00759029616961578,
+          0.008157186144027846,
+          0.007792156689471896,
+          0.0,
+          0.05835882399606313,
+          0.023026229222752184,
+          0.03721158287498966,
+          0.026878245113045898,
+          0.19220214579567083
+        ],
+        [
+          0.008157186144027846,
+          0.008157186144027846,
+          0.008157186144027846,
+          0.008157186144027846,
+          0.008157186144027846,
+          0.0,
+          0.008157186144027846,
+          0.008157186144027846,
+          0.008157186144027846,
+          0.008157186144027846
+        ],
+        [
+          0.008157186144027846,
+          0.008157186144027846,
+          0.008157186144027846,
+          0.008157186144027846,
+          0.008157186144027846,
+          0.008157186144027846,
+          0.0,
+          0.008157186144027846,
+          0.008157186144027846,
+          0.008157186144027846
+        ],
+        [
+          0.008157186144027846,
+          0.008157186144027846,
+          0.008157186144027846,
+          0.008157186144027846,
+          0.008157186144027846,
+          0.008157186144027846,
+          0.008157186144027846,
+          0.0,
+          0.008157186144027846,
+          0.008157186144027846
+        ],
+        [
+          0.008157186144027846,
+          0.027229620139792837,
+          0.008157186144027846,
+          0.008157186144027846,
+          0.017099427601270253,
+          0.05494704977500958,
+          0.006726608239226333,
+          0.016450809903853968,
+          0.0,
+          0.008157186144027846
+        ],
+        [
+          0.008157186144027846,
+          0.12660397692418338,
+          0.008157186144027846,
+          0.008157186144027846,
+          0.008157186144027846,
+          0.007792156689471896,
+          0.05527632895036015,
+          0.026636212209183035,
+          0.008157186144027846,
+          0.0
+        ]
+      ]
+    },
+    {
+      "iteration": 10,
+      "W": [
+        [
+          0.0,
+          0.001,
+          18.99223389172525,
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          20.0,
+          0.001,
+          0.02045664545179446
+        ],
+        [
+          0.001,
+          0.0,
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.13888191199650352,
+          0.027432703360888912,
+          0.001
+        ],
+        [
+          0.001,
+          0.001,
+          0.0,
+          4.977020528223753,
+          0.001,
+          0.001,
+          0.001,
+          18.409771478931756,
+          0.001,
+          0.009327921859789184
+        ],
+        [
+          0.001,
+          0.001,
+          0.001,
+          0.0,
+          1.0930481756170092,
+          0.001,
+          0.10605212538867635,
+          3.76172676451176,
+          0.01671188469667477,
+          0.001
+        ],
+        [
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.0,
+          0.001,
+          0.8081790458328035,
+          0.0023974618307604015,
+          0.049942834077641544,
+          0.23576741998222217
+        ],
+        [
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.0,
+          0.001,
+          0.001,
+          0.001,
+          0.001
+        ],
+        [
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.0,
+          0.001,
+          0.001,
+          0.001
+        ],
+        [
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.0,
+          0.001,
+          0.001
+        ],
+        [
+          0.001,
+          0.050446542920674915,
+          0.001,
+          0.001,
+          0.001,
+          0.025895150994653563,
+          0.001,
+          0.010722449371951017,
+          0.0,
+          0.001
+        ],
+        [
+          0.001,
+          0.11709680999008217,
+          0.001,
+          0.001,
+          0.005658167060848663,
+          0.12504640074872148,
+          0.001,
+          0.016256384581335475,
+          0.001534328263909763,
+          0.0
+        ]
+      ]
+    },
+    {
+      "iteration": 20,
+      "W": [
+        [
+          0.0,
+          0.014863228536028231,
+          18.70977270614685,
+          0.009908876330181149,
+          0.001,
+          18.35748117864098,
+          6.347099769618115,
+          19.20659558152294,
+          0.001,
+          0.021022345698530467
+        ],
+        [
+          0.001,
+          0.0,
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.29456993418265004,
+          0.009322112904960784,
+          0.001
+        ],
+        [
+          0.001,
+          0.23155417980480053,
+          0.0,
+          3.863699246697748,
+          0.001,
+          0.001,
+          0.001,
+          18.73824867475185,
+          0.001,
+          0.001
+        ],
+        [
+          0.001,
+          0.001,
+          0.001,
+          0.0,
+          0.2510995433335451,
+          0.001,
+          0.001,
+          3.6219145767033,
+          0.0018220330632174448,
+          0.001
+        ],
+        [
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.0,
+          0.001,
+          0.19478304420373316,
+          0.001,
+          0.001,
+          0.0556001789823178
+        ],
+        [
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.0,
+          0.001,
+          0.001,
+          0.001,
+          0.001
+        ],
+        [
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.0,
+          0.001,
+          0.001,
+          0.001
+        ],
+        [
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.0,
+          0.001,
+          0.001
+        ],
+        [
+          0.001,
+          0.003286985965059065,
+          0.001,
+          0.001,
+          0.0012253923708447384,
+          0.014311193623891041,
+          0.004124264118674477,
+          0.001,
+          0.0,
+          0.001
+        ],
+        [
+          0.001,
+          0.05572185061550238,
+          0.001,
+          0.0012253923708447384,
+          0.001,
+          0.007763456218939075,
+          0.001,
+          0.001,
+          0.011858575161398167,
+          0.0
+        ]
+      ]
+    },
+    {
+      "iteration": 30,
+      "W": [
+        [
+          0.0,
+          0.0011985140804392754,
+          19.16857032525123,
+          0.19106340660712934,
+          0.001,
+          0.001,
+          6.207476547840858,
+          17.824211646543628,
+          0.08143232223672901,
+          0.001
+        ],
+        [
+          0.001,
+          0.0,
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.14100395327830156,
+          0.07428048935336413,
+          0.001
+        ],
+        [
+          0.001,
+          0.001,
+          0.0,
+          2.3555874450766012,
+          0.001,
+          0.023788625621713334,
+          0.49012576540423136,
+          19.07097316776045,
+          0.001,
+          0.001
+        ],
+        [
+          0.001,
+          0.009392037380723868,
+          0.001,
+          0.0,
+          0.8276249355297756,
+          0.00108268808917505,
+          0.001,
+          1.6902931699677557,
+          0.001,
+          0.018520237696953882
+        ],
+        [
+          0.001,
+          0.06552138212137035,
+          0.001,
+          0.001,
+          0.0,
+          0.001,
+          0.65964372077293,
+          0.001,
+          0.001,
+          0.09323474555507945
+        ],
+        [
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.0,
+          0.001,
+          0.001,
+          0.001,
+          0.001
+        ],
+        [
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.0,
+          0.001,
+          0.001,
+          0.001
+        ],
+        [
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.0,
+          0.001,
+          0.001
+        ],
+        [
+          0.001,
+          0.08143232223672901,
+          0.001,
+          0.001,
+          0.001,
+          0.06957395567745771,
+          0.001,
+          0.001,
+          0.0,
+          0.002632479651272159
+        ],
+        [
+          0.001,
+          0.058537525677219704,
+          0.001,
+          0.001,
+          0.001,
+          0.02527408894053431,
+          0.002632479651272159,
+          0.027678472204301738,
+          0.001,
+          0.0
+        ]
+      ]
+    },
+    {
+      "iteration": 39,
+      "W": [
+        [
+          0.0,
+          0.14385079050490276,
+          19.42246935291635,
+          0.001,
+          0.001,
+          16.265200992030433,
+          0.001,
+          20.0,
+          0.001,
+          0.001
+        ],
+        [
+          0.001,
+          0.0,
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.23214452290196602,
+          0.057226672386364474,
+          0.001
+        ],
+        [
+          0.001,
+          0.11875595966997307,
+          0.0,
+          5.0083505592243025,
+          0.001,
+          2.079106117844634,
+          0.001,
+          18.86944811930526,
+          0.013914924902202173,
+          0.001
+        ],
+        [
+          0.001,
+          0.024646657306484198,
+          0.001,
+          0.0,
+          0.8490514376777211,
+          0.001,
+          0.001,
+          4.153923738552121,
+          0.001,
+          0.001
+        ],
+        [
+          0.001,
+          0.004964607423117575,
+          0.001,
+          0.001,
+          0.0,
+          0.001,
+          0.783153214113674,
+          0.001,
+          0.001,
+          0.0880014380032145
+        ],
+        [
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.0,
+          0.001,
+          0.001,
+          0.001,
+          0.001
+        ],
+        [
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.0,
+          0.001,
+          0.001,
+          0.001
+        ],
+        [
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.0,
+          0.001,
+          0.001
+        ],
+        [
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.024646657306484198,
+          0.013914924902202173,
+          0.0,
+          0.029975438323537384
+        ],
+        [
+          0.001,
+          0.001,
+          0.001,
+          0.001,
+          0.029291409692395815,
+          0.0128534802700881,
+          0.001,
+          0.057997696911016666,
+          0.004032349480399954,
+          0.0
+        ]
+      ]
+    }
+  ]
+}

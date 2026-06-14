@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.Python
+build/
+dist/
+.venv/
+env/
+
+# Notebook
+.ipynb_checkpoints/
+
+# Editor
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project artifacts kept under version control:
+#   results/*.json, figures/*, tables/*, paper/figures/* — KEPT (reproducible artifacts)
+# Project artifacts NOT tracked:
+*.log
+*.tmp
+
+# LaTeX build
+paper/*.aux
+paper/*.log
+paper/*.out
+paper/*.bbl
+paper/*.blg
+paper/*.toc
+paper/*.fls
+paper/*.fdb_latexmk
+paper/*.synctex.gz
+
+# Node / Next.js (Vercel app)
+vercel-app/node_modules/
+vercel-app/.next/
+vercel-app/out/
+vercel-app/.vercel/
+vercel-app/npm-debug.log*
+vercel-app/yarn-error.log*
+
+# Per-seed raw episodes (large) — only keep summary
+results/seed_*/episodes.jsonl

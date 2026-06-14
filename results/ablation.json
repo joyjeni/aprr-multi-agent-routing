@@ -1,0 +1,98 @@
+[
+  {
+    "param": "alpha",
+    "value": 0.5,
+    "success_rate": 0.45611111111111113,
+    "latency_ms": 402.92978195605707
+  },
+  {
+    "param": "alpha",
+    "value": 1.0,
+    "success_rate": 0.45111111111111113,
+    "latency_ms": 365.55995379066286
+  },
+  {
+    "param": "alpha",
+    "value": 1.5,
+    "success_rate": 0.4388888888888889,
+    "latency_ms": 317.48832925288326
+  },
+  {
+    "param": "alpha",
+    "value": 2.0,
+    "success_rate": 0.4211111111111111,
+    "latency_ms": 279.32892880082017
+  },
+  {
+    "param": "beta",
+    "value": 1.0,
+    "success_rate": 0.4211111111111111,
+    "latency_ms": 279.32892880082017
+  },
+  {
+    "param": "beta",
+    "value": 2.0,
+    "success_rate": 0.42,
+    "latency_ms": 379.7476792044631
+  },
+  {
+    "param": "beta",
+    "value": 2.5,
+    "success_rate": 0.41388888888888886,
+    "latency_ms": 423.4796928094811
+  },
+  {
+    "param": "beta",
+    "value": 3.0,
+    "success_rate": 0.43,
+    "latency_ms": 471.9379114587466
+  },
+  {
+    "param": "lam",
+    "value": 0.05,
+    "success_rate": 0.41833333333333333,
+    "latency_ms": 206.47968343868496
+  },
+  {
+    "param": "lam",
+    "value": 0.1,
+    "success_rate": 0.4688888888888889,
+    "latency_ms": 313.7965800642955
+  },
+  {
+    "param": "lam",
+    "value": 0.2,
+    "success_rate": 0.43,
+    "latency_ms": 244.4514337384151
+  },
+  {
+    "param": "lam",
+    "value": 0.4,
+    "success_rate": 0.4216666666666667,
+    "latency_ms": 323.9244221921379
+  },
+  {
+    "param": "gamma",
+    "value": 0.0,
+    "success_rate": 0.28888888888888886,
+    "latency_ms": 306.5768571822754
+  },
+  {
+    "param": "gamma",
+    "value": 0.5,
+    "success_rate": 0.2866666666666667,
+    "latency_ms": 305.7686160192606
+  },
+  {
+    "param": "gamma",
+    "value": 1.0,
+    "success_rate": 0.3672222222222222,
+    "latency_ms": 327.8968534711382
+  },
+  {
+    "param": "gamma",
+    "value": 1.5,
+    "success_rate": 0.48277777777777775,
+    "latency_ms": 361.9188263537291
+  }
+]
