@@ -22,8 +22,8 @@ After every routed episode:
   W ← (1 − λ) · W + κ · 1[success]/(L² · latency_norm) on edges of the path.
 
 **IMPORTANT — no bio-mimic vocabulary.** This is a CSE/Agentic-AI / RL
-paper. Do NOT use the words: ant, colony, swarm, pheromone, trail,
-evaporation, foraging, biological, nature-inspired, stigmergy, bio, hive,
+paper. Do NOT use the words: ant, colony, swarm, weight-signal, trail,
+evaporation, parallel search, biological, nature-inspired, indirect coordination, hive,
 sting, larva. Use: routing affinity, online policy iteration,
 reinforcement, decay/decay-regularisation, edge reinforcement, success-
 weighted update, multi-trajectory sampling.
@@ -83,7 +83,7 @@ The closest concurrent works are:
 - **NeuroMAS** (2026): MAS as a trainable neural net via RL.
 - **FlowBank** (2026): precompute-and-reuse portfolio of workflows.
 - **MetaCogAgent** (2026): metacognitive self-assessment for delegation.
-- **Stigmergy for capability selection** (Hanke, 2026): pheromone-inspired capability layer (closest competitor — APRR must differentiate by being decay-regularised online policy iteration with provable REINFORCE-equivalence, not a stigmergic field).
+- **Stigmergy for capability selection** (Hanke, 2026): weight-signal-inspired capability layer (closest competitor — APRR must differentiate by being decay-regularised online policy iteration with provable REINFORCE-equivalence, not a signal-weighted field).
 
 **APRR's distinct contribution:**
   1. Closed-form policy gradient interpretation (Appendix A of the paper).

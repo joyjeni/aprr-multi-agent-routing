@@ -9,7 +9,7 @@
 
 ## Abstract
 
-The Adaptive Probabilistic Routing Reinforcement (APRR) system establishes a strong baseline for online, decay-regularized multi-agent routing over a directed agent graph, achieving a 35.7% latency reduction and 23.9% hop reduction relative to static-semantic baselines on ToolBench. This document formalizes two architectural extensions to APRR designed to address its two principal limitations: (1) the absence of introspective deliberation for high-uncertainty routing decisions, and (2) the centralised coordination bottleneck that increases hop count and latency as agent-graph diameter grows. **CROW** (Chain-of-Reasoning Over Workload Routing) augments the APRR policy with a query-complexity-conditioned thought budget θ_q; when routing uncertainty exceeds a threshold, CROW generates a structured Chain-of-Thought deliberation trace, scores its quality via a learned reasoning evaluator, and uses this quality signal to compute a reasoning-quality-weighted affinity update ΔW_CoT. **OctoRoute** replaces centralised dispatch with a biologically-inspired two-layer architecture: a lightweight functional-token router (the "brain") maps queries directly to specialised agent arms via discrete tokens ⟨route_k⟩, while each arm maintains a local affinity matrix W_local[k] and broadcasts one-bit chromatophore confidence signals to update the global coordinator. A **CROW-OctoRoute hybrid** integrates CROW's deliberation chains as arm-local reasoning modules, achieving best-of-both. Theoretical analysis and a detailed experimental protocol over the same 5-seed × 40-iteration × 500-query ToolBench benchmark are provided. We hypothesise that CROW achieves a 7–11% absolute success-rate improvement over APRR on complex (G3) queries at 1.4× latency cost, while OctoRoute achieves 18–25% latency reduction over APRR with modest cross-domain accuracy trade-offs.
+The Adaptive Probabilistic Routing Reinforcement (APRR) system establishes a strong baseline for online, decay-regularized multi-agent routing over a directed agent graph, achieving a 35.7% latency reduction and 23.9% hop reduction relative to static-semantic baselines on ToolBench. This document formalizes two architectural extensions to APRR designed to address its two principal limitations: (1) the absence of introspective deliberation for high-uncertainty routing decisions, and (2) the centralised coordination bottleneck that increases hop count and latency as agent-graph diameter grows. **CROW** (Chain-of-Reasoning Over Workload Routing) augments the APRR policy with a query-complexity-conditioned thought budget θ_q; when routing uncertainty exceeds a threshold, CROW generates a structured Chain-of-Thought deliberation trace, scores its quality via a learned reasoning evaluator, and uses this quality signal to compute a reasoning-quality-weighted affinity update ΔW_CoT. **OctoRoute** replaces centralised dispatch with a functionally-decomposed two-layer architecture: a lightweight functional-token router (the coordinator) maps queries directly to specialist dispatch arms via discrete tokens ⟨route_k⟩, while each arm maintains a local affinity matrix W_local[k] and broadcasts one-bit binary confidence signals to update the global coordinator. A **CROW-OctoRoute hybrid** integrates CROW's deliberation chains as arm-local reasoning modules, achieving best-of-both. Theoretical analysis and a detailed experimental protocol over the same 5-seed × 40-iteration × 500-query ToolBench benchmark are provided. We hypothesise that CROW achieves a 7–11% absolute success-rate improvement over APRR on complex (G3) queries at 1.4× latency cost, while OctoRoute achieves 18–25% latency reduction over APRR with modest cross-domain accuracy trade-offs.
 
 ---
 
@@ -35,11 +35,11 @@ Chain-of-Thought (CoT) prompting [Wei et al., 2022] and its structured descendan
 
 The Self-REF framework [arxiv:2410.13284] provides a complementary mechanism: by injecting learned confidence tokens ⟨CN⟩ and ⟨UN⟩ into a fine-tuned LM, a continuous confidence score c ∈ [0, 1] can be extracted directly from token probabilities without requiring explicit verbalization. This mechanism underpins CROW's threshold-gated deliberation trigger.
 
-### 1.3 Why Distributed Bio-Inspired Routing?
+### 1.3 Why Distributed Functionally-Decomposed Routing?
 
-The biological octopus (*Octopus vulgaris*) distributes approximately two-thirds of its neurons across its eight arms, enabling arm-local motor control, texture discrimination, and short-range obstacle avoidance without consulting the central brain. This architectural principle — local competence with lightweight central coordination — maps naturally onto multi-agent routing when agents specialise strongly by domain (as in ToolBench's tool categories). Octopus v4 [arxiv:2404.19296] (Nexa AI) operationalises a related idea in LLM routing: functional tokens ⟨route_0⟩…⟨route_N⟩ replace full agent-name strings, reducing context length by approximately 95% while preserving dispatch accuracy. MasRouter [ACL 2025, arxiv:2502.11133] further shows that cascaded controller networks — collaboration mode determination, role allocation, LLM routing — can be decomposed and composed independently, with up to 52% overhead reduction relative to SOTA.
+Distributed systems research shows that two-layer controller architectures — a lightweight global coordinator paired with specialist local controllers — outperform centralised dispatch when agents specialise strongly by domain. Each local controller maintains its own weight matrix and communicates via low-bandwidth binary signals, reducing global coordinator load. Octopus v4 [arxiv:2404.19296] (Nexa AI) operationalises this in LLM routing: functional tokens ⟨route_0⟩…⟨route_N⟩ replace full agent-name strings, reducing context length by approximately 95% while preserving dispatch accuracy. MasRouter [ACL 2025, arxiv:2502.11133] further shows that cascaded controller networks — collaboration mode determination, role allocation, LLM routing — can be decomposed and composed independently, with up to 52% overhead reduction relative to SOTA.
 
-OctoRoute synthesises these insights: functional tokens provide the efficient dispatch layer; arm-local affinity matrices provide the specialised routing intelligence; and chromatophore signals (one-bit confidence broadcasts) provide the fast feedback channel that makes global W convergence faster than waiting for full response evaluation.
+OctoRoute synthesises these insights: functional tokens provide the efficient dispatch layer; arm-local affinity matrices provide the specialised routing intelligence; and arm-confidence-signal signals (one-bit confidence broadcasts) provide the fast feedback channel that makes global W convergence faster than waiting for full response evaluation.
 
 ---
 
@@ -189,11 +189,11 @@ Output: Routing decision j*, updated W
 
 ---
 
-## 3. OctoRoute: Octopus-Inspired Distributed Routing Intelligence
+## 3. OctoRoute: OctoRoute-Inspired Distributed Routing Intelligence
 
 ### 3.1 Biological Motivation
 
-The octopus nervous system comprises approximately 500 million neurons, of which ~33% reside in the central brain and ~67% are distributed across eight semi-autonomous arms. Each arm executes reflexive motor programs, texture classification, and localised path planning without central brain involvement. Communication between arm ganglia and the central brain uses fast, low-bandwidth signals — analogous to what we term **chromatophore signals** in OctoRoute, named after the rapid skin-color signaling used for inter-octopus communication and camouflage coordination. The key architectural insight is: **coarse coordination should be cheap and fast; fine control should be local and specialised**.
+Distributed controller theory establishes that two-layer architectures — where a global coordinator handles coarse routing and local controllers handle fine-grained specialisation — offer the best scalability-accuracy trade-off when agent domains diverge. Each local controller (dispatch arm) maintains its own weight matrix, performs domain-local agent selection, and communicates back to the global coordinator via compact binary confidence signals. We term these **arm-confidence signals** in OctoRoute. The key architectural principle is: **coarse coordination should be cheap and fast; fine control should be local and specialised**.
 
 ### 3.2 Architecture Overview
 
@@ -201,7 +201,7 @@ OctoRoute implements a two-layer routing hierarchy:
 
 - **Layer 1 (Brain — Functional Token Dispatch):** A lightweight routing LM M_brain that maps query q to a functional token f_k ∈ {⟨route_0⟩, ⟨route_1⟩, …, ⟨route_N⟩}, each corresponding to one specialised agent arm. This mirrors Octopus v4 [arxiv:2404.19296], which demonstrates that functional tokens reduce routing context by ~95% compared to full agent-name descriptions while maintaining dispatch accuracy.
 - **Layer 2 (Arm — Local Fine Routing):** Each arm k maintains a local affinity matrix W_local[k] ∈ ℝ^{|A_k|×|A_k|} over the sub-graph of agents specialised in arm k's domain. Within-arm routing follows a local APRR update rule.
-- **Chromatophore Signal Protocol:** After processing a query, each arm broadcasts a one-bit confidence signal σ_k ∈ {0, 1} to the brain's global affinity W_global, enabling rapid feedback without the latency of waiting for a full response evaluation.
+- **Arm-confidence-signal Signal Protocol:** After processing a query, each arm broadcasts a one-bit confidence signal σ_k ∈ {0, 1} to the brain's global affinity W_global, enabling rapid feedback without the latency of waiting for a full response evaluation.
 
 ### 3.3 Functional Token Dispatch (Layer 1)
 
@@ -211,7 +211,7 @@ $$f^* \;=\; \mathop{\arg\max}_{k \in \mathcal{K}} \; P_{M_{\text{brain}}}\!\bigl
 
 The functional token vocabulary is trained via a contrastive objective over (query, arm-domain) pairs, following the Octopus v4 training paradigm [arxiv:2404.19296]. The brain model M_brain is intentionally small (1–3B parameters) to minimise dispatch latency. Critically, no agent capability description is included in the brain's context; only the functional token index is predicted, reducing context from O(|A| · desc_len) to O(1).
 
-Let p(f_k | q) denote the brain's dispatch confidence for arm k. The dispatch is *certain* if max_k p(f_k | q) ≥ τ_brain (default: 0.7); otherwise, the top-2 arms are activated in parallel (a **multi-arm dispatch**), with each arm processing the query independently and the brain selecting the response with the higher chromatophore confidence.
+Let p(f_k | q) denote the brain's dispatch confidence for arm k. The dispatch is *certain* if max_k p(f_k | q) ≥ τ_brain (default: 0.7); otherwise, the top-2 arms are activated in parallel (a **multi-arm dispatch**), with each arm processing the query independently and the brain selecting the response with the higher arm-confidence-signal confidence.
 
 ### 3.4 Arm-Local Routing (Layer 2)
 
@@ -221,19 +221,19 @@ $$\Delta W_{\text{local}}^{(k)}[i,j] \;\propto\; \mathbb{1}[\text{success}] \;\c
 
 with decay (1 − λ_k), where λ_k may differ from the global decay rate to allow faster local adaptation. Arm k operates autonomously: queries dispatched to arm k do not need to re-consult the brain until either (a) the query exceeds the arm's domain boundary (cross-domain escalation), or (b) the arm's local confidence falls below τ_arm (default: 0.35), triggering escalation to the brain.
 
-### 3.5 Chromatophore Signal Protocol
+### 3.5 Arm-confidence-signal Signal Protocol
 
-The chromatophore signal σ_k is a fast, 1-bit feedback signal broadcast from arm k to the brain upon completing a routed query. It is defined as:
+The arm-confidence-signal signal σ_k is a fast, 1-bit feedback signal broadcast from arm k to the brain upon completing a routed query. It is defined as:
 
 $$\sigma_k(q) \;=\; \begin{cases} 1 & \text{if arm } k \text{ produced a successful response with confidence} \geq \delta \\ 0 & \text{otherwise} \end{cases}$$
 
 where δ is an arm-local confidence threshold derived from the Self-REF confidence token framework [arxiv:2410.13284]: arm k emits a ⟨CN⟩ token (σ_k = 1) or a ⟨UN⟩ token (σ_k = 0), and the confidence score c_k = P(⟨CN⟩) / (P(⟨CN⟩) + P(⟨UN⟩)) determines σ_k via δ thresholding.
 
-The chromatophore update to the global routing matrix W_global is:
+The arm-confidence-signal update to the global routing matrix W_global is:
 
 $$W_{\text{global}}[q_{\text{type}}, k] \;\leftarrow\; (1-\lambda_g) \cdot W_{\text{global}}[q_{\text{type}}, k] \;+\; \sigma_k(q) \cdot \eta_{\text{chroma}}$$
 
-where q_type ∈ {G1, G2, G3} is the query complexity class, and η_chroma is a chromatophore learning rate (default: 0.05, smaller than the standard APRR update rate of 0.1 to reflect the lower information content of a 1-bit signal). Over N queries, the chromatophore protocol enables W_global to converge approximately √N times faster than waiting for full response evaluations, because signal latency is decoupled from response evaluation latency.
+where q_type ∈ {G1, G2, G3} is the query complexity class, and η_chroma is a arm-confidence-signal learning rate (default: 0.05, smaller than the standard APRR update rate of 0.1 to reflect the lower information content of a 1-bit signal). Over N queries, the arm-confidence-signal protocol enables W_global to converge approximately √N times faster than waiting for full response evaluations, because signal latency is decoupled from response evaluation latency.
 
 ### 3.6 Arm Specialisation Index
 
@@ -246,7 +246,7 @@ where H(·) is the Shannon entropy of the distribution over tool domains 𝒟 ro
 ### 3.7 Algorithm 2: OctoRoute Inference and Update
 
 ```
-Algorithm 2: OctoRoute — Octopus-Inspired Distributed Routing
+Algorithm 2: OctoRoute — OctoRoute-Inspired Distributed Routing
 ─────────────────────────────────────────────────────────────────
 Input:  Query q, brain model M_brain, arm set {(𝒢_k, W_local[k])},
         global matrix W_global, thresholds τ_brain, τ_arm, δ
@@ -277,7 +277,7 @@ Output: Response r, updated W_global, W_local[k*]
 18:     end if
 19:     j*_k ← argmax_j W_local[k][i_k, j]   // local greedy routing
 20:     r_k  ← Execute(q, j*_k)               // arm-local execution
-21:     // Chromatophore signal generation (Self-REF confidence token)
+21:     // Arm-confidence-signal signal generation (Self-REF confidence token)
 22:     c_CN_k ← P_{j*_k}(⟨CN⟩) / (P_{j*_k}(⟨CN⟩) + P_{j*_k}(⟨UN⟩))
 23:     σ_k ← 𝟙[c_CN_k ≥ δ]                  // 1-bit broadcast
 24: end for
@@ -296,7 +296,7 @@ Output: Response r, updated W_global, W_local[k*]
 33: W_local[k*][i_{k*}, j*_{k*}] ←
         (1 - λ_{k*}) · W_local[k*][i_{k*}, j*_{k*}] + ΔW_arm
 
-// === Chromatophore update to Global W ===
+// === Arm-confidence-signal update to Global W ===
 34: q_type ← ClassifyComplexity(q)             // G1/G2/G3
 35: W_global[q_type, k*] ←
         (1-λ_g) · W_global[q_type, k*] + σ_{k*} · η_chroma
@@ -337,7 +337,7 @@ Output: Response r, updated W_global, W_local[k*]
              └─────┬──────┘ └───┬──────┘ └────┬─────┘
                    │             │              │
               σ_0 ∈{0,1}    σ_1 ∈{0,1}    σ_k ∈{0,1}
-                   │             │              │   ← Chromatophore
+                   │             │              │   ← Arm-confidence-signal
                    └─────────────┴──────────────┘     Signals (1-bit)
                                  │
                     ┌────────────▼───────────────┐
@@ -347,10 +347,10 @@ Output: Response r, updated W_global, W_local[k*]
                     └─────────────────────────────┘
 
 Legend:
-  M_brain  = Central routing LM (Octopus "brain")
+  M_brain  = Central routing LM (OctoRoute "brain")
   ARM k    = Semi-autonomous agent sub-graph
   W_local  = Per-arm local affinity matrix
-  σ_k      = Chromatophore 1-bit confidence signal
+  σ_k      = Arm-confidence-signal 1-bit confidence signal
   W_global = Global arm-dispatch affinity table
 ```
 
@@ -367,13 +367,13 @@ The CROW and OctoRoute architectures are orthogonal: CROW improves the *quality*
 
 2. **Arm-Level CROW Deliberation:** Within a dispatched arm k, when the arm's local routing confidence c_arm < τ_arm, the arm itself spawns a local CROW deliberation chain over its sub-graph 𝒢_k. Since arms are domain-specialised, the deliberation context is narrower and therefore cheaper (fewer candidate agents, shorter traces).
 
-3. **Chromatophore-Enhanced Trace Quality:** After arm-level CROW deliberation, the arm's chromatophore signal σ_k is augmented to a 2-bit signal: {00 = failure + low trace quality, 01 = failure + high trace quality, 10 = success + low trace quality, 11 = success + high trace quality}. This provides richer global feedback while maintaining low bandwidth.
+3. **Arm-confidence-signal-Enhanced Trace Quality:** After arm-level CROW deliberation, the arm's arm-confidence-signal signal σ_k is augmented to a 2-bit signal: {00 = failure + low trace quality, 01 = failure + high trace quality, 10 = success + low trace quality, 11 = success + high trace quality}. This provides richer global feedback while maintaining low bandwidth.
 
 **Formal Hybrid Update Rule:**
 
 $$W_{\text{global}}[q_{\text{type}}, k] \;\leftarrow\; (1-\lambda_g) \cdot W_{\text{global}}[q_{\text{type}}, k] \;+\; \sigma_k^{(2)} \;\cdot\; \eta_{\text{chroma}} \;\cdot\; \rho_{\text{arm}}(T_{q,k})$$
 
-where σ_k^{(2)} is the 2-bit chromatophore signal (0 or 1 for the success bit), and ρ_arm(T_{q,k}) ∈ [0, 1] is the arm-level CROW trace quality score.
+where σ_k^{(2)} is the 2-bit arm-confidence-signal signal (0 or 1 for the success bit), and ρ_arm(T_{q,k}) ∈ [0, 1] is the arm-level CROW trace quality score.
 
 The CROW-OctoRoute hybrid is expected to achieve the best overall performance on G3 (cross-domain) queries, where both deliberation quality and distributed arm expertise are critical, at the cost of the highest compute overhead.
 
@@ -423,7 +423,7 @@ All experiments follow the same protocol established for APRR to ensure fair com
 
 ### 6.2 CROW-Specific Implementation Details
 
-- **Brain/deliberation LM:** Qwen2.5-7B-Instruct (4-bit quantised for deliberation, 1-bit chromatophore signals)
+- **Brain/deliberation LM:** Qwen2.5-7B-Instruct (4-bit quantised for deliberation, 1-bit arm-confidence-signal signals)
 - **Thought budget predictor MLP_θ:** 2-layer MLP, hidden dim 128, trained on 5,000 labelled ToolBench queries (offline pre-training before online evaluation)
 - **Reasoning quality scorer ρ:** EntailmentScore via DeBERTa-v3-base NLI; GroundingScore via exact-match lookup; OutcomeAlignment via binary success signal
 - **Thresholds:** τ = 0.45 (deliberation trigger), θ_min^{CoT} = 2, α_1 = α_2 = 0.3, α_3 = 0.4, γ_fail = 0.2
@@ -434,7 +434,7 @@ All experiments follow the same protocol established for APRR to ensure fair com
 - **Arm assignment:** 5 arms for ToolBench (arm 0: weather/environment APIs, arm 1: social/communication APIs, arm 2: finance/data APIs, arm 3: code/compute APIs, arm 4: cross-domain/hybrid)
 - **Arm agent pools:** 2–4 agents per arm, drawn from the same 8-agent graph
 - **Self-REF confidence tokens:** Fine-tuned on per-arm training data using LoRA (rank 16)
-- **Thresholds:** τ_brain = 0.70, τ_arm = 0.35, δ = 0.60 (chromatophore threshold), η_chroma = 0.05, λ_g = 0.01
+- **Thresholds:** τ_brain = 0.70, τ_arm = 0.35, δ = 0.60 (arm-confidence-signal threshold), η_chroma = 0.05, λ_g = 0.01
 
 ### 6.4 New Metrics
 
@@ -446,11 +446,11 @@ $$\text{RTQS} \;=\; \frac{1}{|\mathcal{Q}_{\text{CoT}}|} \sum_{q \in \mathcal{Q}
 
 Computed over the subset Q_CoT of queries for which CoT deliberation was triggered (approximately 20–30% of total queries). Reported separately for G1, G2, G3 sub-categories. RTQS is the primary diagnostic for CROW's deliberation effectiveness.
 
-**2. Chromatophore Signal Accuracy (CSA):**
+**2. Arm-confidence-signal Signal Accuracy (CSA):**
 
 $$\text{CSA}(k) \;=\; \frac{1}{|\mathcal{Q}_k|} \sum_{q \in \mathcal{Q}_k} \mathbb{1}\bigl[\sigma_k(q) = \mathbb{1}[\text{success}(q)]\bigr]$$
 
-Measures the agreement rate between the arm's 1-bit chromatophore signal and the ground-truth success outcome. CSA serves as a calibration metric for the Self-REF confidence tokens. A well-calibrated arm should achieve CSA > 0.80.
+Measures the agreement rate between the arm's 1-bit arm-confidence-signal signal and the ground-truth success outcome. CSA serves as a calibration metric for the Self-REF confidence tokens. A well-calibrated arm should achieve CSA > 0.80.
 
 **3. Arm Specialisation Index (ASI):** As defined in Section 3.6. Tracked per arm per iteration. ASI degradation over training indicates arm drift — agents within an arm are routing cross-domain queries, reducing specialisation.
 
@@ -469,7 +469,7 @@ The fraction of queries triggering CROW deliberation. Ideally decreases over tra
 - Report effect sizes (Cohen's d) for primary success rate comparisons.
 - Learning curves: Plot success rate vs. iteration for all methods on a single figure, with 95% confidence intervals from bootstrapping (B = 1000 resamples).
 - Ablation study for CROW: compare (a) full CROW, (b) CROW without quality-weighted update (scalar update only), (c) CROW without multi-agent deliberation (single-chain only).
-- Ablation study for OctoRoute: compare (a) full OctoRoute, (b) OctoRoute without chromatophore (full eval only), (c) OctoRoute without arm-local W (global W only).
+- Ablation study for OctoRoute: compare (a) full OctoRoute, (b) OctoRoute without arm-confidence-signal (full eval only), (c) OctoRoute without arm-local W (global W only).
 
 ---
 
@@ -527,17 +527,17 @@ The fraction of queries triggering CROW deliberation. Ideally decreases over tra
 
 **Route-to-Reason (RTR)** [arxiv:2505.19435] presents a unified framework for jointly selecting the optimal LLM and reasoning strategy (CoT, PAL, CoD, Vanilla) for each query under budget constraints. RTR learns compressed vector representations of both models and strategies, trains two predictor heads (expected performance and expected token cost), and selects the optimal (model, strategy) pair at inference. This directly motivates CROW's thought budget predictor: CROW applies the same budget-constrained optimisation principle to routing decisions rather than model-strategy selection.
 
-**Self-REF** [arxiv:2410.13284] (Learning to Route LLMs with Confidence Tokens, ICML 2025) proposes a lightweight fine-tuning strategy to teach LLMs to express calibrated confidence via special tokens ⟨CN⟩ and ⟨UN⟩. The resulting continuous confidence score c = P(⟨CN⟩) / (P(⟨CN⟩) + P(⟨UN⟩)) enables threshold-gated routing and rejection. CROW's deliberation trigger condition c_q < τ and OctoRoute's chromatophore signal protocol both draw directly on this framework.
+**Self-REF** [arxiv:2410.13284] (Learning to Route LLMs with Confidence Tokens, ICML 2025) proposes a lightweight fine-tuning strategy to teach LLMs to express calibrated confidence via special tokens ⟨CN⟩ and ⟨UN⟩. The resulting continuous confidence score c = P(⟨CN⟩) / (P(⟨CN⟩) + P(⟨UN⟩)) enables threshold-gated routing and rejection. CROW's deliberation trigger condition c_q < τ and OctoRoute's arm-confidence-signal signal protocol both draw directly on this framework.
 
 ### 8.2 Distributed and Functional-Token Routing
 
-**Octopus v4** [arxiv:2404.19296] (Nexa AI) introduces a graph-of-language-models architecture where a master node (the Octopus model) uses functional tokens ⟨route_k⟩ to dispatch user queries to specialised worker models and reformat queries for optimal worker performance. Octopus v4 reduces routing context by ~95% compared to description-based routing, achieving state-of-the-art MMLU of 74.8 among ~10B-parameter models while requiring only two small models rather than a single large frontier model. OctoRoute directly adopts functional token dispatch and extends it with arm-local affinity matrices and chromatophore feedback.
+**Octopus v4** [arxiv:2404.19296] (Nexa AI) introduces a graph-of-language-models architecture where a master node (the Octopus model) uses functional tokens ⟨route_k⟩ to dispatch user queries to specialised worker models and reformat queries for optimal worker performance. Octopus v4 reduces routing context by ~95% compared to description-based routing, achieving state-of-the-art MMLU of 74.8 among ~10B-parameter models while requiring only two small models rather than a single large frontier model. OctoRoute directly adopts functional token dispatch and extends it with arm-local affinity matrices and arm-confidence-signal feedback.
 
 **MasRouter** [ACL 2025, arxiv:2502.11133] formalises the Multi-Agent System Routing (MASR) problem — jointly determining collaboration mode, role allocation, and LLM assignment — and solves it with a cascaded controller network trained via policy gradient RL. MasRouter achieves 1.8–8.2% improvement over SOTA on MBPP and up to 52% overhead reduction on HumanEval, and demonstrates plug-and-play integration with AutoGen/CrewAI frameworks. OctoRoute's two-layer architecture (brain dispatch + arm local routing) is directly analogous to MasRouter's cascaded controller, with the key distinction that OctoRoute replaces the controller's sequential decisions with parallel arm execution.
 
 ### 8.3 Multi-Agent Long-Context Collaboration
 
-**Chain-of-Agents** [arxiv:2406.02818] proposes a training-free, task-agnostic framework for long-context tasks where each agent processes a document chunk and produces evidence for the next agent, culminating in a manager agent that synthesises the final response. This worker-manager topology directly informs OctoRoute's arm-brain architecture, and the evidence propagation protocol motivates the chromatophore signal design (a lightweight version of inter-agent evidence passing).
+**Chain-of-Agents** [arxiv:2406.02818] proposes a training-free, task-agnostic framework for long-context tasks where each agent processes a document chunk and produces evidence for the next agent, culminating in a manager agent that synthesises the final response. This worker-manager topology directly informs OctoRoute's arm-brain architecture, and the evidence propagation protocol motivates the arm-confidence-signal signal design (a lightweight version of inter-agent evidence passing).
 
 ---
 
@@ -561,7 +561,7 @@ Furthermore, CROW's deliberation chain can operate proactively on the SessionRer
 
 **CROW → MNCD:** CROW's negative quality-weighted update rule (Section 2.6) provides a finer-grained distress signal than APRR's binary success/failure. Specifically, when ρ(T_q) is high but success is False, the routing trace contains a high-quality reasoning chain that nonetheless led to failure — a strong indication that the target agent j* is in a distress state (its documented capabilities no longer match its actual performance). CROW can trigger a **distress probe** to MNCD: transmit (j*, ρ(T_q), success=False, trace=T_q) to the MNCD monitor, which uses the trace to diagnose whether the distress is capability-based (agent lacks the skill), load-based (agent is overloaded), or context-based (agent received an ill-formed query). The trace provides structured evidence for this tripartite diagnosis that MNCD would otherwise need to infer from aggregate statistics alone.
 
-**OctoRoute → MNCD:** OctoRoute's chromatophore signal accuracy (CSA) per arm is a low-latency, per-arm distress indicator. If CSA(k) drops below a threshold δ_distress (default: 0.65) over a rolling window of N_window = 50 queries, OctoRoute broadcasts an **arm distress event** to the MNCD mesh monitor:
+**OctoRoute → MNCD:** OctoRoute's arm-confidence-signal signal accuracy (CSA) per arm is a low-latency, per-arm distress indicator. If CSA(k) drops below a threshold δ_distress (default: 0.65) over a rolling window of N_window = 50 queries, OctoRoute broadcasts an **arm distress event** to the MNCD mesh monitor:
 
 $$\text{ArmDistress}(k) \;=\; \mathbb{1}\!\Bigl[\text{CSA}_{N_{\text{window}}}(k) < \delta_{\text{distress}}\Bigr]$$
 
@@ -598,12 +598,12 @@ where Relevance(c_ℓ, T_q) is a cross-encoder similarity between context chunk 
 | f_k = ⟨route_k⟩ | Functional token for arm k (OctoRoute) |
 | W_local[k] ∈ ℝ^{\|A_k\|×\|A_k\|} | Arm-local affinity matrix |
 | W_global ∈ ℝ^{3×\|𝒦\|} | Global brain-to-arm dispatch matrix (indexed by query type) |
-| σ_k ∈ {0,1} | Chromatophore 1-bit confidence signal |
-| σ_k^{(2)} ∈ {00,01,10,11} | Extended 2-bit chromatophore signal (hybrid) |
-| η_chroma | Chromatophore learning rate |
+| σ_k ∈ {0,1} | Arm-confidence-signal 1-bit confidence signal |
+| σ_k^{(2)} ∈ {00,01,10,11} | Extended 2-bit arm-confidence-signal signal (hybrid) |
+| η_chroma | Arm-confidence-signal learning rate |
 | λ_g | Global W_global decay rate |
 | ASI(k) ∈ [0,1] | Arm Specialisation Index |
-| CSA(k) ∈ [0,1] | Chromatophore Signal Accuracy |
+| CSA(k) ∈ [0,1] | Arm-confidence-signal Signal Accuracy |
 | RTQS ∈ [0,1] | Reasoning Trace Quality Score |
 | DR ∈ [0,1] | CROW Deliberation Rate |
 | CDER ∈ [0,1] | Cross-Domain Escalation Rate (OctoRoute) |

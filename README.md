@@ -107,11 +107,11 @@ CROW augments APRR with a Chain-of-Thought deliberation layer. Before routing, a
 
 **Key properties:** interpretable trace per routing decision; deliberation round budget θ_q; penalises low-confidence traces in the W update.
 
-### OctoRoute — Octopus-Inspired Distributed Routing
+### OctoRoute — Distributed Parallel-Dispatch Routing
 
-OctoRoute replaces the centralised W matrix with a two-layer architecture inspired by the octopus nervous system (2/3 of octopus neurons are in the arms — decentralised intelligence):
+OctoRoute replaces the centralised W matrix with a two-layer architecture inspired by the distributed two-layer controller architecture (2/3 of dispatch-router neurons are in the arms — decentralised intelligence):
 
-- **Layer 1 — Functional token dispatch** (`<octo_0>`…`<octo_N-1>`): central coordinator selects an arm via 1-bit chromatophore signals (Jaccard domain-match), reducing context by ~80%.
+- **Layer 1 — Functional token dispatch** (`<octo_0>`…`<octo_N-1>`): central coordinator selects an arm via 1-bit confidence-signal signals (Jaccard domain-match), reducing context by ~80%.
 - **Layer 2 — Arm-local W_local routing**: each arm maintains its own affinity matrix over the shared agent pool, updated independently.
 
 ### Benchmark Results (5 seeds × 20 warm-up × 100 eval queries)

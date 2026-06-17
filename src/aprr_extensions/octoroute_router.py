@@ -1,12 +1,12 @@
 """
-octoroute_router.py — OctoRoute: Octopus-Inspired Distributed Routing
+octoroute_router.py — OctoRoute: Distributed Parallel-Dispatch Routing
 ======================================================================
-Two-layer routing architecture inspired by the octopus nervous system:
+Two-layer routing architecture using functional token dispatch:
 
-  - OctoArms (peripheral):  semi-autonomous routing units, each
-    specialising in one query domain via a local affinity matrix.
-  - OctoRouteRouter (brain): global coordinator that dispatches queries
-    to the most suitable arm using fast chromatophore-style signals,
+  - DispatchArms (local):   domain-specialist routing units, each
+    maintaining a local affinity matrix W_local for agent selection.
+  - OctoRouteRouter (coordinator): global controller that maps queries
+    to the best arm via fast binary confidence signals,
     then delegates intra-arm agent selection.
 
 No LLM calls.  All signals are heuristic / token-overlap based.
@@ -56,15 +56,15 @@ _LATENCY_NORM: float = 500.0
 
 
 # ---------------------------------------------------------------------------
-# OctoArm
+# DispatchArm
 # ---------------------------------------------------------------------------
 
-class OctoArm:
+class DispatchArm:
     """
     Semi-autonomous routing arm specialising in a single query domain.
 
     Each arm maintains its own local APRR affinity matrix (``W_local``)
-    over the shared agent pool and emits a fast 1-bit chromatophore signal
+    over the shared agent pool and emits a fast 1-bit confidence-signal signal
     indicating whether it claims the incoming query.
 
     Parameters
@@ -114,7 +114,7 @@ class OctoArm:
     # Chromatophore signal
     # ------------------------------------------------------------------
 
-    def emit_chromatophore_signal(self, query: str) -> dict:
+    def emit_confidence-signal_signal(self, query: str) -> dict:
         """
         Emit a fast 1-bit domain-match signal for ``query``.
 
@@ -248,7 +248,7 @@ class OctoArm:
 
     def __repr__(self) -> str:
         return (
-            f"OctoArm(id={self.arm_id}, domain='{self.domain}', "
+            f"DispatchArm(id={self.arm_id}, domain='{self.domain}', "
             f"token='{self.functional_token}')"
         )
 
@@ -259,14 +259,14 @@ class OctoArm:
 
 class OctoRouteRouter:
     """
-    Octopus-Inspired Distributed Router.
+    Parallel-Dispatch Distributed Router.
 
-    Coordinates a set of ``OctoArm`` instances (peripheral intelligence)
+    Coordinates a set of ``DispatchArm`` instances (peripheral intelligence)
     through a global affinity matrix (central brain).
 
     Routing is performed in two layers:
 
-    1. **Arm dispatch** — each arm emits a chromatophore signal; the arm
+    1. **Arm dispatch** — each arm emits a confidence-signal signal; the arm
        with the highest ``domain_match`` score is selected via the
        functional-token dispatch mechanism.
     2. **Agent selection** — the selected arm runs ``local_route`` to
@@ -280,7 +280,7 @@ class OctoRouteRouter:
         One domain string per arm (e.g. ``["weather", "market_prices", ...]``).
     lambda_decay : float
         Decay rate applied to both local and global affinity matrices.
-    chromatophore_threshold : float
+    confidence-signal_threshold : float
         Minimum ``domain_match`` score for an arm to be considered a
         valid candidate.  Falls back to global W if no arm qualifies.
     """
@@ -290,17 +290,17 @@ class OctoRouteRouter:
         agents: list[str],
         arm_domains: list[str],
         lambda_decay: float = 0.05,
-        chromatophore_threshold: float = 0.6,
+        confidence-signal_threshold: float = 0.6,
     ) -> None:
         self.agents = agents
         self.n_agents = len(agents)
         self.n_arms = len(arm_domains)
         self.lambda_decay = lambda_decay
-        self.chromatophore_threshold = chromatophore_threshold
+        self.confidence-signal_threshold = confidence-signal_threshold
 
-        # Create one OctoArm per domain
-        self.arms: list[OctoArm] = [
-            OctoArm(
+        # Create one DispatchArm per domain
+        self.arms: list[DispatchArm] = [
+            DispatchArm(
                 arm_id=i,
                 domain=domain,
                 n_agents=self.n_agents,
@@ -319,13 +319,13 @@ class OctoRouteRouter:
     # Arm dispatch via functional tokens
     # ------------------------------------------------------------------
 
-    def dispatch_via_functional_token(self, query: str) -> OctoArm:
+    def dispatch_via_functional_token(self, query: str) -> DispatchArm:
         """
         Select the most domain-appropriate arm for ``query``.
 
-        Step 1: Collect chromatophore signals from all arms (fast O(N·|V|)).
+        Step 1: Collect confidence-signal signals from all arms (fast O(N·|V|)).
         Step 2: Select arm with highest ``domain_match``.
-        Step 3: If best match < ``chromatophore_threshold``, fall back to
+        Step 3: If best match < ``confidence-signal_threshold``, fall back to
                 the arm whose ``W_global`` row has the highest column sum
                 (global brain routing).
 
@@ -335,14 +335,14 @@ class OctoRouteRouter:
 
         Returns
         -------
-        OctoArm
+        DispatchArm
             The selected arm.
         """
-        signals = [arm.emit_chromatophore_signal(query) for arm in self.arms]
+        signals = [arm.emit_confidence-signal_signal(query) for arm in self.arms]
         best_idx = int(np.argmax([s["domain_match"] for s in signals]))
         best_match = signals[best_idx]["domain_match"]
 
-        if best_match >= self.chromatophore_threshold:
+        if best_match >= self.confidence-signal_threshold:
             return self.arms[best_idx]
 
         # Fallback: use global W (brain routing)
@@ -366,13 +366,13 @@ class OctoRouteRouter:
             arm                  : int
             functional_token     : str
             latency_ms           : float
-            chromatophore_signals: list[dict]
+            confidence-signal_signals: list[dict]
         """
         t0 = time.perf_counter()
 
         # Collect all signals (stored for transparency)
-        chromatophore_signals = [
-            arm.emit_chromatophore_signal(query) for arm in self.arms
+        confidence-signal_signals = [
+            arm.emit_confidence-signal_signal(query) for arm in self.arms
         ]
 
         # Layer 1: dispatch
@@ -391,7 +391,7 @@ class OctoRouteRouter:
             "arm_domain": selected_arm.domain,
             "arm_confidence": local_result["confidence"],
             "latency_ms": round(latency_ms, 3),
-            "chromatophore_signals": chromatophore_signals,
+            "confidence-signal_signals": confidence-signal_signals,
         }
 
     # ------------------------------------------------------------------
@@ -457,7 +457,7 @@ class OctoRouteRouter:
     def __repr__(self) -> str:
         return (
             f"OctoRouteRouter(n_arms={self.n_arms}, n_agents={self.n_agents}, "
-            f"threshold={self.chromatophore_threshold})"
+            f"threshold={self.confidence-signal_threshold})"
         )
 
 
@@ -556,7 +556,7 @@ if __name__ == "__main__":
         agents=agents,
         arm_domains=arm_domains,
         lambda_decay=0.05,
-        chromatophore_threshold=0.05,   # low threshold for demo
+        confidence-signal_threshold=0.05,   # low threshold for demo
     )
 
     queries = _make_synthetic_queries_octo(50)

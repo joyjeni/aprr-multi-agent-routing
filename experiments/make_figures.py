@@ -88,7 +88,7 @@ def fig2_convergence_latency(art, out: Path):
 
 
 def fig3_affinity_evolution(art, out: Path):
-    snaps = art.get("W_snapshots") or art.get("pheromone_snapshots") or []
+    snaps = art.get("W_snapshots") or art.get("weight-signal_snapshots") or []
     if not snaps:
         return
     idxs = [0, len(snaps)//3, (2*len(snaps))//3, len(snaps)-1]
