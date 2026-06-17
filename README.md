@@ -90,3 +90,67 @@ Interactive results, charts, and downloadable artifacts at
 ## License
 
 MIT — see [LICENSE](LICENSE).
+
+---
+
+## Objective 2 Extension: CROW and OctoRoute Routing Variants
+
+> **New (June 2026)** — Two novel routing paradigms benchmarked against APRR.
+
+### CROW — Chain-of-Reasoning Over Workload
+
+CROW augments APRR with a Chain-of-Thought deliberation layer. Before routing, a complexity scorer gates whether the query needs greedy dispatch (low complexity) or multi-agent CoT deliberation (high complexity). The routing affinity update is weighted by *reasoning quality* ρ(T_q) ∈ [0,1]:
+
+```
+ΔW[i,j] += 𝟙[success] · (1/L²) · (1/latency_norm) · (1 + β·ρ(T_q))
+```
+
+**Key properties:** interpretable trace per routing decision; deliberation round budget θ_q; penalises low-confidence traces in the W update.
+
+### OctoRoute — Octopus-Inspired Distributed Routing
+
+OctoRoute replaces the centralised W matrix with a two-layer architecture inspired by the octopus nervous system (2/3 of octopus neurons are in the arms — decentralised intelligence):
+
+- **Layer 1 — Functional token dispatch** (`<octo_0>`…`<octo_N-1>`): central coordinator selects an arm via 1-bit chromatophore signals (Jaccard domain-match), reducing context by ~80%.
+- **Layer 2 — Arm-local W_local routing**: each arm maintains its own affinity matrix over the shared agent pool, updated independently.
+
+### Benchmark Results (5 seeds × 20 warm-up × 100 eval queries)
+
+| Router | Success | Latency (ms) | Interpretability | Best For |
+|---|---|---|---|---|
+| APRR (baseline) | 0.660 | 268.7 | Low | General-purpose |
+| **CROW** | 0.660 | 467.4 | **High** | Complex multi-step queries |
+| **OctoRoute** | 0.660 | **207.2** | Med | Latency-sensitive edge deployment |
+| CROW-OctoRoute | 0.658 | 497.8 | High | Research demonstrator |
+| StaticSemantic | 0.212 | 385.2 | None | Baseline |
+
+> OctoRoute achieves **~22% lower latency** than APRR via direct functional-token dispatch. CROW is expected to show larger success gains on real ToolBench G3 (out-of-distribution) splits where deliberation quality separates from greedy routing.
+
+### Source
+
+```
+src/aprr_extensions/
+  crow_router.py          # CROWRouter: CoT-gated routing with quality-weighted ΔW
+  octoroute_router.py     # OctoRouteRouter: functional tokens + arm-local W
+  __init__.py
+
+experiments/extensions/
+  aprr_comparison_benchmark.py  # 5-router benchmark runner
+
+notebooks/extensions/
+  APRR_CROW_OctoRoute_Benchmark.ipynb  # Kaggle/Colab-ready
+
+paper/extensions/
+  APRR_CROW_OctoRoute_Extension.md    # Full research extension document
+
+results/
+  extension_results.json
+```
+
+### PhD Integration Map
+
+| Extension | Objective 1 (SessionRerank) | Objective 3 (MNCD Mesh) | Objective 4 (FCNP Pruning) |
+|---|---|---|---|
+| **CROW** | Reasoning trace → session priority score | Negative-quality traces → distress signal | Trace relevance → context chunk filter |
+| **OctoRoute** | Arm domain → session category hint | CSA drops → mesh distress broadcast | Arm dispatch → domain-gated pruning |
+

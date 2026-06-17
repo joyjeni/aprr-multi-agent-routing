@@ -1,0 +1,42 @@
+{
+  "APRR": {
+    "success_rate": 0.66,
+    "avg_latency_ms": 268.71,
+    "avg_hops": 1.0,
+    "n_queries": 500,
+    "interpretability": "Low",
+    "overhead": "Low"
+  },
+  "CROW": {
+    "success_rate": 0.66,
+    "avg_latency_ms": 467.38,
+    "avg_hops": 1.0,
+    "n_queries": 500,
+    "interpretability": "High",
+    "overhead": "Med"
+  },
+  "OctoRoute": {
+    "success_rate": 0.66,
+    "avg_latency_ms": 207.22,
+    "avg_hops": 1.0,
+    "n_queries": 500,
+    "interpretability": "Med",
+    "overhead": "Low"
+  },
+  "CROW-OctoRoute": {
+    "success_rate": 0.658,
+    "avg_latency_ms": 497.76,
+    "avg_hops": 1.0,
+    "n_queries": 500,
+    "interpretability": "High",
+    "overhead": "High"
+  },
+  "StaticSemantic": {
+    "success_rate": 0.212,
+    "avg_latency_ms": 385.25,
+    "avg_hops": 1.0,
+    "n_queries": 500,
+    "interpretability": "None",
+    "overhead": "None"
+  }
+}
