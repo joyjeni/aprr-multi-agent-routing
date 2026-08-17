@@ -1,0 +1,28 @@
+---
+title: FTDR — Functional-Token Dispatch Router (Extension 2)
+config:
+  layout: elk
+---
+flowchart TD
+    Q(["<b>Query Q</b>"]):::input
+    SIG["<b>1 · Confidence Signals</b><br/>each Dispatch Arm computes<br/>emit_confidence_signal(query):<br/>Jaccard overlap(query tokens,<br/>arm domain keywords)"]:::deep
+    PICK["<b>2 · Arm Selection</b><br/>dispatch_via_functional_token()<br/>highest-confidence arm, else<br/>fallback: argmax W_global row-sum"]:::deep
+    TOK["<b>3 · Emit Functional<br/>Token</b><br/>&lt;dispatch_N&gt;"]:::token
+    LR1["<b>4 · Local Route</b><br/>local_route(query) using<br/>arm's own W_local<br/>(specialist sub-pool)"]:::deep2
+    EXEC["<b>5 · Execute</b><br/>Tool / API call"]:::exec
+    U1["<b>6a · update_local()</b><br/>Δ = 𝟙[success]/(L²·lat_norm)<br/>W_local[row,agent] += Δ, then<br/>W_local ← (1−λ)·W_local, clip ≥ 0"]:::update
+    U2["<b>6b · Update W_global</b><br/>if success:<br/>W_global[arm,agent] += Δ"]:::update
+    U3["<b>6c · Decay W_global</b><br/>W_global ← (1−λ)·W_global<br/>clip ≥ 0"]:::update
+    NOTE["<i>decayed W_local / W_global<br/>reinforce stage 1 signals</i>"]:::note
+
+    Q --> SIG --> PICK --> TOK --> LR1 --> EXEC
+    EXEC --> U1 --> U2 --> U3
+    U3 -.->|"per-arm decay loop"| NOTE
+
+    classDef input fill:#B45309,color:#ffffff,stroke:#7C3A02,stroke-width:2px,rx:8,ry:8
+    classDef deep fill:#F59E0B,color:#1E1B3A,stroke:#B45309,stroke-width:1.5px,rx:8,ry:8
+    classDef token fill:#7C3A02,color:#ffffff,stroke:#451A03,stroke-width:2px,rx:8,ry:8
+    classDef deep2 fill:#FCD34D,color:#1E1B3A,stroke:#B45309,stroke-width:1.5px,rx:8,ry:8
+    classDef exec fill:#1B2A4A,color:#ffffff,stroke:#0B1730,stroke-width:2px,rx:8,ry:8
+    classDef update fill:#0D9488,color:#ffffff,stroke:#064E3B,stroke-width:2px,rx:8,ry:8
+    classDef note fill:#FFFBEB,color:#7C3A02,stroke:#FDE68A,stroke-width:1px,rx:6,ry:6

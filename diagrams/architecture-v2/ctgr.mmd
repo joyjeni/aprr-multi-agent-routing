@@ -1,0 +1,36 @@
+---
+title: CTGR — Chain-of-Thought Gated Router (Extension 1)
+config:
+  layout: elk
+---
+flowchart TD
+    Q(["Query Q"]):::input
+    C1["1 · Complexity Score<br/>0.3·len + 0.4·category + 0.3·multistep ∈ [0,1]"]:::cut
+    GATE{"2 · Gate<br/>score &lt; τ (0.5) ?"}:::gate
+
+    G1["3a · Greedy Dispatch<br/>argmax over affinity matrix W row/column sum"]:::greedy
+
+    D1["3b · Top-k Candidates<br/>shortlist agents from W"]:::delib
+    D2["3c · Reasoning Trace<br/>1–5 template steps ∝ complexity"]:::delib
+    D3["3d · Quality Score<br/>score_reasoning_quality(trace)"]:::delib
+    D4["3e · Multi-Round Voting<br/>weighted vote, exit at ≥60%"]:::delib
+
+    AGENT["4 · Chosen Agent"]:::exec
+    EXEC["5 · Execute"]:::exec
+    RET["6 · route() return dict<br/>agent · agent_name · mode<br/>complexity_score · latency_ms · reasoning"]:::audit
+
+    Q --> C1 --> GATE
+    GATE -->|"yes: low complexity"| G1
+    GATE -->|"no: high complexity"| D1
+    D1 --> D2 --> D3 --> D4
+    G1 --> AGENT
+    D4 --> AGENT
+    AGENT --> EXEC --> RET
+
+    classDef input fill:#1B2A4A,stroke:#1B2A4A,color:#ffffff,font-weight:bold
+    classDef cut fill:#94A3B8,stroke:#64748B,color:#0f172a,font-weight:bold
+    classDef gate fill:#4C1D95,stroke:#2E1065,color:#ffffff,font-weight:bold
+    classDef greedy fill:#0E7490,stroke:#0C4A6E,color:#ffffff,font-weight:bold
+    classDef delib fill:#7C3AED,stroke:#4C1D95,color:#ffffff,font-weight:bold
+    classDef exec fill:#1B2A4A,stroke:#1B2A4A,color:#ffffff,font-weight:bold
+    classDef audit fill:#EA580C,stroke:#9A3412,color:#ffffff,font-weight:bold

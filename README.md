@@ -45,37 +45,30 @@ Two further verified reference points inform the comparison:
 
 Four separate, detailed diagrams — one per distinct flow — so each is readable at full detail (GitHub renders Mermaid natively; no external tool needed to view these).
 
+> **Rendering note (fixed 2026-08-17):** the previous revision of these four diagrams used a 2-row `subgraph`-wrapped layout with the default Mermaid/dagre renderer. When an edge crossed a subgraph boundary whose internal `direction` differed from the parent flowchart's direction, dagre routed that edge to the subgraph's *cluster* boundary rather than all the way to the actual target node — on a few edges (the `Query Q → stage 1` entry edge, the row-1→row-2 handoff edge, and the CTGR gate branches) this left a visible gap between the arrowhead and the node it was supposed to point at. All four diagrams below were rebuilt on the [ELK layout engine](https://github.com/kieler/elkjs) (`config: {layout: elk}`), which routes every edge — including ones crossing branch/merge points — all the way to the node's actual border. The trade-off: ELK does not honor a `direction` override inside a subgraph, so the earlier compact 2-row grid is no longer possible; these are now single-direction top-to-bottom pipelines (and a top-to-bottom decision tree for CTGR) rather than a wide 2×4 grid. Source `.mmd` + rendered `.png` for both the corrected version and the original are kept in the repo (see [Source files](#design-architecture-source-files) below) so the change is auditable.
+
 #### 1. Base / SOTA — MasRouter (Yue et al., ACL 2025)
 
 ```mermaid
 ---
 title: MasRouter — Base / SOTA Architecture (Yue et al., ACL 2025)
+config:
+  layout: elk
 ---
 flowchart TD
     Q(["<b>Query Q</b>"]):::input
+    ENC["<b>1 · Query Encoder</b><br/>Sentence-BERT / MiniLM<br/>e_Q &isin; R^D"]:::cut
+    LAT["<b>2 · Variational Latent</b><br/>H ~ N(&mu;, &sigma;&sup2;)"]:::cut
+    MODE["<b>3 · Collaboration-Mode<br/>Determiner F_&theta;t</b><br/>topology T &isin; {Chain, Tree,<br/>Graph, Debate, MacNet}<br/>k=&lceil;&delta;(H)&middot;&gamma;&rceil;, &gamma;=6 max"]:::cut
+    ROLE["<b>4 · Agent Role<br/>Allocator F_&theta;r</b><br/>autoregressive cascade<br/>over a 26-role pool"]:::cut
+    LLMR["<b>5 · Agent LLM<br/>Router F_&theta;m</b><br/>multinomial backbone pick:<br/>GPT-4o-mini, Claude-3.5-Haiku,<br/>Gemini-1.5-Flash, Llama-3.1-70B"]:::cut
+    EXEC["<b>6 · Execute MAS</b><br/>agents run in topology T<br/>with assigned roles &amp; backbones"]:::exec
+    REW["<b>7 · Reward</b><br/>R = U(S;Q,a) &minus; &lambda;&middot;C(S;Q)"]:::reward
+    TRAIN["<b>8 · Policy-Gradient<br/>Update</b><br/>&theta; &larr; &theta; &minus; &alpha;&middot;&nabla;&theta; E[&minus;R]<br/>REINFORCE, K=5&ndash;10 iters/query"]:::train
+    NOTE["<i>&theta;t, &theta;r, &theta;m updated offline;<br/>applied to stages 3&ndash;5 next query</i>"]:::note
 
-    subgraph ROW1[" "]
-        direction LR
-        ENC["<b>1 · Query Encoder</b><br/>Sentence-BERT / MiniLM<br/>e_Q &isin; R^D"]:::cut
-        LAT["<b>2 · Variational Latent</b><br/>H ~ N(&mu;, &sigma;&sup2;)"]:::cut
-        MODE["<b>3 · Collaboration-Mode<br/>Determiner F_&theta;t</b><br/>topology T &isin; {Chain, Tree,<br/>Graph, Debate, MacNet}<br/>k=&lceil;&delta;(H)&middot;&gamma;&rceil;, &gamma;=6 max"]:::cut
-        ROLE["<b>4 · Agent Role<br/>Allocator F_&theta;r</b><br/>autoregressive cascade<br/>over a 26-role pool"]:::cut
-        ENC --> LAT --> MODE --> ROLE
-    end
-
-    subgraph ROW2[" "]
-        direction LR
-        LLMR["<b>5 · Agent LLM<br/>Router F_&theta;m</b><br/>multinomial backbone pick:<br/>GPT-4o-mini, Claude-3.5-Haiku,<br/>Gemini-1.5-Flash, Llama-3.1-70B"]:::cut
-        EXEC["<b>6 · Execute MAS</b><br/>agents run in topology T<br/>with assigned roles &amp; backbones"]:::exec
-        REW["<b>7 · Reward</b><br/>R = U(S;Q,a) &minus; &lambda;&middot;C(S;Q)"]:::reward
-        TRAIN["<b>8 · Policy-Gradient<br/>Update</b><br/>&theta; &larr; &theta; &minus; &alpha;&middot;&nabla;&theta; E[&minus;R]<br/>REINFORCE, K=5&ndash;10 iters/query"]:::train
-        NOTE["<i>&theta;t, &theta;r, &theta;m updated offline;<br/>applied to stages 3&ndash;5 next query</i>"]:::note
-        LLMR --> EXEC --> REW --> TRAIN
-        TRAIN -.-> NOTE
-    end
-
-    Q --> ENC
-    ROLE --> LLMR
+    Q --> ENC --> LAT --> MODE --> ROLE --> LLMR --> EXEC --> REW --> TRAIN
+    TRAIN -.->|"offline update loop"| NOTE
 
     classDef input fill:#1B2A4A,color:#ffffff,stroke:#0B1730,stroke-width:2px,rx:8,ry:8
     classDef cut fill:#94A3B8,color:#0B1730,stroke:#475569,stroke-width:1.5px,rx:8,ry:8
@@ -83,8 +76,6 @@ flowchart TD
     classDef reward fill:#B45309,color:#ffffff,stroke:#7C3A02,stroke-width:2px,rx:8,ry:8
     classDef train fill:#7C3AED,color:#ffffff,stroke:#5B21B6,stroke-width:2px,rx:8,ry:8
     classDef note fill:#F1F5F9,color:#334155,stroke:#94A3B8,stroke-width:1px,rx:6,ry:6
-    style ROW1 fill:none,stroke:none
-    style ROW2 fill:none,stroke:none
 ```
 
 Gray = stages **cut** in APRR. Navy = execution. Amber = reward. Purple = the policy-gradient training loop APRR does not have.
@@ -94,31 +85,22 @@ Gray = stages **cut** in APRR. Navy = execution. Amber = reward. Purple = the po
 ```mermaid
 ---
 title: APRR — Core Architecture (This Repo, Objective 2)
+config:
+  layout: elk
 ---
 flowchart TD
     Q(["<b>Query Q</b>"]):::input
+    KW["<b>1 · Domain-Keyword<br/>Inference</b><br/>heuristic keyword match<br/><i>zero trainable parameters</i>"]:::light
+    ROW["<b>2 · Affinity Matrix<br/>Row Lookup</b><br/>W[i, :] &isin; R^N<br/>N&times;N routing-affinity matrix"]:::core
+    POL["<b>3 · Policy Computation</b><br/>P(aj|ai,q) &prop;<br/>W_ij^&alpha; &middot; &eta;_ij^&beta; &middot; &psi;j(q)^&gamma;"]:::core
+    SEL["<b>4 · Agent Selection</b><br/>argmax / sample aj"]:::core
+    EXEC["<b>5 · Tool / API<br/>Execution</b><br/>ToolBench real APIs"]:::exec
+    OUT["<b>6 · Observe Outcome</b><br/>success &isin; {0,1}<br/>path length L, latency"]:::observe
+    UPD["<b>7 · Online Update</b><br/>&Delta;W &prop; 1[success] / (L&sup2;&middot;lat_norm)<br/>W &larr; (1&minus;&lambda;)&middot;W + &Delta;W<br/><i>no gradients, no offline training</i>"]:::update
+    NOTE["<i>&Delta;W reinforces the affinity-<br/>matrix row used in stage 2</i>"]:::note
 
-    subgraph ROW1[" "]
-        direction LR
-        KW["<b>1 · Domain-Keyword<br/>Inference</b><br/>heuristic keyword match<br/><i>zero trainable parameters</i>"]:::light
-        ROW["<b>2 · Affinity Matrix<br/>Row Lookup</b><br/>W[i, :] &isin; R^N<br/>N&times;N routing-affinity matrix"]:::core
-        POL["<b>3 · Policy Computation</b><br/>P(aj|ai,q) &prop;<br/>W_ij^&alpha; &middot; &eta;_ij^&beta; &middot; &psi;j(q)^&gamma;"]:::core
-        KW --> ROW --> POL
-    end
-
-    subgraph ROW2[" "]
-        direction LR
-        SEL["<b>4 · Agent Selection</b><br/>argmax / sample aj"]:::core
-        EXEC["<b>5 · Tool / API<br/>Execution</b><br/>ToolBench real APIs"]:::exec
-        OUT["<b>6 · Observe Outcome</b><br/>success &isin; {0,1}<br/>path length L, latency"]:::observe
-        UPD["<b>7 · Online Update</b><br/>&Delta;W &prop; 1[success] / (L&sup2;&middot;lat_norm)<br/>W &larr; (1&minus;&lambda;)&middot;W + &Delta;W<br/><i>no gradients, no offline training</i>"]:::update
-        NOTE["<i>&Delta;W reinforces the affinity-<br/>matrix row used in stage 2</i>"]:::note
-        SEL --> EXEC --> OUT --> UPD
-        UPD -.-> NOTE
-    end
-
-    Q --> KW
-    POL --> SEL
+    Q --> KW --> ROW --> POL --> SEL --> EXEC --> OUT --> UPD
+    UPD -.->|"per-query online loop"| NOTE
 
     classDef input fill:#0F766E,color:#ffffff,stroke:#064E3B,stroke-width:2px,rx:8,ry:8
     classDef light fill:#CCFBF1,color:#0B1730,stroke:#0F766E,stroke-width:1.5px,rx:8,ry:8
@@ -127,8 +109,6 @@ flowchart TD
     classDef observe fill:#B45309,color:#ffffff,stroke:#7C3A02,stroke-width:2px,rx:8,ry:8
     classDef update fill:#0D9488,color:#ffffff,stroke:#064E3B,stroke-width:2px,rx:8,ry:8
     classDef note fill:#F0FDFA,color:#134E4A,stroke:#5EEAD4,stroke-width:1px,rx:6,ry:6
-    style ROW1 fill:none,stroke:none
-    style ROW2 fill:none,stroke:none
 ```
 
 APRR replaces MasRouter's entire learned-encoder + 3-network cascade with a single closed-form affinity-matrix lookup and update — zero trainable parameters, no gradients.
@@ -138,90 +118,67 @@ APRR replaces MasRouter's entire learned-encoder + 3-network cascade with a sing
 ```mermaid
 ---
 title: CTGR — Chain-of-Thought Gated Router (Extension 1)
+config:
+  layout: elk
 ---
-flowchart LR
-    Q(["<b>Query Q</b>"]):::input
-    CPX["<b>1 &middot; Complexity Score</b><br/>0.3&middot;len + 0.4&middot;category<br/>+ 0.3&middot;multistep &isin; [0,1]"]:::core
-    GATE{"<b>2 &middot; Gate</b><br/>score &lt; &tau; (0.5) ?"}:::gate
+flowchart TD
+    Q(["Query Q"]):::input
+    C1["1 · Complexity Score<br/>0.3&middot;len + 0.4&middot;category + 0.3&middot;multistep &isin; [0,1]"]:::cut
+    GATE{"2 · Gate<br/>score &lt; &tau; (0.5) ?"}:::gate
 
-    Q --> CPX --> GATE
+    G1["3a · Greedy Dispatch<br/>argmax over affinity matrix W row/column sum"]:::greedy
 
-    subgraph GREEDY["Low complexity &rarr; Greedy path"]
-        direction LR
-        G1["<b>3a &middot; Greedy Dispatch</b><br/>argmax over affinity<br/>matrix W row/column sum"]:::light
-    end
+    D1["3b · Top-k Candidates<br/>shortlist agents from W"]:::delib
+    D2["3c · Reasoning Trace<br/>1&ndash;5 template steps &prop; complexity"]:::delib
+    D3["3d · Quality Score<br/>score_reasoning_quality(trace)"]:::delib
+    D4["3e · Multi-Round Voting<br/>weighted vote, exit at &ge;60%"]:::delib
 
-    subgraph DELIB["High complexity &rarr; Deliberation path"]
-        direction TB
-        D1["<b>3b &middot; Top-k Candidates</b> &mdash; shortlist agents from W"]:::deep
-        D2["<b>3c &middot; Reasoning Trace</b> &mdash; 1&ndash;5 template steps &prop; complexity"]:::deep
-        D3["<b>3d &middot; Quality Score</b> &mdash; score_reasoning_quality(trace)"]:::deep
-        D4["<b>3e &middot; Multi-Round Voting</b> &mdash; weighted vote, exit at &ge;60%"]:::deep
-        D1 --> D2 --> D3 --> D4
-    end
+    AGENT["4 · Chosen Agent"]:::exec
+    EXEC["5 · Execute"]:::exec
+    RET["6 · route() return dict<br/>agent &middot; agent_name &middot; mode<br/>complexity_score &middot; latency_ms &middot; reasoning"]:::audit
 
-    GATE -->|"yes"| G1
-    GATE -->|"no"| D1
+    Q --> C1 --> GATE
+    GATE -->|"yes: low complexity"| G1
+    GATE -->|"no: high complexity"| D1
+    D1 --> D2 --> D3 --> D4
+    G1 --> AGENT
+    D4 --> AGENT
+    AGENT --> EXEC --> RET
 
-    SEL["<b>4 &middot; Chosen Agent</b>"]:::select
-    G1 --> SEL
-    D4 --> SEL
-
-    EXEC["<b>5 &middot; Execute</b>"]:::exec
-    UPD["<b>6 &middot; Update W</b><br/>decay-regularised<br/>APRR update"]:::update
-    SEL --> EXEC --> UPD
-    NOTE["<i>reinforces stage-1<br/>affinity matrix W</i>"]:::note
-    UPD -.-> NOTE
-
-    classDef input fill:#7C3AED,color:#ffffff,stroke:#5B21B6,stroke-width:2px,rx:8,ry:8
-    classDef core fill:#A78BFA,color:#1E1B3A,stroke:#5B21B6,stroke-width:1.5px,rx:8,ry:8
-    classDef gate fill:#5B21B6,color:#ffffff,stroke:#3B0764,stroke-width:2px
-    classDef light fill:#DDD6FE,color:#1E1B3A,stroke:#7C3AED,stroke-width:1.5px,rx:8,ry:8
-    classDef deep fill:#8B5CF6,color:#ffffff,stroke:#5B21B6,stroke-width:1.5px,rx:8,ry:8
-    classDef select fill:#1B2A4A,color:#ffffff,stroke:#0B1730,stroke-width:2px,rx:8,ry:8
-    classDef exec fill:#1B2A4A,color:#ffffff,stroke:#0B1730,stroke-width:2px,rx:8,ry:8
-    classDef update fill:#0D9488,color:#ffffff,stroke:#064E3B,stroke-width:2px,rx:8,ry:8
-    classDef note fill:#F5F3FF,color:#3B0764,stroke:#C4B5FD,stroke-width:1px,rx:6,ry:6
-    style GREEDY fill:#F5F3FF,stroke:#C4B5FD,stroke-width:1px
-    style DELIB fill:#F5F3FF,stroke:#C4B5FD,stroke-width:1px
+    classDef input fill:#1B2A4A,stroke:#1B2A4A,color:#ffffff,font-weight:bold
+    classDef cut fill:#94A3B8,stroke:#64748B,color:#0f172a,font-weight:bold
+    classDef gate fill:#4C1D95,stroke:#2E1065,color:#ffffff,font-weight:bold
+    classDef greedy fill:#0E7490,stroke:#0C4A6E,color:#ffffff,font-weight:bold
+    classDef delib fill:#7C3AED,stroke:#4C1D95,color:#ffffff,font-weight:bold
+    classDef exec fill:#1B2A4A,stroke:#1B2A4A,color:#ffffff,font-weight:bold
+    classDef audit fill:#EA580C,stroke:#9A3412,color:#ffffff,font-weight:bold
 ```
 
-CTGR re-adds MasRouter's "give complex queries more deliberation" idea as a training-free gate: below the complexity threshold it falls back to plain APRR greedy dispatch; above it, `deliberate()` runs template reasoning traces and multi-round weighted voting with early-exit at a 60% majority.
+CTGR re-adds MasRouter's "give complex queries more deliberation" idea as a training-free gate: below the complexity threshold it falls back to plain APRR greedy dispatch (`route()` → `mode="greedy"`); above it, `deliberate()` runs template reasoning traces and multi-round weighted voting with early-exit at a 60% majority (`mode="deliberation"`). Both paths return the same `route()` dict shape (stage 6), so downstream code does not need to branch on which path was taken.
 
 #### 4. Extension 2 — FTDR (Functional-Token Dispatch Router)
 
 ```mermaid
 ---
 title: FTDR — Functional-Token Dispatch Router (Extension 2)
+config:
+  layout: elk
 ---
 flowchart TD
     Q(["<b>Query Q</b>"]):::input
+    SIG["<b>1 · Confidence Signals</b><br/>each Dispatch Arm computes<br/>emit_confidence_signal(query):<br/>Jaccard overlap(query tokens,<br/>arm domain keywords)"]:::deep
+    PICK["<b>2 · Arm Selection</b><br/>dispatch_via_functional_token()<br/>highest-confidence arm, else<br/>fallback: argmax W_global row-sum"]:::deep
+    TOK["<b>3 · Emit Functional<br/>Token</b><br/>&lt;dispatch_N&gt;"]:::token
+    LR1["<b>4 · Local Route</b><br/>local_route(query) using<br/>arm's own W_local<br/>(specialist sub-pool)"]:::deep2
+    EXEC["<b>5 · Execute</b><br/>Tool / API call"]:::exec
+    U1["<b>6a · update_local()</b><br/>&Delta; = &#120793;[success]/(L&sup2;&middot;lat_norm)<br/>W_local[row,agent] += &Delta;, then<br/>W_local &larr; (1&minus;&lambda;)&middot;W_local, clip &ge; 0"]:::update
+    U2["<b>6b · Update W_global</b><br/>if success:<br/>W_global[arm,agent] += &Delta;"]:::update
+    U3["<b>6c · Decay W_global</b><br/>W_global &larr; (1&minus;&lambda;)&middot;W_global<br/>clip &ge; 0"]:::update
+    NOTE["<i>decayed W_local / W_global<br/>reinforce stage 1 signals</i>"]:::note
 
-    subgraph ROW1[" "]
-        direction LR
-        SIG["<b>1 &middot; Confidence Signals</b><br/>each Dispatch Arm computes<br/>emit_confidence_signal(query):<br/>Jaccard overlap(query tokens,<br/>arm domain keywords)"]:::deep
-        PICK["<b>2 &middot; Arm Selection</b><br/>dispatch_via_functional_token()<br/>highest-confidence arm, else<br/>fallback: argmax W_global row-sum"]:::deep
-        TOK["<b>3 &middot; Emit Functional<br/>Token</b><br/>&lt;dispatch_N&gt;"]:::token
-        SIG --> PICK --> TOK
-    end
-
-    subgraph ROW2[" "]
-        direction LR
-        LR1["<b>4 &middot; Local Route</b><br/>local_route(query) using<br/>arm's own W_local<br/>(specialist sub-pool)"]:::deep2
-        EXEC["<b>5 &middot; Execute</b><br/>Tool / API call"]:::exec
-        U1["<b>6a &middot; Update W_local</b><br/>update_local() on<br/>chosen arm"]:::update
-        U2["<b>6b &middot; Update W_global</b><br/>W_global[arm, agent] += &Delta;"]:::update
-        U3["<b>6c &middot; Decay Both</b><br/>W &larr; (1&minus;&lambda;)&middot;W, clip &ge; 0"]:::update
-        NOTE["<i>decayed W_local / W_global<br/>reinforce stage 1 signals</i>"]:::note
-        LR1 --> EXEC --> U1
-        EXEC --> U2
-        U1 --> U3
-        U2 --> U3
-        U3 -.-> NOTE
-    end
-
-    Q --> SIG
-    TOK --> LR1
+    Q --> SIG --> PICK --> TOK --> LR1 --> EXEC
+    EXEC --> U1 --> U2 --> U3
+    U3 -.->|"per-arm decay loop"| NOTE
 
     classDef input fill:#B45309,color:#ffffff,stroke:#7C3A02,stroke-width:2px,rx:8,ry:8
     classDef deep fill:#F59E0B,color:#1E1B3A,stroke:#B45309,stroke-width:1.5px,rx:8,ry:8
@@ -230,13 +187,23 @@ flowchart TD
     classDef exec fill:#1B2A4A,color:#ffffff,stroke:#0B1730,stroke-width:2px,rx:8,ry:8
     classDef update fill:#0D9488,color:#ffffff,stroke:#064E3B,stroke-width:2px,rx:8,ry:8
     classDef note fill:#FFFBEB,color:#7C3A02,stroke:#FDE68A,stroke-width:1px,rx:6,ry:6
-    style ROW1 fill:none,stroke:none
-    style ROW2 fill:none,stroke:none
 ```
 
-FTDR re-adds MasRouter's stage-wise cascade structure as a two-layer, still fully non-parametric system: a global coordinator (`W_global`) picks a specialist Dispatch Arm by confidence signal, that arm routes locally with its own `W_local`, and both matrices update (and decay) after every outcome.
+FTDR re-adds MasRouter's stage-wise cascade structure as a two-layer, still fully non-parametric system: a global coordinator (`W_global`) picks a specialist Dispatch Arm by confidence signal, that arm routes locally with its own `W_local`. On outcome, the update is **sequential**, matching `ftdr_router.py` exactly: the chosen arm's `update_local()` applies its delta *and* decays `W_local` in one call (stage 6a), then the coordinator adds the same delta to `W_global` (stage 6b), then `W_global` is decayed separately (stage 6c) — not two parallel updates followed by one joint decay.
 
-Source files for all four diagrams: [`diagrams/masrouter.mmd`](diagrams/masrouter.mmd), [`diagrams/aprr_core.mmd`](diagrams/aprr_core.mmd), [`diagrams/ctgr.mmd`](diagrams/ctgr.mmd), [`diagrams/ftdr.mmd`](diagrams/ftdr.mmd) — rendered to slide-ready PNGs via [Mermaid CLI](https://github.com/mermaid-js/mermaid-cli) for the PhD-defense deck.
+#### Design-architecture self-evaluation (research reviewer / UX designer / enterprise architect)
+
+Performed after the 2026-08-17 arrow-connection fix, before finalizing:
+
+- **Research reviewer** — re-checked every labeled stage against the actual function names and control flow in `src/aprr_extensions/ctgr_router.py` and `src/aprr_extensions/ftdr_router.py`. Found and corrected two inaccuracies introduced in the previous revision: (1) CTGR's stage 6 was labeled as a fabricated `decision.json audit record` that does not exist anywhere in the codebase — replaced with the router's actual `route()` return-dict fields; (2) FTDR's stages 6a/6b were drawn as two parallel branches feeding a single joint "Decay Both" step — the code updates `W_local` (with its own decay) and then `W_global` (with a separate decay) strictly sequentially, so the diagram was corrected to a single sequential chain. The MasRouter citation (Yue et al., ACL 2025, DOI [10.18653/v1/2025.acl-long.757](https://doi.org/10.18653/v1/2025.acl-long.757)) and CTGR's threshold logic (`complexity < threshold → greedy`) were re-verified against the paper and source respectively and are accurate as drawn.
+- **UX designer** — verified every arrowhead in all four re-rendered diagrams touches its target node's border directly (checked via pixel-level crops at each branch/merge junction), replacing the prior renderer's boundary-clipped, visually "floating" arrows. Kept a consistent color grammar per diagram (gray = cut-from-baseline, navy = execution, amber = reward/observe, purple = training/deliberation, teal = update rules) and dotted arrows reserved exclusively for the offline/online feedback-loop annotations, so a dotted line always means "this is a note about what feeds back," not a live pipeline edge.
+- **Enterprise architect** — confirmed each diagram's system boundaries and data-flow direction are correct: MasRouter and APRR both show a strictly acyclic online-serving path with a feedback annotation (not a real cycle) for parameter/matrix updates; CTGR is drawn as a true decision tree with a single shared exit node (both branches converge on stage 4 before execution, matching the code's single `route()` return path); FTDR correctly separates the two-layer W_local/W_global responsibility boundary (arm-local state vs. coordinator-global state) and shows both being touched on every outcome, in the order the code actually touches them.
+
+**Trade-off accepted:** switching to the ELK layout engine for guaranteed edge-to-node connections means these four diagrams are now single-direction pipelines/tree (portrait-oriented, aspect ratios ~0.3–0.4) rather than the previous wide 2-row grid (~2:1) designed to fill a 16:9 slide edge-to-edge. For slide use, place each diagram as a portrait panel alongside explanatory text rather than as a full-bleed background — this is a more common and more readable pattern for detailed technical diagrams in a defense deck than a low-detail wide banner would have been.
+
+<a id="design-architecture-source-files"></a>
+Source files for all four diagrams (current, corrected): [`diagrams/architecture-v2/masrouter.mmd`](diagrams/architecture-v2/masrouter.mmd) / [`.png`](diagrams/architecture-v2/masrouter.png), [`diagrams/architecture-v2/aprr_core.mmd`](diagrams/architecture-v2/aprr_core.mmd) / [`.png`](diagrams/architecture-v2/aprr_core.png), [`diagrams/architecture-v2/ctgr.mmd`](diagrams/architecture-v2/ctgr.mmd) / [`.png`](diagrams/architecture-v2/ctgr.png), [`diagrams/architecture-v2/ftdr.mmd`](diagrams/architecture-v2/ftdr.mmd) / [`.png`](diagrams/architecture-v2/ftdr.png) — rendered via [Mermaid CLI](https://github.com/mermaid-js/mermaid-cli) with the [ELK](https://github.com/kieler/elkjs) layout engine for the PhD-defense deck. The prior (dagre-rendered, connection-bug) versions remain at [`diagrams/`](diagrams/) for audit purposes and are superseded by the files above.
+
 
 ### Property comparison (verified, cited sources only)
 
