@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getMultiSeed, getAblation } from "@/lib/data";
+import { getMultiSeed, getAblation, getPipelineResults } from "@/lib/data";
 
 export const dynamic = "force-static";
 
@@ -13,6 +13,7 @@ const CORS = {
 export async function GET() {
   const multiseed = getMultiSeed();
   const ablation = getAblation();
+  const pipeline = getPipelineResults();
   return NextResponse.json(
     {
       method: "APRR",
@@ -27,6 +28,7 @@ export async function GET() {
       },
       multiseed,
       ablation,
+      pipeline,
     },
     { headers: CORS }
   );

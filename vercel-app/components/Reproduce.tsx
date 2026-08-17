@@ -25,18 +25,18 @@ const LINKS: ResLink[] = [
     external: true,
   },
   {
-    title: "Kaggle kernel",
-    desc: "Alternative reproducible runtime (placeholder — link to be added on publication).",
-    href: "#",
-    cta: "Coming soon",
-    external: false,
-    disabled: true,
+    title: "Objective 1 → Objective 2 pipeline",
+    desc: "Kaggle-executable notebook: session-aware reranking feeds APRR/CTGR/FTDR online routing on real ToolBench data.",
+    href: "https://github.com/joyjeni/aprr-multi-agent-routing/blob/main/notebooks/APRR_Objective1_Objective2_ToolBench.ipynb",
+    cta: "Open notebook",
+    external: true,
   },
 ];
 
 const DATASETS: { label: string; href: string }[] = [
   { label: "multiseed.json", href: "/data/multiseed.json" },
   { label: "ablation.json", href: "/data/ablation.json" },
+  { label: "pipeline_results.json", href: "/data/pipeline_results.json" },
   { label: "API · /api/results", href: "/api/results" },
 ];
 

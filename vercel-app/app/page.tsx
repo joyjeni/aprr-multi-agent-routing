@@ -1,4 +1,4 @@
-import { getMultiSeed, getAblation } from "@/lib/data";
+import { getMultiSeed, getAblation, getPipelineResults } from "@/lib/data";
 import { Nav } from "@/components/Nav";
 import { Hero } from "@/components/Hero";
 import { Section } from "@/components/Section";
@@ -6,12 +6,14 @@ import { ResultsTable } from "@/components/ResultsTable";
 import { Charts } from "@/components/Charts";
 import { Figures } from "@/components/Figures";
 import { AlgorithmCard } from "@/components/AlgorithmCard";
+import { Pipeline } from "@/components/Pipeline";
 import { Reproduce } from "@/components/Reproduce";
 import { Logo } from "@/components/Logo";
 
 export default function Home() {
   const data = getMultiSeed();
   const ablation = getAblation();
+  const pipeline = getPipelineResults();
 
   return (
     <>
@@ -57,6 +59,16 @@ export default function Home() {
           intro="A softmax-style routing policy with a decay-regularised, success-weighted reinforcement rule — interpretable as online policy iteration with a closed-form policy gradient."
         >
           <AlgorithmCard />
+        </Section>
+
+        <div className="hairline" />
+        <Section
+          id="pipeline"
+          eyebrow="Objective 1 → Objective 2"
+          title="End-to-end pipeline: session-aware reranking feeds multi-agent routing"
+          intro="A Kaggle-executable notebook chains Objective 1's session-aware ToolBench reranker into Objective 2's APRR/CTGR/FTDR routers, running genuine online reinforcement learning on real ToolBench eval queries — every number below is reproduced live when the notebook runs."
+        >
+          <Pipeline data={pipeline} />
         </Section>
 
         <div className="hairline" />

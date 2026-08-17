@@ -68,3 +68,45 @@ export const ROUTER_COLORS: Record<string, string> = {
   APRR: "#d93025",
   Oracle: "#1e9e6a",
 };
+
+// --- Objective 1 -> Objective 2 pipeline notebook results ---
+
+export interface PipelineRouterResult {
+  router: string;
+  n_queries: number;
+  success_rate: number;
+  success_rate_first_half: number;
+  success_rate_second_half: number;
+  mean_routing_compute_ms: number;
+}
+
+export interface PipelineObj1Validation {
+  n_queries: number;
+  n_sessions: number;
+  BM25_only: { "Hit@1": number; "Hit@5": number; "NDCG@5": number };
+  BM25_plus_SessionRerank: { "Hit@1": number; "Hit@5": number; "NDCG@5": number };
+}
+
+export interface PipelineResults {
+  dataset: string;
+  objective1_repo: string;
+  objective2_repo: string;
+  agent_pool: string[];
+  categories: string[];
+  n_eval_queries: number;
+  fusion_boost_fraction: number;
+  fusion_boost_floor: number;
+  objective1_validation: PipelineObj1Validation;
+  results: PipelineRouterResult[];
+}
+
+export const PIPELINE_COLORS: Record<string, string> = {
+  Random: "#6b6b73",
+  StaticSemantic: "#94A3B8",
+  "APRR-core (online, no Obj1 signal)": "#0F766E",
+  "CTGR (online, no Obj1 signal)": "#7C3AED",
+  "FTDR (online, no Obj1 signal)": "#B45309",
+  "APRR-core + Obj1 fusion (online)": "#0D9488",
+  "CTGR + Obj1 fusion (online)": "#5B21B6",
+  "FTDR + Obj1 fusion (online)": "#EA580C",
+};
