@@ -371,10 +371,13 @@ experiments/extensions/
   aprr_extension_benchmark.py  # Real-data 5-router benchmark runner
 
 notebooks/
-  APRR_Objective1_Objective2_ToolBench.ipynb  # Kaggle-executable, flows Objective 1 → Objective 2
+  APRR_Objective1_Objective2_ToolBench.ipynb           # Kaggle-executable, flows Objective 1 → Objective 2
+  APRR_Objective1_Objective2_ToolBench.executed.ipynb  # pre-executed copy, for auditability
 
 results/
   extension_results.json
+  objective1_objective2_pipeline_results.json  # notebook's saved output
+  objective1_objective2_pipeline_results.png   # notebook's saved chart
 ```
 
 ### PhD Integration Map
@@ -383,6 +386,34 @@ results/
 |---|---|---|---|
 | **CTGR** | Reasoning trace → session priority score | Negative-quality traces → distress signal | Trace relevance → context chunk filter |
 | **FTDR** | Arm domain → session category hint | Confidence-signal drops → mesh distress broadcast | Arm dispatch → domain-gated pruning |
+
+### Executable pipeline notebook: Objective 1 → Objective 2 (real ToolBench data, online learning)
+
+[![Kaggle](https://img.shields.io/badge/Kaggle-Run%20notebook-20BEFF)](https://github.com/joyjeni/aprr-multi-agent-routing/blob/main/notebooks/APRR_Objective1_Objective2_ToolBench.ipynb)
+
+[`notebooks/APRR_Objective1_Objective2_ToolBench.ipynb`](notebooks/APRR_Objective1_Objective2_ToolBench.ipynb) is a self-contained, Kaggle-compatible notebook (no local-only paths — it `pip install`s, `git clone`s both Objective 1 and Objective 2 repos, and downloads the real `tuandunghcmut/toolbench-v1` Hugging Face dataset on first run) that:
+
+1. Runs Objective 1's real `BM25Retriever` + `SessionRerank` + `SessionPrior` on real ToolBench eval queries, grouped into the repo's own synthetic-session evaluation protocol, and freshly computes Hit@1/Hit@5/NDCG@5.
+2. Takes Objective 1's top-1 session-reranked API category per query as a hand-off signal into Objective 2.
+3. Runs APRR-core, CTGR, and FTDR as **genuine online (prequential) reinforcement learning** — each router routes a query, is scored, then calls its own real `update()` method to reinforce its affinity matrix over a single fixed-seed pass through 165 real ToolBench eval queries — both with and without the Objective 1 fusion signal (an additive score boost, scaled to each router's live score spread, applied to the agent matching Objective 1's suggested category).
+4. Reports `success_rate_first_half` vs. `success_rate_second_half` per router as direct evidence of online learning, not just a single frozen number.
+
+A pre-executed copy (`APRR_Objective1_Objective2_ToolBench.executed.ipynb`, run via `jupyter nbconvert --execute` from a clean clone-and-download state) and the resulting `results/objective1_objective2_pipeline_results.json` / `.png` are committed alongside it for auditability.
+
+**Results (seed=42, n=165 real ToolBench eval queries, online prequential evaluation):**
+
+| Router | Success rate | First half | Second half | Mean routing compute (ms) |
+|---|---|---|---|---|
+| Random | 0.2545 | 0.2439 | 0.2651 | 0.002 |
+| StaticSemantic | 0.7091 | 0.7683 | 0.6506 | 0.011 |
+| APRR-core (online, no Obj1 signal) | 0.7455 | 0.7683 | 0.7229 | 0.285 |
+| CTGR (online, no Obj1 signal) | 0.5576 | 0.5244 | 0.5904 | 1.149 |
+| FTDR (online, no Obj1 signal) | 0.5030 | 0.5244 | 0.4819 | 0.104 |
+| APRR-core + Obj1 fusion (online) | 0.7455 | 0.7683 | 0.7229 | 0.257 |
+| **CTGR + Obj1 fusion (online)** | **0.6606** | 0.6707 | 0.6506 | 0.941 |
+| FTDR + Obj1 fusion (online) | 0.5030 | 0.5244 | 0.4819 | 0.107 |
+
+> **Honest reading.** CTGR is the only router whose success rate visibly changes with the Objective 1 fusion signal (0.5576 → 0.6606), because its deliberation branch reshuffles the *shortlist* of candidate agents using the boosted scores. APRR-core and FTDR make a single greedy argmax decision with no exploration; once online reinforcement pushes an incumbent choice's score high enough, a single query's fusion boost is mathematically too small to overturn it, and neither router revisits an already-confident wrong pick — a genuine exploration/exploitation limitation of greedy, no-exploration online routers, documented here rather than hidden. This is a natural next extension (ε-greedy exploration, already used in this repo's core topology router in `src/aprr/router.py`, has not yet been carried over to these lightweight domain-keyword variants).
 
 <a id="review-driven-corrections"></a>
 ## Review-driven corrections (August 2026)
