@@ -1,0 +1,37 @@
+---
+title: APRR — Core Architecture (This Repo, Objective 2)
+---
+flowchart TD
+    Q(["<b>Query Q</b>"]):::input
+
+    subgraph ROW1[" "]
+        direction LR
+        KW["<b>1 · Domain-Keyword<br/>Inference</b><br/>heuristic keyword match<br/><i>zero trainable parameters</i>"]:::light
+        ROW["<b>2 · Affinity Matrix<br/>Row Lookup</b><br/>W[i, :] &isin; R^N<br/>N&times;N routing-affinity matrix"]:::core
+        POL["<b>3 · Policy Computation</b><br/>P(aj|ai,q) &prop;<br/>W_ij^&alpha; &middot; &eta;_ij^&beta; &middot; &psi;j(q)^&gamma;"]:::core
+        KW --> ROW --> POL
+    end
+
+    subgraph ROW2[" "]
+        direction LR
+        SEL["<b>4 · Agent Selection</b><br/>argmax / sample aj"]:::core
+        EXEC["<b>5 · Tool / API<br/>Execution</b><br/>ToolBench real APIs"]:::exec
+        OUT["<b>6 · Observe Outcome</b><br/>success &isin; {0,1}<br/>path length L, latency"]:::observe
+        UPD["<b>7 · Online Update</b><br/>&Delta;W &prop; 1[success] / (L&sup2;&middot;lat_norm)<br/>W &larr; (1&minus;&lambda;)&middot;W + &Delta;W<br/><i>no gradients, no offline training</i>"]:::update
+        NOTE["<i>&Delta;W reinforces the affinity-<br/>matrix row used in stage 2</i>"]:::note
+        SEL --> EXEC --> OUT --> UPD
+        UPD -.-> NOTE
+    end
+
+    Q --> KW
+    POL --> SEL
+
+    classDef input fill:#0F766E,color:#ffffff,stroke:#064E3B,stroke-width:2px,rx:8,ry:8
+    classDef light fill:#CCFBF1,color:#0B1730,stroke:#0F766E,stroke-width:1.5px,rx:8,ry:8
+    classDef core fill:#0F766E,color:#ffffff,stroke:#064E3B,stroke-width:2px,rx:8,ry:8
+    classDef exec fill:#1B2A4A,color:#ffffff,stroke:#0B1730,stroke-width:2px,rx:8,ry:8
+    classDef observe fill:#B45309,color:#ffffff,stroke:#7C3A02,stroke-width:2px,rx:8,ry:8
+    classDef update fill:#0D9488,color:#ffffff,stroke:#064E3B,stroke-width:2px,rx:8,ry:8
+    classDef note fill:#F0FDFA,color:#134E4A,stroke:#5EEAD4,stroke-width:1px,rx:6,ry:6
+    style ROW1 fill:none,stroke:none
+    style ROW2 fill:none,stroke:none

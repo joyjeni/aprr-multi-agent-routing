@@ -47,3 +47,6 @@ vercel-app/yarn-error.log*
 
 # Per-seed raw episodes (large) — only keep summary
 results/seed_*/episodes.jsonl
+
+# Downloaded ToolBench dataset cache (reproducible via src/aprr/data/download_toolbench.py)
+/data/

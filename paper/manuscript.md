@@ -47,13 +47,13 @@ AutoGen [Wu et al., 2023] introduced the conversable-agent abstraction and manag
 
 ### Dynamic Topology and Differentiable Routing
 
-DyTopo [Hong et al., 2026] learns a sparse agent graph per-round via a manager LLM, but reconstruction cost scales with agent count and the topology is discarded after each round—precluding long-horizon learning. Differentiable MoA (DMoA) [Wu et al., 2026] trains a differentiable routing controller with predictive-entropy self-supervision; it requires gradient access to the underlying LLM, which is unavailable for proprietary models. NeuroMAS [Li et al., 2026] casts multi-agent coordination as a trainable neural network via RL; the training signal is end-to-end task reward which is expensive to obtain at inference time. FlowBank [Zhang et al., 2026] precomputes and reuses a portfolio of workflows but cannot adapt to previously unseen query patterns. MetaCogAgent [Chen et al., 2026] introduces metacognitive self-assessment for agent delegation; it operates at the *within-agent* level, not across the agent topology.
+DyTopo [Lu et al., 2026] learns a sparse agent graph per-round via semantic matching, but reconstruction cost scales with agent count and the topology is discarded after each round—precluding long-horizon learning. Differentiable MoA (DMoA) [Wu et al., 2026] trains a differentiable routing controller with predictive-entropy self-supervision; it requires gradient access to the underlying LLM, which is unavailable for proprietary models. NeuroMAS [Lu et al., 2026] casts multi-agent coordination as a trainable neural network via joint reinforcement learning; the training signal is end-to-end task reward which is expensive to obtain at inference time. FlowBank [Yu et al., 2026] precomputes and reuses a portfolio of query-adaptive agentic workflows, favouring workflow-level caching over the per-hop, per-edge affinity learning APRR performs. MetaCogAgent [2026] introduces metacognitive self-assessment for agent delegation; it operates at the *within-agent* level, not across the agent topology. Closest in problem framing is **MasRouter** [Yue et al., ACL 2025], a cascaded neural controller (collaboration-mode determiner → role allocator → LLM router) trained end-to-end via policy gradient; APRR differs by requiring zero trainable parameters, no offline training data, and by operating over a fixed specialist-agent pool rather than a swappable-LLM-backbone pool (see README.md § "Base Paper & Design Architecture" for the full architectural delta).
 
 **Key differentiator.** Unlike DyTopo's per-round reconstruction, APRR updates **W** *in-place* after each episode in O(L) time (L = path length), retaining long-horizon information across the full experiment. Unlike DMoA/NeuroMAS, APRR requires no LLM gradients. Unlike FlowBank, APRR adapts online.
 
 ### LLM Routing
 
-RouteLLM [Ong et al., 2024] and Mixture-of-Experts (MoE) [Shazeer et al., 2017] select among models rather than among *agents in a topology*; they do not consider multi-hop routing, latency constraints, or distractor-robustness. MAPoRL [Tan et al., 2026] applies RL to multi-agent policy optimisation but does not study tool-calling topologies.
+RouteLLM [Ong et al., 2024] and Mixture-of-Experts (MoE) [Shazeer et al., 2017] select among models rather than among *agents in a topology*; they do not consider multi-hop routing, latency constraints, or distractor-robustness. MAPoRL [Park et al., ACL 2025] applies post-co-training RL to multi-agent LLM collaboration but does not study tool-calling topologies.
 
 ### Policy Gradient Methods
 
@@ -311,29 +311,30 @@ Identifying effective learning rate η = κ/(Wᵢⱼ L² ℓ̃), reward R = r, a
 2. Chase, H. (2023). LangChain / LangGraph. <https://github.com/langchain-ai/langgraph>
 3. Moura, J. (2023). CrewAI. <https://crewai.com>
 4. Qin, Y., et al. (2024). ToolLLM: Facilitating large language models to master 16000+ real-world APIs. *ICLR 2024*. <https://arxiv.org/abs/2307.16789>
-5. Hong, M., et al. (2026). DyTopo: Manager-guided dynamic topology reconstruction. *arXiv:2602.xxxxx*.
-6. Wu, J., et al. (2026). DMoA: Differentiable mixture-of-agents routing. *arXiv:2603.xxxxx*.
-7. Li, H., et al. (2026). NeuroMAS: Multi-agent systems as trainable neural networks. *ICML 2026*.
-8. Zhang, R., et al. (2026). FlowBank: Precompute-and-reuse workflow portfolios. *ACL 2026*.
-9. Chen, Y., et al. (2026). MetaCogAgent: Metacognitive self-assessment for agent delegation. *EMNLP 2026*.
-10. Tan, K., et al. (2026). MAPoRL: Multi-agent policy optimization with RL. *IJCAI 2026*.
-11. Ong, I.O., et al. (2024). RouteLLM: Learning to route LLMs with preference data. *arXiv:2406.18665*. <https://arxiv.org/abs/2406.18665>
-12. Shazeer, N., et al. (2017). Outrageously large neural networks: The sparsely-gated mixture-of-experts layer. *ICLR 2017*. <https://arxiv.org/abs/1701.06538>
-13. Williams, R.J. (1992). Simple statistical gradient-following algorithms for connectionist reinforcement learning. *Machine Learning*, 8(3–4), 229–256.
-14. Sutton, R.S. & Barto, A.G. (2018). *Reinforcement Learning: An Introduction* (2nd ed.). MIT Press.
-15. Vaswani, A., et al. (2017). Attention is all you need. *NeurIPS 2017*. <https://arxiv.org/abs/1706.03762>
-16. Yao, S., et al. (2022). ReAct: Synergizing reasoning and acting in language models. *ICLR 2023*. <https://arxiv.org/abs/2210.03629>
-17. Schick, T., et al. (2023). Toolformer: Language models can teach themselves to use tools. *NeurIPS 2023*. <https://arxiv.org/abs/2302.04761>
-18. Patil, S.S., et al. (2023). Gorilla: Large language model connected with massive APIs. *arXiv:2305.15334*. <https://arxiv.org/abs/2305.15334>
-19. OpenAI (2022). ChatGPT: Optimizing language models for dialogue. <https://openai.com/chatgpt>
-20. Touvron, H., et al. (2023). LLaMA: Open and efficient foundation language models. *arXiv:2302.13971*. <https://arxiv.org/abs/2302.13971>
-21. Google DeepMind (2024). Gemma: Open models based on Gemini. *arXiv:2403.08295*. <https://arxiv.org/abs/2403.08295>
-22. Yao, S., et al. (2023). Tree of thoughts: Deliberate problem solving with LLMs. *NeurIPS 2023*. <https://arxiv.org/abs/2305.10601>
-23. Jiang, A.Q., et al. (2024). Mixtral of experts. *arXiv:2401.04088*. <https://arxiv.org/abs/2401.04088>
-24. Brown, T.B., et al. (2020). Language models are few-shot learners. *NeurIPS 2020*. <https://arxiv.org/abs/2005.14165>
-25. Nakano, R., et al. (2021). WebGPT: Browser-assisted question-answering with human feedback. *arXiv:2112.09332*. <https://arxiv.org/abs/2112.09332>
-26. Ouyang, L., et al. (2022). Training language models to follow instructions with human feedback. *NeurIPS 2022*. <https://arxiv.org/abs/2203.02155>
-27. Mnih, V., et al. (2015). Human-level control through deep reinforcement learning. *Nature*, 518, 529–533.
-28. Schulman, J., et al. (2017). Proximal policy optimization algorithms. *arXiv:1707.06347*. <https://arxiv.org/abs/1707.06347>
-29. Mnih, V., et al. (2016). Asynchronous methods for deep reinforcement learning. *ICML 2016*. <https://arxiv.org/abs/1602.01783>
-30. Silver, D., et al. (2016). Mastering the game of Go with deep neural networks. *Nature*, 529, 484–489.
+5. Lu, Y., Hu, Y., Zhao, X., & Cao, J. (2026). DyTopo: Dynamic Topology Routing for Multi-Agent Reasoning via Semantic Matching. *arXiv:2602.06039*. https://arxiv.org/abs/2602.06039
+6. Wu, X., Lu, J., Yan, S., Qiu, X., Hu, J., Guo, C., & Yang, B. (2026). Differentiable Mixture-of-Agents Incentivizes Swarm Intelligence of Large Language Models. *arXiv:2605.15706*. https://arxiv.org/html/2605.15706v1
+7. Lu, H., Fang, L., Zhong, W., & Ma, P. (2026). NeuroMAS: Multi-Agent Systems as Neural Networks with Joint Reinforcement Learning. *arXiv:2605.16757*. https://arxiv.org/abs/2605.16757
+8. Yu, F., et al. (2026). FlowBank: Query-Adaptive Agentic Workflows Optimization through Precompute-and-Reuse. *arXiv:2606.11290*. https://huggingface.co/papers/2606.11290
+9. (2026). MetaCogAgent: A Metacognitive Multi-Agent LLM Framework with Self-Aware Task Delegation. *arXiv:2605.17292* (submitted IEEE SMC 2026). https://arxiv.org/abs/2605.17292
+10. Park, C., Han, S., Guo, X., Ozdaglar, A.E., Zhang, K., & Kim, J.-K. (2025). MAPoRL: Multi-Agent Post-Co-Training for Collaborative Large Language Models with Reinforcement Learning. *ACL 2025*, 2025.acl-long.1459. https://aclanthology.org/2025.acl-long.1459/
+11. Yue, Y., Zhang, G., Liu, B., Wan, G., Wang, K., Cheng, D., & Qi, Y. (2025). MasRouter: Learning to Route LLMs for Multi-Agent Systems. *ACL 2025*, pp. 15549–15572. https://aclanthology.org/2025.acl-long.757/
+12. Ong, I.O., et al. (2024). RouteLLM: Learning to route LLMs with preference data. *arXiv:2406.18665*. <https://arxiv.org/abs/2406.18665>
+13. Shazeer, N., et al. (2017). Outrageously large neural networks: The sparsely-gated mixture-of-experts layer. *ICLR 2017*. <https://arxiv.org/abs/1701.06538>
+14. Williams, R.J. (1992). Simple statistical gradient-following algorithms for connectionist reinforcement learning. *Machine Learning*, 8(3–4), 229–256.
+15. Sutton, R.S. & Barto, A.G. (2018). *Reinforcement Learning: An Introduction* (2nd ed.). MIT Press.
+16. Vaswani, A., et al. (2017). Attention is all you need. *NeurIPS 2017*. <https://arxiv.org/abs/1706.03762>
+17. Yao, S., et al. (2022). ReAct: Synergizing reasoning and acting in language models. *ICLR 2023*. <https://arxiv.org/abs/2210.03629>
+18. Schick, T., et al. (2023). Toolformer: Language models can teach themselves to use tools. *NeurIPS 2023*. <https://arxiv.org/abs/2302.04761>
+19. Patil, S.S., et al. (2023). Gorilla: Large language model connected with massive APIs. *arXiv:2305.15334*. <https://arxiv.org/abs/2305.15334>
+20. OpenAI (2022). ChatGPT: Optimizing language models for dialogue. <https://openai.com/chatgpt>
+21. Touvron, H., et al. (2023). LLaMA: Open and efficient foundation language models. *arXiv:2302.13971*. <https://arxiv.org/abs/2302.13971>
+22. Google DeepMind (2024). Gemma: Open models based on Gemini. *arXiv:2403.08295*. <https://arxiv.org/abs/2403.08295>
+23. Yao, S., et al. (2023). Tree of thoughts: Deliberate problem solving with LLMs. *NeurIPS 2023*. <https://arxiv.org/abs/2305.10601>
+24. Jiang, A.Q., et al. (2024). Mixtral of experts. *arXiv:2401.04088*. <https://arxiv.org/abs/2401.04088>
+25. Brown, T.B., et al. (2020). Language models are few-shot learners. *NeurIPS 2020*. <https://arxiv.org/abs/2005.14165>
+26. Nakano, R., et al. (2021). WebGPT: Browser-assisted question-answering with human feedback. *arXiv:2112.09332*. <https://arxiv.org/abs/2112.09332>
+27. Ouyang, L., et al. (2022). Training language models to follow instructions with human feedback. *NeurIPS 2022*. <https://arxiv.org/abs/2203.02155>
+28. Mnih, V., et al. (2015). Human-level control through deep reinforcement learning. *Nature*, 518, 529–533.
+29. Schulman, J., et al. (2017). Proximal policy optimization algorithms. *arXiv:1707.06347*. <https://arxiv.org/abs/1707.06347>
+30. Mnih, V., et al. (2016). Asynchronous methods for deep reinforcement learning. *ICML 2016*. <https://arxiv.org/abs/1602.01783>
+31. Silver, D., et al. (2016). Mastering the game of Go with deep neural networks. *Nature*, 529, 484–489.

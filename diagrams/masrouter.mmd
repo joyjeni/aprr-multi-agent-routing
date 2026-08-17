@@ -1,0 +1,37 @@
+---
+title: MasRouter — Base / SOTA Architecture (Yue et al., ACL 2025)
+---
+flowchart TD
+    Q(["<b>Query Q</b>"]):::input
+
+    subgraph ROW1[" "]
+        direction LR
+        ENC["<b>1 · Query Encoder</b><br/>Sentence-BERT / MiniLM<br/>e_Q &isin; R^D"]:::cut
+        LAT["<b>2 · Variational Latent</b><br/>H ~ N(&mu;, &sigma;&sup2;)"]:::cut
+        MODE["<b>3 · Collaboration-Mode<br/>Determiner F_&theta;t</b><br/>topology T &isin; {Chain, Tree,<br/>Graph, Debate, MacNet}<br/>k=&lceil;&delta;(H)&middot;&gamma;&rceil;, &gamma;=6 max"]:::cut
+        ROLE["<b>4 · Agent Role<br/>Allocator F_&theta;r</b><br/>autoregressive cascade<br/>over a 26-role pool"]:::cut
+        ENC --> LAT --> MODE --> ROLE
+    end
+
+    subgraph ROW2[" "]
+        direction LR
+        LLMR["<b>5 · Agent LLM<br/>Router F_&theta;m</b><br/>multinomial backbone pick:<br/>GPT-4o-mini, Claude-3.5-Haiku,<br/>Gemini-1.5-Flash, Llama-3.1-70B"]:::cut
+        EXEC["<b>6 · Execute MAS</b><br/>agents run in topology T<br/>with assigned roles &amp; backbones"]:::exec
+        REW["<b>7 · Reward</b><br/>R = U(S;Q,a) &minus; &lambda;&middot;C(S;Q)"]:::reward
+        TRAIN["<b>8 · Policy-Gradient<br/>Update</b><br/>&theta; &larr; &theta; &minus; &alpha;&middot;&nabla;&theta; E[&minus;R]<br/>REINFORCE, K=5&ndash;10 iters/query"]:::train
+        NOTE["<i>&theta;t, &theta;r, &theta;m updated offline;<br/>applied to stages 3&ndash;5 next query</i>"]:::note
+        LLMR --> EXEC --> REW --> TRAIN
+        TRAIN -.-> NOTE
+    end
+
+    Q --> ENC
+    ROLE --> LLMR
+
+    classDef input fill:#1B2A4A,color:#ffffff,stroke:#0B1730,stroke-width:2px,rx:8,ry:8
+    classDef cut fill:#94A3B8,color:#0B1730,stroke:#475569,stroke-width:1.5px,rx:8,ry:8
+    classDef exec fill:#1B2A4A,color:#ffffff,stroke:#0B1730,stroke-width:2px,rx:8,ry:8
+    classDef reward fill:#B45309,color:#ffffff,stroke:#7C3A02,stroke-width:2px,rx:8,ry:8
+    classDef train fill:#7C3AED,color:#ffffff,stroke:#5B21B6,stroke-width:2px,rx:8,ry:8
+    classDef note fill:#F1F5F9,color:#334155,stroke:#94A3B8,stroke-width:1px,rx:6,ry:6
+    style ROW1 fill:none,stroke:none
+    style ROW2 fill:none,stroke:none

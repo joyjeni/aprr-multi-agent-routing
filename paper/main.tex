@@ -164,33 +164,45 @@ routing across a \emph{heterogeneous} agent pool.
 
 \subsection{Dynamic Topology and Differentiable Routing}
 
-DyTopo \cite{hong2026dytopo} learns a sparse agent graph per-round via a
-manager LLM, but reconstruction cost scales with agent count and the topology
-is discarded after each round---precluding long-horizon learning.
+DyTopo \cite{lu2026dytopo} learns a sparse agent graph per-round via
+semantic matching, but reconstruction cost scales with agent count and the
+topology is discarded after each round---precluding long-horizon learning.
 Differentiable MoA (DMoA) \cite{wu2026dmoa} trains a differentiable routing
 controller with predictive-entropy self-supervision; it requires gradient
 access to the underlying LLM, which is unavailable for proprietary models.
-NeuroMAS \cite{li2026neuromas} casts multi-agent coordination as a trainable
-neural network via RL; the training signal is end-to-end task reward which is
-expensive to obtain at inference time.  FlowBank \cite{zhang2026flowbank}
-precomputes and reuses a portfolio of workflows but cannot adapt to previously
-unseen query patterns.  MetaCogAgent \cite{chen2026metacogagent} introduces
-metacognitive self-assessment for agent delegation; it operates at the
-\emph{within-agent} level, not across the agent topology.
+NeuroMAS \cite{lu2026neuromas} casts multi-agent coordination as a trainable
+neural network via joint reinforcement learning; the training signal is
+end-to-end task reward which is expensive to obtain at inference time.
+FlowBank \cite{yu2026flowbank} precomputes and reuses a portfolio of
+query-adaptive agentic workflows, favouring workflow-level caching over the
+per-hop, per-edge affinity learning \APRR{} performs.  MetaCogAgent
+\cite{metacogagent2026} introduces metacognitive self-assessment for agent
+delegation; it operates at the \emph{within-agent} level, not across the
+agent topology.  Closest in problem framing is \textbf{MasRouter}
+\cite{yue2025masrouter}, a cascaded neural controller (collaboration-mode
+determiner $\to$ role allocator $\to$ LLM router) trained end-to-end via
+policy gradient; \APRR{} differs by requiring zero trainable parameters, no
+offline training data, and by operating over a fixed specialist-agent pool
+rather than a swappable-LLM-backbone pool (see the project README's
+``Base Paper \& Design Architecture'' section for the full architectural
+delta).
 
 \textbf{Key differentiator.}  Unlike DyTopo's per-round reconstruction,
 \APRR{} updates $\WW$ \emph{in-place} after each episode in $O(L)$ time ($L$
 = path length), retaining long-horizon information across the full experiment.
 Unlike DMoA/NeuroMAS, \APRR{} requires no LLM gradients.  Unlike FlowBank,
-\APRR{} adapts online.
+\APRR{} adapts online.  Unlike MasRouter's three-stage neural cascade,
+\APRR{} uses a single closed-form affinity-matrix update with no learned
+parameters.
 
 \subsection{LLM Routing}
 
-RouteLLM \cite{ong2024routellm} and Mixture-of-Routers (MoR)
+RouteLLM \cite{ong2024routellm} and Mixture-of-Experts (MoE)
 \cite{shazeer2017moe} select among models rather than among \emph{agents in a
 topology}; they do not consider multi-hop routing, latency constraints, or
-distractor-robustness.  MAPoRL \cite{tan2026maporl} applies RL to multi-agent
-policy optimisation but does not study tool-calling topologies.
+distractor-robustness.  MAPoRL \cite{park2025maporl} applies post-co-training
+reinforcement learning to multi-agent LLM collaboration but does not study
+tool-calling topologies.
 
 \subsection{Policy Gradient Methods}
 
@@ -749,7 +761,7 @@ measurements) as primary future work.
 \APRR{} assumes a fixed agent set $V$ throughout deployment.  Agent addition
 or removal requires re-initialising the corresponding rows/columns of $\WW$,
 which may incur a transient performance drop.  Dynamic topology management
-(as in DyTopo \cite{hong2026dytopo}) is complementary.
+(as in DyTopo \cite{lu2026dytopo}) is complementary.
 
 \paragraph{Single-hop reward attribution.}
 The current update rule applies a uniform deposit to all edges in the
@@ -892,34 +904,44 @@ Y.~Qin, S.~Liang, Y.~Ye, K.~Zhu, L.~Yan, Y.-T. Liu, H.~Lin, X.~Han,
   H.~Ding, Z.~Liu, Z.~Liu, and M.~Sun, ``ToolLLM: Facilitating large language
   models to master 16000+ real-world APIs,'' in \emph{Proc. ICLR}, 2024.
 
-\bibitem{hong2026dytopo}
-M.~Hong, X.~Zhang, and J.~Li, ``DyTopo: Manager-guided dynamic topology
-  reconstruction for multi-agent LLM systems,'' \emph{arXiv:2602.xxxxx}, 2026.
+\bibitem{lu2026dytopo}
+Y.~Lu, Y.~Hu, X.~Zhao, and J.~Cao, ``DyTopo: Dynamic topology routing for
+  multi-agent reasoning via semantic matching,'' \emph{arXiv:2602.06039}, 2026.
+  [Online]. Available: \url{https://arxiv.org/abs/2602.06039}
 
 \bibitem{wu2026dmoa}
-J.~Wu, L.~Chen, and W.~Wang, ``DMoA: Differentiable mixture-of-agents
-  routing via predictive-entropy self-supervision,''
-  \emph{arXiv:2603.xxxxx}, 2026.
+X.~Wu, J.~Lu, S.~Yan, X.~Qiu, J.~Hu, C.~Guo, and B.~Yang, ``Differentiable
+  mixture-of-agents incentivizes swarm intelligence of large language
+  models,'' \emph{arXiv:2605.15706}, 2026. [Online]. Available:
+  \url{https://arxiv.org/html/2605.15706v1}
 
-\bibitem{li2026neuromas}
-H.~Li, Y.~Zhao, and P.~Liu, ``NeuroMAS: Multi-agent systems as trainable
-  neural networks via end-to-end reinforcement learning,''
-  in \emph{Proc. ICML}, 2026.
+\bibitem{lu2026neuromas}
+H.~Lu, L.~Fang, W.~Zhong, and P.~Ma, ``NeuroMAS: Multi-agent systems as
+  neural networks with joint reinforcement learning,''
+  \emph{arXiv:2605.16757}, 2026. [Online]. Available:
+  \url{https://arxiv.org/abs/2605.16757}
 
-\bibitem{zhang2026flowbank}
-R.~Zhang, Q.~Liu, and S.~Chen, ``FlowBank: Precompute-and-reuse
-  workflow portfolios for multi-agent task execution,''
-  in \emph{Proc. ACL}, 2026.
+\bibitem{yu2026flowbank}
+F.~Yu \emph{et al.}, ``FlowBank: Query-adaptive agentic workflows
+  optimization through precompute-and-reuse,'' \emph{arXiv:2606.11290}, 2026.
+  [Online]. Available: \url{https://huggingface.co/papers/2606.11290}
 
-\bibitem{chen2026metacogagent}
-Y.~Chen, H.~Wang, and L.~Zhang, ``MetaCogAgent: Metacognitive
-  self-assessment for agent delegation in LLM workflows,''
-  in \emph{Proc. EMNLP}, 2026.
+\bibitem{metacogagent2026}
+``MetaCogAgent: A metacognitive multi-agent LLM framework with self-aware
+  task delegation,'' \emph{arXiv:2605.17292}, 2026 (submitted IEEE SMC 2026).
+  [Online]. Available: \url{https://arxiv.org/abs/2605.17292}
 
-\bibitem{tan2026maporl}
-K.~Tan, X.~Fang, and M.~Chen, ``MAPoRL: Multi-agent policy optimization
-  with reinforcement learning for LLM collaboration,''
-  in \emph{Proc. IJCAI}, 2026.
+\bibitem{park2025maporl}
+C.~Park, S.~Han, X.~Guo, A.~E.~Ozdaglar, K.~Zhang, and J.-K.~Kim, ``MAPoRL:
+  Multi-agent post-co-training for collaborative large language models with
+  reinforcement learning,'' in \emph{Proc. ACL}, 2025, paper 2025.acl-long.1459.
+  [Online]. Available: \url{https://aclanthology.org/2025.acl-long.1459/}
+
+\bibitem{yue2025masrouter}
+Y.~Yue, G.~Zhang, B.~Liu, G.~Wan, K.~Wang, D.~Cheng, and Y.~Qi, ``MasRouter:
+  Learning to route LLMs for multi-agent systems,'' in \emph{Proc. ACL},
+  2025, pp.\ 15549--15572. [Online]. Available:
+  \url{https://aclanthology.org/2025.acl-long.757/}
 
 \bibitem{ong2024routellm}
 I.~O.~Ong, A.~Almahairi, V.~Wu, W.-L.~Chiang, T.~Wu, J.~Gonzalez,

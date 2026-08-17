@@ -1,6 +1,6 @@
 """
-crow_router.py — Chain-of-Reasoning Over Workload (CROW) Router
-===============================================================
+ctgr_router.py — Chain-of-Thought Gated Router (CTGR)
+=======================================================
 An extension to the APRR multi-agent routing system that gates routing
 decisions through a lightweight chain-of-thought deliberation mechanism.
 
@@ -12,6 +12,12 @@ No LLM calls — all complexity estimation and reasoning traces are
 heuristic / template-based.
 
 Dependencies: numpy, math, random, time, re  (all stdlib or numpy)
+
+Renamed 2026-08: this module was previously named ``crow_router.py``
+(class ``CROWRouter``). Renamed to plain computation/IT terminology per
+project policy (no biomimicry-derived names) — CTGR = Chain-of-Thought
+Gated Router, describing exactly what the mechanism does: a gate that
+switches between greedy dispatch and CoT-based deliberation.
 """
 
 from __future__ import annotations
@@ -54,13 +60,20 @@ _DOMAIN_KWS: dict[str, list[str]] = {
 _DOMAIN_ORDER = ["weather", "market_prices", "crop_advisory", "schemes", "soil_health"]
 
 
-def _infer_source_row(query: str, n_agents: int) -> int:
+def _infer_source_row(
+    query: str,
+    n_agents: int,
+    domain_kws: Optional[dict[str, list[str]]] = None,
+    domain_order: Optional[list[str]] = None,
+) -> int:
     """Infer source row in W from query domain keywords."""
+    kws = domain_kws if domain_kws is not None else _DOMAIN_KWS
+    order = domain_order if domain_order is not None else _DOMAIN_ORDER
     q = query.lower()
     best_idx = 0
     best_hits = 0
-    for idx, domain in enumerate(_DOMAIN_ORDER[:n_agents]):
-        hits = sum(1 for kw in _DOMAIN_KWS.get(domain, []) if kw in q)
+    for idx, domain in enumerate(order[:n_agents]):
+        hits = sum(1 for kw in kws.get(domain, []) if kw in q)
         if hits > best_hits:
             best_hits = hits
             best_idx = idx
@@ -78,12 +91,12 @@ _COMPLEXITY_CATEGORY_LABELS: dict[str, str] = {
 
 
 # ---------------------------------------------------------------------------
-# CROWRouter
+# CTGRRouter
 # ---------------------------------------------------------------------------
 
-class CROWRouter:
+class CTGRRouter:
     """
-    Chain-of-Reasoning Over Workload (CROW) Router.
+    Chain-of-Thought Gated Router (CTGR).
 
     Extends APRR by introducing a deliberation gate: queries whose
     heuristic complexity score exceeds ``thought_budget_threshold`` trigger
@@ -124,6 +137,8 @@ class CROWRouter:
         alpha: float = 0.3,
         thought_budget_threshold: float = 0.5,
         max_deliberation_rounds: int = 3,
+        domain_keywords: Optional[dict[str, list[str]]] = None,
+        domain_order: Optional[list[str]] = None,
     ) -> None:
         self.agents = agents
         self.n_agents = len(agents)
@@ -131,6 +146,14 @@ class CROWRouter:
         self.alpha = alpha
         self.thought_budget_threshold = thought_budget_threshold
         self.max_deliberation_rounds = max_deliberation_rounds
+        # Domain vocabulary is pluggable: defaults to the illustrative agri
+        # domains, but a real deployment (e.g. real ToolBench categories)
+        # should pass its own keyword map + agent order.
+        self._domain_kws = domain_keywords if domain_keywords is not None else _DOMAIN_KWS
+        self._domain_order = domain_order if domain_order is not None else _DOMAIN_ORDER
+        self._tool_category_patterns = (
+            domain_keywords if domain_keywords is not None else _TOOL_CATEGORY_PATTERNS
+        )
 
         if W_init is not None:
             if W_init.shape != (self.n_agents, self.n_agents):
@@ -176,10 +199,10 @@ class CROWRouter:
 
         # --- Component 2: tool-category coverage
         categories_hit = 0
-        for kws in _TOOL_CATEGORY_PATTERNS.values():
+        for kws in self._tool_category_patterns.values():
             if any(kw in query.lower() for kw in kws):
                 categories_hit += 1
-        cat_score = categories_hit / len(_TOOL_CATEGORY_PATTERNS)
+        cat_score = categories_hit / max(1, len(self._tool_category_patterns))
 
         # --- Component 3: multi-step keyword density
         ms_hits = sum(
@@ -210,12 +233,12 @@ class CROWRouter:
         # Determine dominant category
         best_cat = "general"
         best_hits = 0
-        for cat, kws in _TOOL_CATEGORY_PATTERNS.items():
+        for cat, kws in self._tool_category_patterns.items():
             hits = sum(1 for kw in kws if kw in query.lower())
             if hits > best_hits:
                 best_hits = hits
                 best_cat = cat
-        category_label = _COMPLEXITY_CATEGORY_LABELS.get(best_cat, "general reasoning")
+        category_label = _COMPLEXITY_CATEGORY_LABELS.get(best_cat, best_cat.replace("_", " "))
 
         # Affinity score for this agent (use max of row as proxy for "this agent's W")
         w_val = float(self.W[agent_idx, agent_idx]) if self.n_agents > 0 else 0.0
@@ -364,7 +387,7 @@ class CROWRouter:
         mode: str
 
         # Infer source row from query domain (APRR: W[i,:] where i = source agent)
-        src_row = _infer_source_row(query, self.n_agents)
+        src_row = _infer_source_row(query, self.n_agents, self._domain_kws, self._domain_order)
 
         if complexity < self.thought_budget_threshold:
             # --- Greedy: pick agent with highest affinity in source row
@@ -450,7 +473,7 @@ class CROWRouter:
 
     def __repr__(self) -> str:
         return (
-            f"CROWRouter(n_agents={self.n_agents}, "
+            f"CTGRRouter(n_agents={self.n_agents}, "
             f"threshold={self.thought_budget_threshold}, "
             f"lambda={self.lambda_decay})"
         )
@@ -461,7 +484,9 @@ class CROWRouter:
 # ---------------------------------------------------------------------------
 
 def _make_synthetic_queries() -> list[str]:
-    """Generate 20 ToolBench-style synthetic queries."""
+    """Generate 20 ToolBench-style synthetic queries (illustrative demo only;
+    the real benchmark uses actual ToolBench data — see
+    experiments/extensions/aprr_extension_benchmark.py)."""
     templates = [
         "What is the current temperature in Delhi?",
         "Show me the price of wheat and rice in Mandis, then compare with last week's rates.",
@@ -489,14 +514,14 @@ def _make_synthetic_queries() -> list[str]:
 
 if __name__ == "__main__":
     print("=" * 70)
-    print("CROW Router — 20-Query Demo (ToolBench-style synthetic data)")
+    print("CTGR Router — 20-Query Demo (illustrative synthetic data)")
     print("=" * 70)
 
     agents = [
         "WeatherAgent", "MarketAgent", "CropAgent",
         "SchemeAgent", "SoilAgent",
     ]
-    router = CROWRouter(
+    router = CTGRRouter(
         agents=agents,
         lambda_decay=0.05,
         alpha=0.3,

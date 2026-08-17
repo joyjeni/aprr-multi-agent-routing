@@ -1,17 +1,28 @@
 """
-octoroute_router.py — OctoRoute: Distributed Parallel-Dispatch Routing
-======================================================================
+ftdr_router.py — Functional-Token Dispatch Router (FTDR)
+==========================================================
 Two-layer routing architecture using functional token dispatch:
 
   - DispatchArms (local):   domain-specialist routing units, each
     maintaining a local affinity matrix W_local for agent selection.
-  - OctoRouteRouter (coordinator): global controller that maps queries
+    ("Arm" here is the standard multi-armed-bandit term, not biomimicry.)
+  - FTDRRouter (coordinator): global controller that maps queries
     to the best arm via fast binary confidence signals,
     then delegates intra-arm agent selection.
 
 No LLM calls.  All signals are heuristic / token-overlap based.
 
 Dependencies: numpy, math, random, time, collections  (stdlib + numpy)
+
+Renamed 2026-08: this module was previously named ``octoroute_router.py``
+(class ``OctoRouteRouter``, functional tokens ``<octo_N>``). Renamed to
+plain computation/IT terminology per project policy (no octopus/biomimicry
+names) — FTDR = Functional-Token Dispatch Router. This rewrite also fixes
+a syntax bug in the prior version: method/parameter names containing
+literal hyphens (``emit_confidence-signal_signal``,
+``confidence-signal_threshold``) are invalid Python identifiers and could
+not be imported. They are corrected here to ``emit_confidence_signal`` and
+``confidence_threshold``.
 """
 
 from __future__ import annotations
@@ -64,7 +75,7 @@ class DispatchArm:
     Semi-autonomous routing arm specialising in a single query domain.
 
     Each arm maintains its own local APRR affinity matrix (``W_local``)
-    over the shared agent pool and emits a fast 1-bit confidence-signal signal
+    over the shared agent pool and emits a fast 1-bit confidence signal
     indicating whether it claims the incoming query.
 
     Parameters
@@ -76,7 +87,7 @@ class DispatchArm:
     n_agents : int
         Number of agents in the shared pool.
     functional_token : str
-        String token used to identify this arm (e.g. ``"<octo_0>"``).
+        String token used to identify this arm (e.g. ``"<dispatch_0>"``).
     lambda_decay : float
         Multiplicative decay rate for ``W_local``.
     """
@@ -88,6 +99,7 @@ class DispatchArm:
         n_agents: int,
         functional_token: str,
         lambda_decay: float = 0.05,
+        domain_keywords: Optional[list[str]] = None,
     ) -> None:
         self.arm_id = arm_id
         self.domain = domain
@@ -105,16 +117,19 @@ class DispatchArm:
         # Rolling confidence history (last 20 routing outcomes)
         self.confidence_history: deque[float] = deque(maxlen=20)
 
-        # Domain keyword set for fast Jaccard lookup
+        # Domain keyword set for fast Jaccard lookup. Callers may pass a
+        # custom keyword list (e.g. real ToolBench category vocabulary);
+        # falls back to the illustrative agri-domain vocabulary.
         self._domain_keywords: set[str] = set(
-            _DOMAIN_KEYWORDS.get(domain, [domain.lower()])
+            domain_keywords if domain_keywords is not None
+            else _DOMAIN_KEYWORDS.get(domain, [domain.lower()])
         )
 
     # ------------------------------------------------------------------
-    # Chromatophore signal
+    # Confidence signal
     # ------------------------------------------------------------------
 
-    def emit_confidence-signal_signal(self, query: str) -> dict:
+    def emit_confidence_signal(self, query: str) -> dict:
         """
         Emit a fast 1-bit domain-match signal for ``query``.
 
@@ -194,6 +209,8 @@ class DispatchArm:
 
         ``ΔW[arm_id_proxy, agent_to] += 𝟙[success] · (1/L²) · (1/latency_norm)``
 
+        Then multiplicative decay: ``W_local *= (1 − λ)``
+
         Parameters
         ----------
         agent_to : int
@@ -254,19 +271,19 @@ class DispatchArm:
 
 
 # ---------------------------------------------------------------------------
-# OctoRouteRouter
+# FTDRRouter
 # ---------------------------------------------------------------------------
 
-class OctoRouteRouter:
+class FTDRRouter:
     """
-    Parallel-Dispatch Distributed Router.
+    Functional-Token Dispatch Router (FTDR).
 
-    Coordinates a set of ``DispatchArm`` instances (peripheral intelligence)
-    through a global affinity matrix (central brain).
+    Coordinates a set of ``DispatchArm`` instances (distributed local
+    controllers) through a global affinity matrix (coordinator).
 
     Routing is performed in two layers:
 
-    1. **Arm dispatch** — each arm emits a confidence-signal signal; the arm
+    1. **Arm dispatch** — each arm emits a confidence signal; the arm
        with the highest ``domain_match`` score is selected via the
        functional-token dispatch mechanism.
     2. **Agent selection** — the selected arm runs ``local_route`` to
@@ -280,7 +297,7 @@ class OctoRouteRouter:
         One domain string per arm (e.g. ``["weather", "market_prices", ...]``).
     lambda_decay : float
         Decay rate applied to both local and global affinity matrices.
-    confidence-signal_threshold : float
+    confidence_threshold : float
         Minimum ``domain_match`` score for an arm to be considered a
         valid candidate.  Falls back to global W if no arm qualifies.
     """
@@ -290,27 +307,31 @@ class OctoRouteRouter:
         agents: list[str],
         arm_domains: list[str],
         lambda_decay: float = 0.05,
-        confidence-signal_threshold: float = 0.6,
+        confidence_threshold: float = 0.6,
+        domain_keywords: Optional[dict[str, list[str]]] = None,
     ) -> None:
         self.agents = agents
         self.n_agents = len(agents)
         self.n_arms = len(arm_domains)
         self.lambda_decay = lambda_decay
-        self.confidence-signal_threshold = confidence-signal_threshold
+        self.confidence_threshold = confidence_threshold
 
-        # Create one DispatchArm per domain
+        # Create one DispatchArm per domain. domain_keywords lets callers
+        # supply real vocabulary (e.g. ToolBench category keywords) instead
+        # of the illustrative agri-domain defaults.
         self.arms: list[DispatchArm] = [
             DispatchArm(
                 arm_id=i,
                 domain=domain,
                 n_agents=self.n_agents,
-                functional_token=f"<octo_{i}>",
+                functional_token=f"<dispatch_{i}>",
                 lambda_decay=lambda_decay,
+                domain_keywords=(domain_keywords or {}).get(domain),
             )
             for i, domain in enumerate(arm_domains)
         ]
 
-        # Global coordinator matrix (brain): arms × agents
+        # Global coordinator matrix: arms × agents
         self.W_global: np.ndarray = (
             np.ones((self.n_arms, self.n_agents)) / self.n_agents
         )
@@ -323,11 +344,11 @@ class OctoRouteRouter:
         """
         Select the most domain-appropriate arm for ``query``.
 
-        Step 1: Collect confidence-signal signals from all arms (fast O(N·|V|)).
+        Step 1: Collect confidence signals from all arms (fast O(N·|V|)).
         Step 2: Select arm with highest ``domain_match``.
-        Step 3: If best match < ``confidence-signal_threshold``, fall back to
+        Step 3: If best match < ``confidence_threshold``, fall back to
                 the arm whose ``W_global`` row has the highest column sum
-                (global brain routing).
+                (global coordinator routing).
 
         Parameters
         ----------
@@ -338,14 +359,14 @@ class OctoRouteRouter:
         DispatchArm
             The selected arm.
         """
-        signals = [arm.emit_confidence-signal_signal(query) for arm in self.arms]
+        signals = [arm.emit_confidence_signal(query) for arm in self.arms]
         best_idx = int(np.argmax([s["domain_match"] for s in signals]))
         best_match = signals[best_idx]["domain_match"]
 
-        if best_match >= self.confidence-signal_threshold:
+        if best_match >= self.confidence_threshold:
             return self.arms[best_idx]
 
-        # Fallback: use global W (brain routing)
+        # Fallback: use global W (coordinator routing)
         global_scores = self.W_global.sum(axis=1)
         fallback_idx = int(np.argmax(global_scores))
         return self.arms[fallback_idx]
@@ -366,13 +387,13 @@ class OctoRouteRouter:
             arm                  : int
             functional_token     : str
             latency_ms           : float
-            confidence-signal_signals: list[dict]
+            confidence_signals   : list[dict]
         """
         t0 = time.perf_counter()
 
         # Collect all signals (stored for transparency)
-        confidence-signal_signals = [
-            arm.emit_confidence-signal_signal(query) for arm in self.arms
+        confidence_signals = [
+            arm.emit_confidence_signal(query) for arm in self.arms
         ]
 
         # Layer 1: dispatch
@@ -391,7 +412,7 @@ class OctoRouteRouter:
             "arm_domain": selected_arm.domain,
             "arm_confidence": local_result["confidence"],
             "latency_ms": round(latency_ms, 3),
-            "confidence-signal_signals": confidence-signal_signals,
+            "confidence_signals": confidence_signals,
         }
 
     # ------------------------------------------------------------------
@@ -421,7 +442,7 @@ class OctoRouteRouter:
         arm = self.arms[arm_id]
         arm.update_local(agent_to, success, latency_ms)
 
-        # Update global W (brain)
+        # Update global W (coordinator)
         if success:
             L = 1
             latency_norm = max(latency_ms, 1.0) / _LATENCY_NORM
@@ -456,8 +477,8 @@ class OctoRouteRouter:
 
     def __repr__(self) -> str:
         return (
-            f"OctoRouteRouter(n_arms={self.n_arms}, n_agents={self.n_agents}, "
-            f"threshold={self.confidence-signal_threshold})"
+            f"FTDRRouter(n_arms={self.n_arms}, n_agents={self.n_agents}, "
+            f"threshold={self.confidence_threshold})"
         )
 
 
@@ -465,9 +486,11 @@ class OctoRouteRouter:
 # Demo
 # ---------------------------------------------------------------------------
 
-def _make_synthetic_queries_octo(n: int = 50) -> list[tuple[str, str]]:
+def _make_synthetic_queries_ftdr(n: int = 50) -> list[tuple[str, str]]:
     """
     Return ``n`` (query, expected_domain) pairs spread across 5 domains.
+    Illustrative demo only — the real benchmark uses actual ToolBench data
+    (see experiments/extensions/aprr_extension_benchmark.py).
     """
     templates: dict[str, list[str]] = {
         "weather": [
@@ -543,7 +566,7 @@ def _make_synthetic_queries_octo(n: int = 50) -> list[tuple[str, str]]:
 
 if __name__ == "__main__":
     print("=" * 70)
-    print("OctoRoute Router — 50-Query Demo (5 Domains)")
+    print("FTDR Router — 50-Query Demo (5 Domains, illustrative)")
     print("=" * 70)
 
     agents = [
@@ -552,14 +575,14 @@ if __name__ == "__main__":
     ]
     arm_domains = ["weather", "market_prices", "crop_advisory", "schemes", "soil_health"]
 
-    router = OctoRouteRouter(
+    router = FTDRRouter(
         agents=agents,
         arm_domains=arm_domains,
         lambda_decay=0.05,
-        confidence-signal_threshold=0.05,   # low threshold for demo
+        confidence_threshold=0.05,   # low threshold for demo
     )
 
-    queries = _make_synthetic_queries_octo(50)
+    queries = _make_synthetic_queries_ftdr(50)
     random.seed(42)
 
     domain_agent_map: dict[str, int] = {
@@ -604,5 +627,5 @@ if __name__ == "__main__":
     print("\nArm Specialisation Index:")
     for arm_key, asi in router.get_arm_specialization_index().items():
         print(f"  {arm_key}: {asi:.4f}")
-    print("\nGlobal W_global (brain matrix):")
+    print("\nGlobal W_global (coordinator matrix):")
     print(np.round(router.W_global, 4))

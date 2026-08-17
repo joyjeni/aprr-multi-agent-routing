@@ -1,12 +1,18 @@
 """
-APRR Extensions: CROW and OctoRoute routing variants.
+APRR Extensions: CTGR and FTDR routing variants.
 
 Modules
 -------
-crow_router      : Chain-of-Reasoning Over Workload Router
-octoroute_router : Distributed Parallel-Dispatch Routing
-"""
-from .crow_router import CROWRouter
-from .octoroute_router import DispatchArm, OctoRouteRouter
+ctgr_router : Chain-of-Thought Gated Router
+ftdr_router : Functional-Token Dispatch Router
 
-__all__ = ["CROWRouter", "DispatchArm", "OctoRouteRouter"]
+Renamed 2026-08 from ``crow_router``/``octoroute_router`` (classes
+``CROWRouter``/``OctoRouteRouter``) to remove biomimicry-derived naming
+(CROW, Octo/octopus) per project policy — the extension mechanisms are
+now named for what they literally compute: a CoT-gated deliberation
+router and a functional-token dispatch router.
+"""
+from .ctgr_router import CTGRRouter
+from .ftdr_router import DispatchArm, FTDRRouter
+
+__all__ = ["CTGRRouter", "DispatchArm", "FTDRRouter"]

@@ -1,0 +1,48 @@
+---
+title: CTGR — Chain-of-Thought Gated Router (Extension 1)
+---
+flowchart LR
+    Q(["<b>Query Q</b>"]):::input
+    CPX["<b>1 &middot; Complexity Score</b><br/>0.3&middot;len + 0.4&middot;category<br/>+ 0.3&middot;multistep &isin; [0,1]"]:::core
+    GATE{"<b>2 &middot; Gate</b><br/>score &lt; &tau; (0.5) ?"}:::gate
+
+    Q --> CPX --> GATE
+
+    subgraph GREEDY["Low complexity &rarr; Greedy path"]
+        direction LR
+        G1["<b>3a &middot; Greedy Dispatch</b><br/>argmax over affinity<br/>matrix W row/column sum"]:::light
+    end
+
+    subgraph DELIB["High complexity &rarr; Deliberation path"]
+        direction TB
+        D1["<b>3b &middot; Top-k Candidates</b> &mdash; shortlist agents from W"]:::deep
+        D2["<b>3c &middot; Reasoning Trace</b> &mdash; 1&ndash;5 template steps &prop; complexity"]:::deep
+        D3["<b>3d &middot; Quality Score</b> &mdash; score_reasoning_quality(trace)"]:::deep
+        D4["<b>3e &middot; Multi-Round Voting</b> &mdash; weighted vote, exit at &ge;60%"]:::deep
+        D1 --> D2 --> D3 --> D4
+    end
+
+    GATE -->|"yes"| G1
+    GATE -->|"no"| D1
+
+    SEL["<b>4 &middot; Chosen Agent</b>"]:::select
+    G1 --> SEL
+    D4 --> SEL
+
+    EXEC["<b>5 &middot; Execute</b>"]:::exec
+    UPD["<b>6 &middot; Update W</b><br/>decay-regularised<br/>APRR update"]:::update
+    SEL --> EXEC --> UPD
+    NOTE["<i>reinforces stage-1<br/>affinity matrix W</i>"]:::note
+    UPD -.-> NOTE
+
+    classDef input fill:#7C3AED,color:#ffffff,stroke:#5B21B6,stroke-width:2px,rx:8,ry:8
+    classDef core fill:#A78BFA,color:#1E1B3A,stroke:#5B21B6,stroke-width:1.5px,rx:8,ry:8
+    classDef gate fill:#5B21B6,color:#ffffff,stroke:#3B0764,stroke-width:2px
+    classDef light fill:#DDD6FE,color:#1E1B3A,stroke:#7C3AED,stroke-width:1.5px,rx:8,ry:8
+    classDef deep fill:#8B5CF6,color:#ffffff,stroke:#5B21B6,stroke-width:1.5px,rx:8,ry:8
+    classDef select fill:#1B2A4A,color:#ffffff,stroke:#0B1730,stroke-width:2px,rx:8,ry:8
+    classDef exec fill:#1B2A4A,color:#ffffff,stroke:#0B1730,stroke-width:2px,rx:8,ry:8
+    classDef update fill:#0D9488,color:#ffffff,stroke:#064E3B,stroke-width:2px,rx:8,ry:8
+    classDef note fill:#F5F3FF,color:#3B0764,stroke:#C4B5FD,stroke-width:1px,rx:6,ry:6
+    style GREEDY fill:#F5F3FF,stroke:#C4B5FD,stroke-width:1px
+    style DELIB fill:#F5F3FF,stroke:#C4B5FD,stroke-width:1px

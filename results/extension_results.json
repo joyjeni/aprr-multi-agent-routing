@@ -1,42 +1,63 @@
 {
-  "APRR": {
-    "success_rate": 0.66,
-    "avg_latency_ms": 268.71,
-    "avg_hops": 1.0,
-    "n_queries": 500,
-    "interpretability": "Low",
-    "overhead": "Low"
-  },
-  "CROW": {
-    "success_rate": 0.66,
-    "avg_latency_ms": 467.38,
-    "avg_hops": 1.0,
-    "n_queries": 500,
-    "interpretability": "High",
-    "overhead": "Med"
-  },
-  "OctoRoute": {
-    "success_rate": 0.66,
-    "avg_latency_ms": 207.22,
-    "avg_hops": 1.0,
-    "n_queries": 500,
-    "interpretability": "Med",
-    "overhead": "Low"
-  },
-  "CROW-OctoRoute": {
-    "success_rate": 0.658,
-    "avg_latency_ms": 497.76,
-    "avg_hops": 1.0,
-    "n_queries": 500,
-    "interpretability": "High",
-    "overhead": "High"
-  },
-  "StaticSemantic": {
-    "success_rate": 0.212,
-    "avg_latency_ms": 385.25,
-    "avg_hops": 1.0,
-    "n_queries": 500,
-    "interpretability": "None",
-    "overhead": "None"
-  }
+  "dataset": "ToolBench real eval (G1+G2+G3 instruction splits), tuandunghcmut/toolbench-v1",
+  "agent_pool": [
+    "EntertainmentAgent",
+    "ToolsAgent",
+    "MediaAgent",
+    "MoviesAgent",
+    "DataAgent"
+  ],
+  "categories": [
+    "Entertainment",
+    "Tools",
+    "Media",
+    "Movies",
+    "Data"
+  ],
+  "n_eval_queries": 165,
+  "n_total_toolbench_eval_queries": 500,
+  "seed": 42,
+  "latency_disclaimer": "mean/p95 latency figures are wall-clock routing-DECISION compute time only (time.perf_counter around each router's route() call). No real API calls are executed; this is not an end-to-end tool-execution latency measurement.",
+  "results": [
+    {
+      "router": "Random",
+      "n_queries": 165,
+      "success_rate": 0.2727,
+      "success_std": 0.4454,
+      "mean_routing_compute_ms": 0.0021,
+      "p95_routing_compute_ms": 0.0017
+    },
+    {
+      "router": "StaticSemantic",
+      "n_queries": 165,
+      "success_rate": 0.7091,
+      "success_std": 0.4542,
+      "mean_routing_compute_ms": 0.0106,
+      "p95_routing_compute_ms": 0.0124
+    },
+    {
+      "router": "CTGR",
+      "n_queries": 165,
+      "success_rate": 0.7455,
+      "success_std": 0.4356,
+      "mean_routing_compute_ms": 1.211,
+      "p95_routing_compute_ms": 1.8396
+    },
+    {
+      "router": "FTDR",
+      "n_queries": 165,
+      "success_rate": 0.5818,
+      "success_std": 0.4933,
+      "mean_routing_compute_ms": 0.0931,
+      "p95_routing_compute_ms": 0.1131
+    },
+    {
+      "router": "CTGR+FTDR Hybrid",
+      "n_queries": 165,
+      "success_rate": 0.5818,
+      "success_std": 0.4933,
+      "mean_routing_compute_ms": 0.0558,
+      "p95_routing_compute_ms": 0.0694
+    }
+  ]
 }

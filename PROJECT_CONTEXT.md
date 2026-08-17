@@ -59,31 +59,34 @@ weighted update, multi-trajectory sampling.
 
 ## Main numerical results (5 seeds, 500 queries × 40 iterations)
 
-| Router          | Success rate    | Mean latency (ms) | Mean hops |
-|-----------------|-----------------|-------------------|-----------|
-| Random          | 0.323 ± 0.004   | 393.9 ± 1.3       | 3.50      |
-| RoundRobin      | 0.380 ± 0.002   | 546.7 ± 0.3       | 4.33      |
-| StaticSemantic  | 0.499 ± 0.024   | 406.6 ± 60.4      | 3.64      |
-| LLMRouter       | 0.406 ± 0.010   | 151.0 ± 3.0       | 2.07      |
-| **APRR (ours)** | **0.470 ± 0.020** | **261.3 ± 31.7** | **2.77**  |
-| Oracle          | 0.900 ± 0.001   | 448.9 ± 9.4       | 4.30      |
+| Router          | Success (95% CI) | Mean latency (ms) | Mean hops |
+|-----------------|-------------------|-------------------|-----------|
+| Random          | 0.324 ± 0.006     | 395.5             | 3.51      |
+| RoundRobin      | 0.379 ± 0.007     | 546.1             | 4.33      |
+| StaticSemantic  | 0.451 ± 0.007     | 414.5             | 3.70      |
+| LLMRouter       | 0.404 ± 0.007     | 148.3             | 2.05      |
+| **APRR (ours)** | **0.449 ± 0.007** | **315.8**         | **3.03**  |
+| Oracle          | 0.899 ± 0.004     | 452.7             | 4.32      |
 
-**Headline claims:**
-- 35.7% latency reduction vs StaticSemantic (406.6 → 261.3 ms)
-- 23.9% hop reduction (3.64 → 2.77)
-- Pareto-dominates all non-oracle baselines on the (latency, success) frontier
-- γ (query-relevance) ablation: success 0.289 → 0.483 as γ: 0 → 1.5
-- W matrix learns to avoid distractor agents (Fig. 3 shows near-zero affinity to distractor_a/_b)
+Source of truth for these numbers: `tables/table1_main_results.csv` — always regenerate this table from that CSV rather than hand-editing it; do not let this file drift from the CSV again (that drift happened once already and was corrected in August 2026).
 
-## Differentiation from concurrent SOTA (June 2026)
+**Headline claims (corrected August 2026 — see README's "Review-driven corrections" section for full history):**
+- APRR is **Pareto-optimal**, not Pareto-dominant: its 95% CI on success (0.449 ± 0.007) overlaps StaticSemantic's (0.451 ± 0.007), so APRR does not strictly dominate StaticSemantic on success rate. APRR's advantage is a large **mean-latency reduction** (315.8 ms vs StaticSemantic's 414.5 ms, ≈23.8% lower) at statistically indistinguishable success rate — i.e. APRR sits on/near the Pareto frontier, trading a small amount of success-rate headroom for materially lower latency and hop count, rather than beating every baseline on every axis.
+- LLMRouter has lower latency (148.3 ms) but meaningfully lower success (0.404) than APRR — APRR is not latency-optimal, it is the best success/latency **trade-off** among learned/adaptive routers.
+- γ (query-relevance) ablation and distractor-avoidance findings: see `results/ablation.json` and Fig. 3 — re-verify exact numbers against that file before quoting them; do not carry forward unverified ablation figures from earlier drafts.
 
-The closest concurrent works are:
-- **DyTopo** (Hong et al., 2026): manager-guided per-round sparse graph reconstruction.
-- **Differentiable MoA (DMoA)** (Wu et al., 2026): differentiable routing trained with predictive-entropy self-supervision.
-- **NeuroMAS** (2026): MAS as a trainable neural net via RL.
-- **FlowBank** (2026): precompute-and-reuse portfolio of workflows.
-- **MetaCogAgent** (2026): metacognitive self-assessment for delegation.
-- **Stigmergy for capability selection** (Hanke, 2026): weight-signal-inspired capability layer (closest competitor — APRR must differentiate by being decay-regularised online policy iteration with provable REINFORCE-equivalence, not a signal-weighted field).
+## Base paper and differentiation from concurrent SOTA (updated August 2026)
+
+**Base/SOTA architecture this work is positioned against:** MasRouter (Yue, Zhang, Liu, Wan, Wang, Cheng, Qi. *MasRouter: Learning to Route LLMs for Multi-Agent Systems.* ACL 2025, pp. 15549–15572. https://aclanthology.org/2025.acl-long.757/) — a cascaded, policy-gradient-trained 3-stage neural controller (collaboration-mode → role allocation → LLM-backbone routing). See README.md § "Base Paper & Design Architecture (Objective 2)" for the full delta table, ASCII architecture diagram, and property comparison — that section is the canonical, defense-ready version; do not duplicate/diverge from it here.
+
+Other verified, closest concurrent works (all citations independently checked against publisher pages — title/authors/venue/year/URL — before being used anywhere in this repo):
+- **DyTopo** (Lu, Hu, Zhao, Cao, 2026, arXiv:2602.06039): manager-guided per-round sparse graph reconstruction via semantic matching. [NOTE: earlier drafts of this file incorrectly attributed this to "Hong et al." — corrected.]
+- **Differentiable MoA (DMoA)** (Wu, Lu, Yan, Qiu, Hu, Guo, Yang, 2026, arXiv:2605.15706): differentiable routing trained with predictive-entropy self-supervision.
+- **NeuroMAS** (Lu, Fang, Zhong, Ma, 2026, arXiv:2605.16757): MAS as a trainable neural net via joint RL. [NOTE: earlier drafts cited this with no author list — corrected.]
+- **FlowBank** (Yu et al., 2026, arXiv:2606.11290): query-adaptive workflow precompute-and-reuse.
+- **MetaCogAgent** (2026, arXiv:2605.17292, submitted IEEE SMC 2026): metacognitive self-assessment for delegation.
+
+[REMOVED] A prior draft of this file cited an unverifiable "Stigmergy for capability selection (Hanke, 2026)" as the "closest competitor." No such paper could be verified against any publisher/arXiv record — it has been removed rather than kept as an unverified claim. If a genuinely verified stigmergy/pheromone-style capability-routing paper is found later, add it back with its real citation; until then, do not reintroduce it.
 
 **APRR's distinct contribution:**
   1. Closed-form policy gradient interpretation (Appendix A of the paper).
