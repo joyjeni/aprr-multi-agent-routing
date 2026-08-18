@@ -3,6 +3,7 @@
 > Online policy-iteration routing for multi-agent LLM pipelines. On the real ToolBench benchmark, APRR lies on the latency–success **Pareto frontier**: no baseline simultaneously achieves both higher success *and* lower latency. It matches the strongest baseline's success rate (statistically indistinguishable at 95% CI) while using **23.8% lower latency** and **18.1% fewer hops** than that baseline.
 
 [![Live Dashboard](https://img.shields.io/badge/Dashboard-aprr.vercel.app-d93025)](https://aprr-multi-agent-routing.vercel.app)
+[![HF Space](https://img.shields.io/badge/%F0%9F%A4%97%20Space-Live%20Routing%20Demo-blue)](https://huggingface.co/spaces/abigailcreations/aprr-ctgr-ftdr-live-routing)
 [![Colab](https://img.shields.io/badge/Colab-Reproduce-orange)](https://colab.research.google.com/github/joyjeni/aprr-multi-agent-routing/blob/main/notebooks/APRR_Reproducible_Benchmark.ipynb)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
@@ -293,6 +294,12 @@ Open `notebooks/APRR_Reproducible_Benchmark.ipynb` in Colab. Runs end-to-end on 
 
 Interactive results, charts, and downloadable artifacts at
 **https://aprr-multi-agent-routing.vercel.app** (API: `/api/results`).
+
+## Live routing demo (Hugging Face Space)
+
+**https://huggingface.co/spaces/abigailcreations/aprr-ctgr-ftdr-live-routing**
+
+A Gradio Space that imports the actual `CTGRRouter` / `FTDRRouter` source from this repo, warms up online on the real ToolBench-v1 dataset at startup, and lets you type any query to see APRR-core, CTGR, and FTDR pick an agent live, with their internal preference scores shown side by side.
 
 ## Manuscript
 
