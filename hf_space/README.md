@@ -11,6 +11,10 @@ license: mit
 
 # APRR / CTGR / FTDR — Live Multi-Agent Routing Demo
 
+> ACRS Objective 2 demo. Routing behaviour is real; reported win-rates are not
+> Ph.D. proposal commitments. Prefer Indian OGD for execution claims; ToolBench
+> is a ranking/routing library.
+
 Interactive demo for Objective 2 of a PhD research project on adaptive
 multi-agent LLM routing.
 

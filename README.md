@@ -1,13 +1,20 @@
-# APRR: Adaptive Probabilistic Routing Reinforcement for Multi-Agent LLM Systems
+# APRR: Adaptive Probabilistic Routing Reinforcement (ACRS Objective 2)
 
-> Online policy-iteration routing for multi-agent LLM pipelines. On the real ToolBench benchmark, APRR lies on the latency–success **Pareto frontier**: no baseline simultaneously achieves both higher success *and* lower latency. It matches the strongest baseline's success rate (statistically indistinguishable at 95% CI) while using **23.8% lower latency** and **18.1% fewer hops** than that baseline.
+> **Ph.D. CSE, M S Ramaiah University of Applied Sciences (FET).**  
+> Scholar: Jenisha T (`24ETRP720001`). Supervisor: Dr. Jyothi A P.  
+> Integrated loop: SATR → **APRR** → MNCD → FCNP.
 
-[![Live Dashboard](https://img.shields.io/badge/Dashboard-aprr.vercel.app-d93025)](https://aprr-multi-agent-routing.vercel.app)
-[![HF Space](https://img.shields.io/badge/%F0%9F%A4%97%20Space-Live%20Routing%20Demo-blue)](https://huggingface.co/spaces/abigailcreations/aprr-ctgr-ftdr-live-routing)
-[![Colab](https://img.shields.io/badge/Colab-Reproduce-orange)](https://colab.research.google.com/github/joyjeni/aprr-multi-agent-routing/blob/main/notebooks/APRR_Reproducible_Benchmark.ipynb)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+This repository is the **routing chapter** of ACRS: a training-free posterior over
+**tool-specialist agents**, updated from SATR scores and live MNCD observations.
+The unit of a journal paper is the Bayesian / affinity controller, **not** a
+Pareto chart.
 
-**Author:** Jenisha T, MS Ramaiah University of Applied Sciences — PhD candidate, Computer Science Engineering.
+**Proposal-stage stance:** latency, hop-count, success-rate, and “Pareto frontier”
+figures that may appear in notebooks or older README revisions are **not**
+commitments of the research proposal. They are laboratory traces pending a
+frozen, multi-seed bake-off against the papers named below.
+
+**Author:** Jenisha T, MS Ramaiah University of Applied Sciences — Ph.D. candidate, Computer Science Engineering.
 
 ---
 
