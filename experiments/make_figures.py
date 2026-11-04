@@ -218,7 +218,15 @@ def main(results_path="results/results.json",
          episodes_path="results/episodes.jsonl",
          fig_dir="figures", tbl_dir="tables"):
     art = json.loads(Path(results_path).read_text())
-    episodes = [json.loads(l) for l in Path(episodes_path).read_text().splitlines()]
+    _p = Path(episodes_path)
+    if not _p.exists() and Path(str(_p) + ".gz").exists():
+        _p = Path(str(_p) + ".gz")
+    if _p.suffix == ".gz":
+        import gzip
+        _text = gzip.open(_p, "rt", encoding="utf-8").read()
+    else:
+        _text = _p.read_text()
+    episodes = [json.loads(l) for l in _text.splitlines()]
     fig_out = Path(fig_dir); fig_out.mkdir(parents=True, exist_ok=True)
     tbl_out = Path(tbl_dir); tbl_out.mkdir(parents=True, exist_ok=True)
     fig1_convergence_success(art, fig_out)
