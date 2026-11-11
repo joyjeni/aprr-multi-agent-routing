@@ -43,7 +43,7 @@ export default function Home() {
           id="aw-results"
           eyebrow="AppWorld · results"
           title="Outcome and cost of every configuration"
-          intro="57 development tasks, one seed. The full-ACRS row is shaded; the run without O3 is scheduled."
+          intro="57 development tasks, one seed. The full-ACRS row is shaded."
         >
           <div className="space-y-5">
             <AwResultsTable aw={aw} />
