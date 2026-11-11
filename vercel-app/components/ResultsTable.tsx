@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { MultiSeed, RouterSummary } from "@/lib/types";
-import { ROUTER_ORDER } from "@/lib/types";
+import { ROUTER_ORDER, ROUTER_COLORS } from "@/lib/types";
 
 interface Row {
   router: string;
@@ -105,7 +105,6 @@ export function ResultsTable({ data }: { data: MultiSeed }) {
           <tbody>
             {sorted.map((r) => {
               const isAprr = r.router === "APRR";
-              const isOracle = r.router === "Oracle";
               return (
                 <tr
                   key={r.router}
@@ -119,13 +118,7 @@ export function ResultsTable({ data }: { data: MultiSeed }) {
                     <span className="inline-flex items-center gap-2">
                       <span
                         className="h-2.5 w-2.5 rounded-full"
-                        style={{
-                          background: isAprr
-                            ? "#d93025"
-                            : isOracle
-                            ? "#1e9e6a"
-                            : "#1a73e8",
-                        }}
+                        style={{ background: ROUTER_COLORS[r.router] ?? "#71717a" }}
                       />
                       <span className={isAprr ? "text-aprr-soft" : "text-fg"}>
                         {LABEL[r.router] ?? r.router}

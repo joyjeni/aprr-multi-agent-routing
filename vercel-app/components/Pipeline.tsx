@@ -24,9 +24,9 @@ const SHORT_LABEL: Record<string, string> = {
   "APRR-core (online, no Obj1 signal)": "APRR-core",
   "CTGR (online, no Obj1 signal)": "CTGR",
   "FTDR (online, no Obj1 signal)": "FTDR",
-  "APRR-core + Obj1 fusion (online)": "APRR-core + Obj1",
-  "CTGR + Obj1 fusion (online)": "CTGR + Obj1",
-  "FTDR + Obj1 fusion (online)": "FTDR + Obj1",
+  "APRR-core + Obj1 fusion (online)": "APRR-core + O1",
+  "CTGR + Obj1 fusion (online)": "CTGR + O1",
+  "FTDR + Obj1 fusion (online)": "FTDR + O1",
 };
 
 const tooltipStyle = {
@@ -55,7 +55,7 @@ export function Pipeline({ data }: { data: PipelineResults }) {
       {/* Stage 1: Objective 1 hand-off */}
       <div className="card p-5">
         <h3 className="text-sm font-semibold text-fg">
-          Stage 1 — Objective 1 session-aware reranking (hand-off signal)
+          Stage 1 — O1 session-aware reranking (hand-off signal)
         </h3>
         <p className="mt-1 text-xs text-fg-dim">
           Computed live from{" "}
@@ -68,9 +68,9 @@ export function Pipeline({ data }: { data: PipelineResults }) {
             session-aware-toolbench-rerank
           </a>{" "}
           on {obj1.n_queries} real ToolBench eval queries across{" "}
-          {obj1.n_sessions} synthetic sessions. Objective 1&apos;s top-1
-          session-reranked category per query is the signal handed to
-          Objective 2&apos;s routers below.
+          {obj1.n_sessions} synthetic sessions. O1&apos;s top-1
+          session-reranked category per query is the signal handed to the
+          O3 routers below (named Objective 1 and Objective 2 in the notebook).
         </p>
         <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="rounded-md border border-line bg-ink-900/40 p-4">
@@ -103,7 +103,7 @@ export function Pipeline({ data }: { data: PipelineResults }) {
       {/* Stage 2: online routing chart */}
       <div className="card p-5">
         <h3 className="text-sm font-semibold text-fg">
-          Stage 2 — Objective 2 online routing ({data.n_eval_queries} real
+          Stage 2 — O3 online routing ({data.n_eval_queries} real
           ToolBench eval queries, seed 42)
         </h3>
         <p className="mt-1 text-xs text-fg-dim">
@@ -112,6 +112,20 @@ export function Pipeline({ data }: { data: PipelineResults }) {
           its affinity matrix (genuine prequential online learning, not a
           frozen inference pass). Agent pool: {data.categories.join(", ")}.
         </p>
+        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-fg-muted">
+          <span className="inline-flex items-center gap-1.5">
+            <span className="h-2.5 w-2.5 rounded-sm" style={{ background: "#3987e5" }} />
+            with the O1 fusion signal
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <span className="h-2.5 w-2.5 rounded-sm" style={{ background: "#a1a1aa" }} />
+            without it
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <span className="h-2.5 w-2.5 rounded-sm" style={{ background: "#5b5b63" }} />
+            fixed baselines
+          </span>
+        </div>
         <div className="mt-4 h-[340px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
@@ -144,7 +158,7 @@ export function Pipeline({ data }: { data: PipelineResults }) {
                 {chartRows.map((row) => (
                   <Cell
                     key={row.fullName}
-                    fill={PIPELINE_COLORS[row.fullName] ?? "#1a73e8"}
+                    fill={PIPELINE_COLORS[row.fullName] ?? "#a1a1aa"}
                   />
                 ))}
                 <LabelList
@@ -196,7 +210,7 @@ export function Pipeline({ data }: { data: PipelineResults }) {
                           className="h-2.5 w-2.5 rounded-full"
                           style={{
                             background:
-                              PIPELINE_COLORS[r.router] ?? "#1a73e8",
+                              PIPELINE_COLORS[r.router] ?? "#a1a1aa",
                           }}
                         />
                         <span className={isFusionCtgr ? "text-aprr-soft" : "text-fg"}>
@@ -224,7 +238,7 @@ export function Pipeline({ data }: { data: PipelineResults }) {
         </div>
         <div className="border-t border-line px-4 py-3 text-xs text-fg-dim">
           CTGR is the only router whose success rate visibly changes with
-          the Objective 1 fusion signal (0.5576 → 0.6606), because its
+          the O1 fusion signal (0.5576 → 0.6606), because its
           deliberation branch reshuffles the candidate shortlist using the
           boosted scores. APRR-core and FTDR make a single greedy argmax
           decision with no exploration, so once online reinforcement pushes

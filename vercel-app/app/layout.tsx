@@ -16,9 +16,9 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "APRR — Adaptive Probabilistic Routing Reinforcement",
+  title: "APRR · ACRS objective O3: risk-weighted policy routing",
   description:
-    "Online policy-iteration routing for multi-agent LLM workflows. 35.7% latency reduction, 23.9% hop reduction, Pareto-optimal across baselines.",
+    "Per-step routing between Qwen3-4B and Qwen3-8B inside ACRS, evaluated on AppWorld: 21.8% of steps on the 4B model and 49% fewer 8B calls at unchanged task success (development split, one seed). Earlier ToolBench simulation results included.",
   authors: [{ name: "Jenisha T" }],
   keywords: [
     "multi-agent LLM",
@@ -26,11 +26,13 @@ export const metadata: Metadata = {
     "reinforcement learning",
     "online policy iteration",
     "APRR",
+    "AppWorld",
+    "ACRS",
   ],
   openGraph: {
-    title: "APRR — Adaptive Probabilistic Routing Reinforcement",
+    title: "APRR · ACRS objective O3: risk-weighted policy routing",
     description:
-      "Online policy-iteration routing for multi-agent LLM workflows.",
+      "Risk-weighted routing between a small and a large open model, evaluated on AppWorld.",
     type: "website",
   },
 };

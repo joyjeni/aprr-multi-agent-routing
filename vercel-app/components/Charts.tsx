@@ -19,7 +19,7 @@ import {
   ReferenceLine,
 } from "recharts";
 import type { MultiSeed, AblationRow } from "@/lib/types";
-import { ROUTER_ORDER, ROUTER_COLORS } from "@/lib/types";
+import { ROUTER_ORDER, ROUTER_COLORS, ROUTER_DASH } from "@/lib/types";
 
 const AXIS = "#6b6b73";
 const GRID = "#26262c";
@@ -82,7 +82,7 @@ function ConvergenceChart({ data }: { data: MultiSeed }) {
   return (
     <ChartCard
       title="Convergence — success rate vs iteration"
-      subtitle="Online learning curve; APRR rises above non-oracle baselines as affinities adapt."
+      subtitle="Online learning curve over 40 iterations. APRR stays close to Static Semantic in success while taking shorter paths; the Oracle is an upper bound."
     >
       <LineChart data={merged} margin={{ top: 5, right: 8, left: -16, bottom: 0 }}>
         <CartesianGrid stroke={GRID} strokeDasharray="3 3" />
@@ -113,6 +113,7 @@ function ConvergenceChart({ data }: { data: MultiSeed }) {
             type="monotone"
             dataKey={r}
             stroke={ROUTER_COLORS[r]}
+            strokeDasharray={ROUTER_DASH[r]}
             strokeWidth={r === "APRR" ? 2.6 : 1.4}
             dot={false}
             opacity={r === "APRR" || r === "Oracle" ? 1 : 0.75}
@@ -139,7 +140,7 @@ function ParetoChart({ data }: { data: MultiSeed }) {
   return (
     <ChartCard
       title="Pareto frontier — latency vs success"
-      subtitle="Lower latency and higher success are better. APRR dominates all non-oracle baselines."
+      subtitle="Lower latency and higher success are better. APRR, LLM Router and Static Semantic all lie on the non-oracle frontier: APRR gives up 2.9 points of success for 36% lower latency than Static Semantic."
     >
       <ScatterChart margin={{ top: 8, right: 12, left: -12, bottom: 4 }}>
         <CartesianGrid stroke={GRID} strokeDasharray="3 3" />
@@ -200,7 +201,7 @@ function LatencyBarChart({ data }: { data: MultiSeed }) {
   return (
     <ChartCard
       title="Mean latency by router"
-      subtitle="End-to-end milliseconds per query. APRR trims path length without LLM-router overhead."
+      subtitle="End-to-end milliseconds per query (simulated). The LLM Router is fastest because it takes the shortest paths, at lower success."
     >
       <BarChart data={bars} margin={{ top: 8, right: 8, left: -14, bottom: 0 }}>
         <CartesianGrid stroke={GRID} strokeDasharray="3 3" vertical={false} />
@@ -277,9 +278,9 @@ function AblationMini({
             <Line
               type="monotone"
               dataKey="success"
-              stroke="#d93025"
+              stroke="#3987e5"
               strokeWidth={2.2}
-              dot={{ r: 2.5, fill: "#d93025" }}
+              dot={{ r: 3, fill: "#3987e5" }}
               isAnimationActive={false}
             />
           </LineChart>

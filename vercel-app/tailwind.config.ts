@@ -16,17 +16,19 @@ const config: Config = {
           600: "#26262c",
           500: "#3a3a42",
         },
+        // Accent (blue) for this work; neutral slate for links and baselines; amber for the oracle.
+        // No red or green anywhere on the site.
         aprr: {
-          DEFAULT: "#d93025",
-          soft: "#ef5350",
-          dim: "#7a1d18",
+          DEFAULT: "#256abf",
+          soft: "#6da7ec",
+          dim: "#1c5cab",
         },
         base: {
-          DEFAULT: "#1a73e8",
-          soft: "#4f93f0",
-          dim: "#123a6e",
+          DEFAULT: "#7c8aa5",
+          soft: "#a5b4cf",
+          dim: "#2c3444",
         },
-        oracle: "#1e9e6a",
+        oracle: "#c98500",
         line: "#26262c",
         fg: {
           DEFAULT: "#f5f5f7",

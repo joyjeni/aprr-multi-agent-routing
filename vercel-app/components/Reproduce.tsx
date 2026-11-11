@@ -10,12 +10,19 @@ interface ResLink {
 
 const LINKS: ResLink[] = [
   {
+    title: "ACRS on AppWorld",
+    desc: "The agent behind the AppWorld results (branch o4-provenance): all four objectives, the policy check, the Kaggle notebook and offline tests.",
+    href: "https://github.com/joyjeni/acrs-appworld/tree/o4-provenance",
+    cta: "joyjeni/acrs-appworld",
+    external: true,
+    accent: true,
+  },
+  {
     title: "GitHub repository",
-    desc: "Full source: router, baselines, simulator, experiment drivers, and figure scripts.",
+    desc: "APRR source: router, baselines, simulator, experiment drivers and figure scripts.",
     href: "https://github.com/joyjeni/aprr-multi-agent-routing",
     cta: "joyjeni/aprr-multi-agent-routing",
     external: true,
-    accent: true,
   },
   {
     title: "Colab notebook",
@@ -25,8 +32,8 @@ const LINKS: ResLink[] = [
     external: true,
   },
   {
-    title: "Objective 1 → Objective 2 pipeline",
-    desc: "Kaggle-executable notebook: session-aware reranking feeds APRR/CTGR/FTDR online routing on real ToolBench data.",
+    title: "O1 → O3 pipeline (earlier)",
+    desc: "Kaggle notebook: session-aware reranking feeds APRR/CTGR/FTDR online routing on real ToolBench data.",
     href: "https://github.com/joyjeni/aprr-multi-agent-routing/blob/main/notebooks/APRR_Objective1_Objective2_ToolBench.ipynb",
     cta: "Open notebook",
     external: true,
@@ -34,24 +41,34 @@ const LINKS: ResLink[] = [
 ];
 
 const DATASETS: { label: string; href: string }[] = [
+  { label: "appworld_dev.json", href: "/data/appworld_dev.json" },
   { label: "multiseed.json", href: "/data/multiseed.json" },
   { label: "ablation.json", href: "/data/ablation.json" },
   { label: "pipeline_results.json", href: "/data/pipeline_results.json" },
+  { label: "affinity_seed42.json", href: "/data/affinity_seed42.json" },
+  { label: "per_split_seed42.json", href: "/data/per_split_seed42.json" },
   { label: "API · /api/results", href: "/api/results" },
 ];
 
-const FIG_PDFS: { label: string; href: string }[] = [
-  { label: "Fig. 1 (PDF)", href: "/figures/fig1_convergence_success.pdf" },
-  { label: "Fig. 3 (PDF)", href: "/figures/fig3_affinity_evolution.pdf" },
-  { label: "Fig. 4 (PDF)", href: "/figures/fig4_per_split_breakdown.pdf" },
-  { label: "Fig. 5 (PDF)", href: "/figures/fig5_pareto_latency_success.pdf" },
-  { label: "Fig. 7 (PDF)", href: "/figures/fig7_ablation.pdf" },
+const SCRIPTS: { label: string; href: string }[] = [
+  {
+    label: "make_figures.py",
+    href: "https://github.com/joyjeni/aprr-multi-agent-routing/blob/main/experiments/make_figures.py",
+  },
+  {
+    label: "make_ablation_figure.py",
+    href: "https://github.com/joyjeni/aprr-multi-agent-routing/blob/main/experiments/make_ablation_figure.py",
+  },
+  {
+    label: "appworld_dev.json",
+    href: "/data/appworld_dev.json",
+  },
 ];
 
 export function Reproduce() {
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
         {LINKS.map((l) => (
           <a
             key={l.title}
@@ -90,8 +107,8 @@ export function Reproduce() {
         <div className="card p-5">
           <h3 className="text-sm font-semibold text-fg">Result artifacts</h3>
           <p className="mt-1 text-xs text-fg-dim">
-            Raw benchmark JSON. The API route returns the same payload for
-            programmatic GET/POST from notebooks.
+            Aggregate result files (AppWorld: no task text or API output).
+            The API route returns the same payload for programmatic access.
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
             {DATASETS.map((d) => (
@@ -109,12 +126,13 @@ export function Reproduce() {
         </div>
 
         <div className="card p-5">
-          <h3 className="text-sm font-semibold text-fg">Figure PDFs</h3>
+          <h3 className="text-sm font-semibold text-fg">Figure scripts</h3>
           <p className="mt-1 text-xs text-fg-dim">
-            Vector PDFs sized for IEEE double-column submission.
+            Regenerate the manuscript figures (neutral palette) from the
+            result files; AppWorld numbers come from the aggregate file.
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
-            {FIG_PDFS.map((f) => (
+            {SCRIPTS.map((f) => (
               <a
                 key={f.href}
                 href={f.href}

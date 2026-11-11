@@ -59,14 +59,25 @@ export const ROUTER_ORDER: RouterName[] = [
   "Oracle",
 ];
 
-// Color assignment: APRR=red, Oracle=green, all baselines=blue family.
+// Colour assignment: APRR = blue accent, Oracle (upper bound) = amber, baselines = a grey ramp.
+// No red or green: those read as "faulty" and "correct". Validated for the dark chart surface.
 export const ROUTER_COLORS: Record<string, string> = {
-  Random: "#1a73e8",
-  RoundRobin: "#4f93f0",
-  StaticSemantic: "#7fb1f5",
-  LLMRouter: "#2b5fb0",
-  APRR: "#d93025",
-  Oracle: "#1e9e6a",
+  Random: "#5b5b63",
+  RoundRobin: "#71717a",
+  StaticSemantic: "#a1a1aa",
+  LLMRouter: "#d4d4d8",
+  APRR: "#3987e5",
+  Oracle: "#c98500",
+};
+
+// Line dash per router so identity never rests on shade alone.
+export const ROUTER_DASH: Record<string, string | undefined> = {
+  Random: "2 3",
+  RoundRobin: "6 3",
+  StaticSemantic: "10 3 2 3",
+  LLMRouter: undefined,
+  APRR: undefined,
+  Oracle: "4 4",
 };
 
 // --- Objective 1 -> Objective 2 pipeline notebook results ---
@@ -100,13 +111,14 @@ export interface PipelineResults {
   results: PipelineRouterResult[];
 }
 
+// Without the O1 signal = grey; with the O1 fusion signal = blue accent; fixed baselines = dark grey.
 export const PIPELINE_COLORS: Record<string, string> = {
-  Random: "#6b6b73",
-  StaticSemantic: "#94A3B8",
-  "APRR-core (online, no Obj1 signal)": "#0F766E",
-  "CTGR (online, no Obj1 signal)": "#7C3AED",
-  "FTDR (online, no Obj1 signal)": "#B45309",
-  "APRR-core + Obj1 fusion (online)": "#0D9488",
-  "CTGR + Obj1 fusion (online)": "#5B21B6",
-  "FTDR + Obj1 fusion (online)": "#EA580C",
+  Random: "#5b5b63",
+  StaticSemantic: "#5b5b63",
+  "APRR-core (online, no Obj1 signal)": "#a1a1aa",
+  "CTGR (online, no Obj1 signal)": "#a1a1aa",
+  "FTDR (online, no Obj1 signal)": "#a1a1aa",
+  "APRR-core + Obj1 fusion (online)": "#3987e5",
+  "CTGR + Obj1 fusion (online)": "#3987e5",
+  "FTDR + Obj1 fusion (online)": "#3987e5",
 };

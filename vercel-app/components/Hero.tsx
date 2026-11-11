@@ -1,4 +1,6 @@
 import { Logo } from "./Logo";
+import type { AppWorldResults } from "@/lib/appworld";
+import { cfg } from "@/lib/appworld";
 
 function Metric({
   value,
@@ -18,58 +20,89 @@ function Metric({
       >
         {value}
       </div>
-      <div className="mt-1.5 text-sm text-fg-muted">{label}</div>
+      <div className="mt-1.5 text-sm leading-snug text-fg-muted">{label}</div>
     </div>
   );
 }
 
-export function Hero() {
+export function Hero({ aw }: { aw: AppWorldResults }) {
+  const full = cfg(aw, "full");
+  const ref = cfg(aw, "reference");
+  const smallShare = 100 - (full.large_share_pct ?? 0);
+  const fewer = Math.round(
+    (100 * ((ref.large_steps ?? 0) - (full.large_steps ?? 0))) / (ref.large_steps ?? 1)
+  );
+  const pairRef = aw.paired_mcnemar.find(
+    (p) => p.a === "Full ACRS" && p.b === "Reference agent"
+  );
+
   return (
     <section id="top" className="relative overflow-hidden">
       <div className="section-pad pb-14 pt-16 sm:pt-24">
         <div className="flex items-center gap-2.5">
           <Logo className="h-8 w-8 text-fg" />
-          <span className="eyebrow">Multi-agent LLM routing · RL</span>
+          <span className="eyebrow">ACRS · Objective O3 · Risk-weighted policy routing</span>
         </div>
 
-        <h1 className="mt-6 max-w-4xl text-4xl font-semibold leading-[1.05] tracking-tight sm:text-6xl">
-          <span className="text-aprr-soft">APRR</span>: Adaptive Probabilistic
-          Routing Reinforcement
+        <h1 className="mt-6 max-w-4xl text-4xl font-semibold leading-[1.08] tracking-tight sm:text-6xl">
+          Choosing a <span className="text-aprr-soft">4B or an 8B model</span> for every step of a tool agent
         </h1>
 
         <p className="mt-5 max-w-2xl text-lg leading-relaxed text-fg-muted sm:text-xl">
-          Online policy-iteration routing for multi-agent LLM workflows. A
-          decay-regularised, success-weighted affinity matrix learns shorter,
-          higher-quality call sequences — without LLM gradient updates.
+          APRR started as a routing method for multi-agent workflows on simulated ToolBench queries. In ACRS it is
+          objective O3: a contextual Thompson sampler that picks Qwen3-4B or Qwen3-8B for each step of an AppWorld
+          agent, and trusts the small model on a risky step only when it is clearly better.
         </p>
 
         <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-fg-muted">
           <span>
-            <span className="text-fg">Jenisha&nbsp;T</span> · MS Ramaiah
-            University of Applied Sciences
+            <span className="text-fg">Jenisha&nbsp;T</span> · Ph.D. research, Ramaiah University of Applied
+            Sciences
           </span>
           <span className="hidden h-3 w-px bg-line sm:inline-block" />
-          <span>5 seeds · 500 queries × 40 iterations</span>
+          <span>
+            AppWorld {aw.benchmark.split} split · {aw.benchmark.tasks} tasks · {aw.benchmark.seeds} seed · updated{" "}
+            {aw.updated}
+          </span>
         </div>
 
-        <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <Metric value="−35.7%" label="Mean latency vs StaticSemantic" accent />
-          <Metric value="−23.9%" label="Mean hops per query" accent />
-          <Metric value="Pareto-optimal" label="On the latency–success frontier" />
+        <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <Metric
+            value={`${smallShare.toFixed(1)}%`}
+            label={`of full-ACRS steps written by the 4B model (${full.small_steps} of ${
+              (full.small_steps ?? 0) + (full.large_steps ?? 0)
+            })`}
+            accent
+          />
+          <Metric
+            value={`−${fewer}%`}
+            label={`calls to the 8B model against the reference agent (${full.large_steps} vs ${ref.large_steps})`}
+            accent
+          />
+          <Metric
+            value={`${full.tgc_pct}% / ${ref.tgc_pct}%`}
+            label={`task success, full ACRS / reference agent: no significant difference (McNemar p = ${pairRef?.p.toFixed(
+              2
+            )})`}
+          />
+          <Metric
+            value="Pending"
+            label="ablation without O3 and the per-step check that risky steps went to the 8B model"
+          />
         </div>
 
         <div className="mt-8 flex flex-wrap gap-3">
           <a
-            href="#results"
-            className="rounded-md bg-aprr px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-aprr-soft"
+            href="#appworld"
+            className="rounded-md bg-aprr px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-aprr-dim"
           >
-            View benchmark
+            AppWorld results
           </a>
           <a
-            href="#reproduce"
+            href="#earlier"
             className="rounded-md border border-line px-5 py-2.5 text-sm font-medium text-fg transition-colors hover:border-fg-muted"
           >
-            Reproduce results
+            Earlier experiments
           </a>
         </div>
       </div>

@@ -2,11 +2,11 @@ import Link from "next/link";
 import { Logo } from "./Logo";
 
 const LINKS = [
-  { href: "#results", label: "Results" },
-  { href: "#charts", label: "Charts" },
-  { href: "#figures", label: "Figures" },
-  { href: "#algorithm", label: "Algorithm" },
-  { href: "#pipeline", label: "Pipeline" },
+  { href: "#appworld", label: "AppWorld" },
+  { href: "#aw-results", label: "Results" },
+  { href: "#o3", label: "O3 routing" },
+  { href: "#evidence", label: "Evidence" },
+  { href: "#earlier", label: "Earlier experiments" },
   { href: "#reproduce", label: "Reproduce" },
 ];
 
@@ -18,7 +18,7 @@ export function Nav() {
           <Logo className="h-6 w-6" />
           <span className="text-sm font-semibold tracking-tight">APRR</span>
           <span className="hidden text-xs text-fg-dim sm:inline">
-            Adaptive Probabilistic Routing Reinforcement
+            ACRS · O3 risk-weighted policy routing
           </span>
         </Link>
         <div className="flex items-center gap-1">
