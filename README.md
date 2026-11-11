@@ -1,8 +1,45 @@
-# APRR: Adaptive Probabilistic Routing Reinforcement (ACRS Objective 2)
+# APRR: Adaptive Probabilistic Routing Reinforcement (ACRS objective O3: risk-weighted policy routing)
 
 > **Ph.D. CSE, M S Ramaiah University of Applied Sciences (FET).**  
-> Scholar: Jenisha T (`24ETRP720001`). Supervisor: Dr. Jyothi A P.  
-> Integrated loop: SATR → **APRR** → MNCD → FCNP.
+> Scholar: Jenisha T (`24ETRP720001`). Supervisor: Dr. Padma Priya Dharishini P.  
+> ACRS objectives in the order they act: O1 session-adaptive tool scoring (SATR) → O2 PID-controlled provenance pruning (FCNP) → **O3 risk-weighted policy routing (APRR)** → O4 certified execution (MNCD), with G1 policy as code.
+
+**Objective numbering.** The thesis numbers the objectives in the order in which they act within one step. Older sections of this README, the notebooks and the Hugging Face Space call this work "Objective 2"; in the thesis it is **O3**.
+
+## Latest: ACRS on AppWorld (November 2026)
+
+APRR now runs inside ACRS as O3 and is evaluated on [AppWorld](https://github.com/StonyBrookNLP/appworld) (Trivedi et al., ACL 2024: 9 apps, 457 APIs, tasks graded by state-based unit tests) with open-weight models: Qwen3-8B (AWQ 4-bit) as the large tier and Qwen3-4B (AWQ 4-bit) as the small tier, served with vLLM on two free T4 GPUs.
+
+**What O3 does on AppWorld.** Before each step, a two-arm contextual Thompson sampler (a Beta posterior per arm and context) picks the 4B or the 8B model. The context records whether the last step failed, whether the APIs that O1 retrieves for the task include a state-changing call, whether O2 had to cut an output that no live variable still holds, and whether the episode is late (step 15 or later). In a risky context (any of the first three), the 4B model must beat the 8B model by a margin δ = 0.35; the 8B model carries a cost penalty λ = 0.15. The reward is 1 when the step ran without error, G1 allowed it and, if it changed state, O4 committed it.
+
+**Development split, first full run** (57 tasks in 19 scenarios, one seed, three worked examples; Kaggle on 2 × T4: seven configurations in 10 h 32 min, the run without O3 in a second session of 131 min). Aggregates only: AppWorld task text and API outputs are not published.
+
+| Configuration | Task success (TGC) | Scenarios (SGC) | Steps / task | Tokens (M) | Steps on the 8B model | Collateral damage |
+|---|---|---|---|---|---|---|
+| Reference agent (8B on every step, no ACRS part) | 19.3 % (11/57) | 1/19 | 15.3 | 3.39 | 100 % (873) | 0/57 |
+| **Full ACRS** | **17.5 % (10/57)** | **3/19** | **10.1** | **3.36** | **78.2 % (448; 125 on the 4B)** | **0/57** |
+| O2 only | 15.8 % (9/57) | 1/19 | 13.9 | 2.22 | 100 % | 0/57 |
+| Full without O1 | 10.5 % (6/57) | 0/19 | 7.6 | 2.48 | 75.0 % | 0/57 |
+| Full without O2 | 19.3 % (11/57) | 2/19 | 10.6 | 4.16 | 77.3 % | 0/57 |
+| Full without O3 | 14.0 % (8/57) | 1/19 | 10.0 | 3.14 | 100 % (570) | 0/57 |
+| Full without O4 | 14.0 % (8/57) | 0/19 | 7.7 | 1.38 | 80.3 % | 1/57 |
+| Full without G1 | 12.3 % (7/57) | 0/19 | 11.0 | 3.57 | 80.9 % | 0/57 |
+
+What the run supports for O3 (RQ3):
+
+- 21.8 % of full-ACRS steps were written by the 4B model. Full ACRS called the 8B model 448 times, against 570 for the same system without O3 (21 % fewer) and 873 for the reference agent (49 % fewer; its episodes were also longer). Total tokens were similar with and without O3 (3.36 M and 3.14 M), because the 4B model's steps also cost tokens.
+- Task success did not differ significantly: 17.5 % with O3 against 14.0 % without it (2 tasks against 0, McNemar exact p = 0.5), and against 19.3 % for the reference agent (7 tasks against 8, p = 1.0).
+- Status: the cost claim is supported; the risk-signed part (risky steps go to the 8B model) waits for a check of the per-step logs.
+
+No configuration differs significantly in task success on 57 tasks (every McNemar p ≥ 0.34); about 155 paired tasks are needed to detect a 10-point difference, so the test splits will be run with three seeds. The released harness uses the earlier numbering in its configuration names (`no_o2` is the run without O3).
+
+- Code: [joyjeni/acrs-appworld, branch `o4-provenance`](https://github.com/joyjeni/acrs-appworld/tree/o4-provenance)
+- Dashboard: **https://aprr-multi-agent-routing.vercel.app** (AppWorld first, then the earlier results)
+- Aggregate data: [`vercel-app/public/data/appworld_dev.json`](vercel-app/public/data/appworld_dev.json)
+
+## Earlier work: APRR on a simulated ToolBench workflow (June to October 2026)
+
+The rest of this README documents APRR as it was developed before AppWorld, with simulated agents over ToolBench queries.
 
 This repository is the **routing chapter** of ACRS: a training-free posterior over
 **tool-specialist agents**, updated from SATR scores and live MNCD observations.
@@ -92,7 +129,7 @@ Gray = stages **cut** in APRR. Navy = execution. Amber = reward. Purple = the po
 
 ```mermaid
 ---
-title: APRR — Core Architecture (This Repo, Objective 2)
+title: APRR — Core Architecture (This Repo, O3)
 config:
   layout: elk
 ---
@@ -110,13 +147,13 @@ flowchart TD
     Q --> KW --> ROW --> POL --> SEL --> EXEC --> OUT --> UPD
     UPD -.->|"per-query online loop"| NOTE
 
-    classDef input fill:#0F766E,color:#ffffff,stroke:#064E3B,stroke-width:2px,rx:8,ry:8
-    classDef light fill:#CCFBF1,color:#0B1730,stroke:#0F766E,stroke-width:1.5px,rx:8,ry:8
-    classDef core fill:#0F766E,color:#ffffff,stroke:#064E3B,stroke-width:2px,rx:8,ry:8
+    classDef input fill:#1c5cab,color:#ffffff,stroke:#0d366b,stroke-width:2px,rx:8,ry:8
+    classDef light fill:#dbe7f6,color:#0B1730,stroke:#1c5cab,stroke-width:1.5px,rx:8,ry:8
+    classDef core fill:#1c5cab,color:#ffffff,stroke:#0d366b,stroke-width:2px,rx:8,ry:8
     classDef exec fill:#1B2A4A,color:#ffffff,stroke:#0B1730,stroke-width:2px,rx:8,ry:8
     classDef observe fill:#B45309,color:#ffffff,stroke:#7C3A02,stroke-width:2px,rx:8,ry:8
-    classDef update fill:#0D9488,color:#ffffff,stroke:#064E3B,stroke-width:2px,rx:8,ry:8
-    classDef note fill:#F0FDFA,color:#134E4A,stroke:#5EEAD4,stroke-width:1px,rx:6,ry:6
+    classDef update fill:#256abf,color:#ffffff,stroke:#0d366b,stroke-width:2px,rx:8,ry:8
+    classDef note fill:#eef4fc,color:#0d366b,stroke:#86b6ef,stroke-width:1px,rx:6,ry:6
 ```
 
 APRR replaces MasRouter's entire learned-encoder + 3-network cascade with a single closed-form affinity-matrix lookup and update — zero trainable parameters, no gradients.
@@ -159,7 +196,7 @@ flowchart TD
     classDef greedy fill:#0E7490,stroke:#0C4A6E,color:#ffffff,font-weight:bold
     classDef delib fill:#7C3AED,stroke:#4C1D95,color:#ffffff,font-weight:bold
     classDef exec fill:#1B2A4A,stroke:#1B2A4A,color:#ffffff,font-weight:bold
-    classDef audit fill:#EA580C,stroke:#9A3412,color:#ffffff,font-weight:bold
+    classDef audit fill:#b45309,stroke:#7c3a02,color:#ffffff,font-weight:bold
 ```
 
 CTGR re-adds MasRouter's "give complex queries more deliberation" idea as a training-free gate: below the complexity threshold it falls back to plain APRR greedy dispatch (`route()` → `mode="greedy"`); above it, `deliberate()` runs template reasoning traces and multi-round weighted voting with early-exit at a 60% majority (`mode="deliberation"`). Both paths return the same `route()` dict shape (stage 6), so downstream code does not need to branch on which path was taken.
@@ -193,7 +230,7 @@ flowchart TD
     classDef token fill:#7C3A02,color:#ffffff,stroke:#451A03,stroke-width:2px,rx:8,ry:8
     classDef deep2 fill:#FCD34D,color:#1E1B3A,stroke:#B45309,stroke-width:1.5px,rx:8,ry:8
     classDef exec fill:#1B2A4A,color:#ffffff,stroke:#0B1730,stroke-width:2px,rx:8,ry:8
-    classDef update fill:#0D9488,color:#ffffff,stroke:#064E3B,stroke-width:2px,rx:8,ry:8
+    classDef update fill:#256abf,color:#ffffff,stroke:#0d366b,stroke-width:2px,rx:8,ry:8
     classDef note fill:#FFFBEB,color:#7C3A02,stroke:#FDE68A,stroke-width:1px,rx:6,ry:6
 ```
 
@@ -204,7 +241,7 @@ FTDR re-adds MasRouter's stage-wise cascade structure as a two-layer, still full
 Performed after the 2026-08-17 arrow-connection fix, before finalizing:
 
 - **Research reviewer** — re-checked every labeled stage against the actual function names and control flow in `src/aprr_extensions/ctgr_router.py` and `src/aprr_extensions/ftdr_router.py`. Found and corrected two inaccuracies introduced in the previous revision: (1) CTGR's stage 6 was labeled as a fabricated `decision.json audit record` that does not exist anywhere in the codebase — replaced with the router's actual `route()` return-dict fields; (2) FTDR's stages 6a/6b were drawn as two parallel branches feeding a single joint "Decay Both" step — the code updates `W_local` (with its own decay) and then `W_global` (with a separate decay) strictly sequentially, so the diagram was corrected to a single sequential chain. The MasRouter citation (Yue et al., ACL 2025, DOI [10.18653/v1/2025.acl-long.757](https://doi.org/10.18653/v1/2025.acl-long.757)) and CTGR's threshold logic (`complexity < threshold → greedy`) were re-verified against the paper and source respectively and are accurate as drawn.
-- **UX designer** — verified every arrowhead in all four re-rendered diagrams touches its target node's border directly (checked via pixel-level crops at each branch/merge junction), replacing the prior renderer's boundary-clipped, visually "floating" arrows. Kept a consistent color grammar per diagram (gray = cut-from-baseline, navy = execution, amber = reward/observe, purple = training/deliberation, teal = update rules) and dotted arrows reserved exclusively for the offline/online feedback-loop annotations, so a dotted line always means "this is a note about what feeds back," not a live pipeline edge.
+- **UX designer** — verified every arrowhead in all four re-rendered diagrams touches its target node's border directly (checked via pixel-level crops at each branch/merge junction), replacing the prior renderer's boundary-clipped, visually "floating" arrows. Kept a consistent color grammar per diagram (gray = cut-from-baseline, navy = execution, amber = reward/observe, purple = training/deliberation, blue = update rules) and dotted arrows reserved exclusively for the offline/online feedback-loop annotations, so a dotted line always means "this is a note about what feeds back," not a live pipeline edge.
 - **Enterprise architect** — confirmed each diagram's system boundaries and data-flow direction are correct: MasRouter and APRR both show a strictly acyclic online-serving path with a feedback annotation (not a real cycle) for parameter/matrix updates; CTGR is drawn as a true decision tree with a single shared exit node (both branches converge on stage 4 before execution, matching the code's single `route()` return path); FTDR correctly separates the two-layer W_local/W_global responsibility boundary (arm-local state vs. coordinator-global state) and shows both being touched on every outcome, in the order the code actually touches them.
 
 **Trade-off accepted:** switching to the ELK layout engine for guaranteed edge-to-node connections means these four diagrams are now single-direction pipelines/tree (portrait-oriented, aspect ratios ~0.3–0.4) rather than the previous wide 2-row grid (~2:1) designed to fill a 16:9 slide edge-to-edge. For slide use, place each diagram as a portrait panel alongside explanatory text rather than as a full-bleed background — this is a more common and more readable pattern for detailed technical diagrams in a defense deck than a low-detail wide banner would have been.
@@ -245,21 +282,23 @@ See [Objective 2 Extension: CTGR and FTDR Routing Variants](#objective-2-extensi
 - **Empirics.** 5 seeds × 40 iterations × 500 ToolBench queries (G1/G2/G3). APRR is Pareto-optimal (non-dominated) vs. Random, RoundRobin, StaticSemantic, and an LLM-Router baseline — see the [Pareto framing note](#pareto-framing-note) below.
 - **Reproducibility.** Single-command reproduction; free-tier T4 Colab notebook; JSON artifacts shipped to dashboard.
 
-## Headline Results (5-seed mean ± 95% CI)
+## Headline Results of the simulated workflow (5-seed mean ± 95% CI)
 
-Numbers below are copied verbatim from [`tables/table1_main_results.csv`](tables/table1_main_results.csv) — the actual output of `experiments/multiseed.py` — with no rounding or reframing beyond what's in that file.
+Numbers below are the five-seed means (seeds 42–46) from [`results/multiseed.json`](results/multiseed.json), the output of `experiments/multiseed.py`, with the 95% confidence interval across seeds. The dashboard shows the same file.
 
 | Router | Success | Mean Latency (ms) | Hops |
 |---|---|---|---|
-| Random | 0.324 ± 0.006 | 395.5 | 3.51 |
-| RoundRobin | 0.379 ± 0.007 | 546.1 | 4.33 |
-| StaticSemantic | 0.451 ± 0.007 | 414.5 | 3.70 |
-| LLMRouter | 0.404 ± 0.007 | 148.3 | 2.05 |
-| **APRR (ours)** | **0.449 ± 0.007** | **315.8** | **3.03** |
-| Oracle (upper bound, uses ground truth) | 0.899 ± 0.004 | 452.7 | 4.32 |
+| Random | 0.323 ± 0.004 | 393.9 ± 1.3 | 3.50 ± 0.01 |
+| RoundRobin | 0.380 ± 0.002 | 546.7 ± 0.3 | 4.33 ± 0.00 |
+| StaticSemantic | 0.499 ± 0.024 | 406.6 ± 60.4 | 3.64 ± 0.35 |
+| LLMRouter | 0.406 ± 0.010 | 151.0 ± 3.0 | 2.07 ± 0.02 |
+| **APRR (ours)** | **0.470 ± 0.020** | **261.3 ± 31.7** | **2.77 ± 0.15** |
+| Oracle (upper bound, uses ground truth) | 0.900 ± 0.001 | 448.9 ± 9.4 | 4.30 ± 0.06 |
+
+**Correction (November 2026).** An earlier revision of this section showed the single run with seed 42 ([`tables/table1_main_results.csv`](tables/table1_main_results.csv), produced by `experiments/make_figures.py` from `results/seed_42/results.json`) under a five-seed heading. On seed 42 alone APRR has success 0.449 and latency 315.8 ms against 0.451 and 414.5 ms for StaticSemantic.
 
 <a id="pareto-framing-note"></a>
-**Pareto framing note (added after peer review):** StaticSemantic's point-estimate success rate (0.451) is nominally *higher* than APRR's (0.449), with overlapping 95% confidence intervals — i.e. the two are statistically indistinguishable on success rate. APRR's advantage is **Pareto optimality, not Pareto dominance**: across all 6 routers, no single baseline achieves both higher success *and* lower latency than APRR simultaneously (StaticSemantic has higher latency for its success; LLMRouter has lower latency but lower success). APRR uses 23.8% lower mean latency and 18.1% fewer hops than StaticSemantic, the strongest baseline by success rate. This replaces an earlier version of this README that reported different headline numbers (Success 0.470, Latency 261.3ms) that did not match `table1_main_results.csv` and framed the result as Pareto *dominance* — both corrected per external review (see `paper/review_harvard.md`, `paper/review_mit.md`, `paper/author_response.md`).
+**Pareto framing note (added after peer review):** StaticSemantic has the highest non-oracle success rate over the five seeds (0.499 against 0.470 for APRR). APRR's advantage is **Pareto optimality, not Pareto dominance**: no baseline has both higher success *and* lower latency than APRR (StaticSemantic has higher latency; LLMRouter has lower latency but lower success), so APRR, StaticSemantic and LLMRouter all lie on the non-oracle frontier. Against StaticSemantic, APRR gives up 2.9 points of success for 35.7 % lower mean latency and 23.9 % fewer hops (seed 42 alone: 23.8 % and 18.1 %). The framing as Pareto *dominance* in an older revision was corrected after external review (see `paper/review_harvard.md`, `paper/review_mit.md`, `paper/author_response.md`).
 
 ## Project layout
 
@@ -299,8 +338,7 @@ Open `notebooks/APRR_Reproducible_Benchmark.ipynb` in Colab. Runs end-to-end on 
 
 ## Live dashboard
 
-Interactive results, charts, and downloadable artifacts at
-**https://aprr-multi-agent-routing.vercel.app** (API: `/api/results`).
+**https://aprr-multi-agent-routing.vercel.app** (API: `/api/results`): the AppWorld results first, then the earlier simulated-workflow results, charts and downloadable artefacts. The site uses a blue accent and neutral greys only.
 
 ## Live routing demo (Hugging Face Space)
 
@@ -396,7 +434,7 @@ results/
 
 ### PhD Integration Map
 
-| Extension | Objective 1 (SessionRerank) | Objective 3 (MNCD Mesh) | Objective 4 (FCNP Pruning) |
+| Extension | O1 (SessionRerank) | O4 (MNCD mesh; formerly Objective 3) | O2 (FCNP pruning; formerly Objective 4) |
 |---|---|---|---|
 | **CTGR** | Reasoning trace → session priority score | Negative-quality traces → distress signal | Trace relevance → context chunk filter |
 | **FTDR** | Arm domain → session category hint | Confidence-signal drops → mesh distress broadcast | Arm dispatch → domain-gated pruning |
@@ -442,4 +480,4 @@ This repository was reviewed against two simulated peer reviews (`paper/review_h
 6. **Replaced six placeholder "concurrent work 2026" citations** (`arXiv:2602.xxxxx`-style placeholder IDs) in `PROJECT_CONTEXT.md` and `paper/manuscript.md` with verified, correctly attributed real papers — see the Related Work section of `paper/manuscript.md` for the corrected citation list.
 7. **Theory–practice gap (Proposition 1)** was already addressed in `paper/author_response.md` (retitled from "Theorem" to "Proposition," added an ablation at the exact α=γ=1,β=λ=0 point) — this README now links that response explicitly instead of leaving the correction undiscoverable outside the paper/ directory.
 8. **Simulator fidelity remains a documented limitation**: `src/aprr/toolbench.py`'s main-benchmark simulator is still synthetic/deterministic-latency (per `paper/review_mit.md`, item 8, real-system validation is "expected before defense" but not yet performed). The Objective-2 extension benchmark now at least uses real ToolBench query/category data instead of synthetic domains, but does not execute real API calls or real LLM inference — that remains future work.
-
+9. **Headline table corrected (November 2026).** The table under "Headline Results" had shown the seed-42 run (`tables/table1_main_results.csv`) under a five-seed heading; it now shows the five-seed means from `results/multiseed.json`, which is also what the dashboard plots. The README now leads with the AppWorld results, uses the thesis numbering (APRR is O3), and the dashboard and the figure scripts no longer use red or green.
