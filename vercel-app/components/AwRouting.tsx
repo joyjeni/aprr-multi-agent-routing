@@ -11,6 +11,7 @@ const CONTEXT = [
 export function AwRouting({ aw }: { aw: AppWorldResults }) {
   const full = cfg(aw, "full");
   const ref = cfg(aw, "reference");
+  const noO3 = cfg(aw, "no_o3");
   const finding = aw.findings.find((f) => f.objective === "O3");
   return (
     <div className="grid grid-cols-1 gap-5 lg:grid-cols-5">
@@ -66,13 +67,13 @@ export function AwRouting({ aw }: { aw: AppWorldResults }) {
           <div>
             <dt className="text-xs text-fg-dim">Calls to the 8B model</dt>
             <dd className="font-mono text-fg">
-              {full.large_steps} against {ref.large_steps} for the reference agent
+              {full.large_steps} against {noO3.large_steps} without O3 and {ref.large_steps} for the reference agent
             </dd>
           </div>
           <div>
             <dt className="text-xs text-fg-dim">Task success</dt>
             <dd className="font-mono text-fg">
-              {full.tgc_pct}% against {ref.tgc_pct}% (7 tasks against 8, p = 1.0)
+              {full.tgc_pct}% against {noO3.tgc_pct?.toFixed(1)}% without O3 (2 tasks against 0, p = 0.5)
             </dd>
           </div>
           <div>
@@ -81,9 +82,11 @@ export function AwRouting({ aw }: { aw: AppWorldResults }) {
           </div>
         </dl>
         <p className="mt-4 rounded-lg border border-line bg-ink-900/40 p-3 text-xs leading-relaxed text-fg-muted">
-          Part of the drop in 8B calls comes from shorter episodes, not only from routing. The ablation without O3
-          separates the two, and the per-step logs will show whether risky steps went to the 8B model, which is
-          the risk-signed part of the claim. {finding?.next}
+          Without O3 the same system called the 8B model {noO3.large_steps} times, so the router itself removed{" "}
+          {(noO3.large_steps ?? 0) - (full.large_steps ?? 0)} calls; shorter episodes account for the rest of the drop
+          from {ref.large_steps}. Total tokens stayed similar ({full.tokens_m} M with O3, {noO3.tokens_m} M without),
+          because the 4B model&apos;s steps also cost tokens. Whether risky steps went to the 8B model, the
+          risk-signed part of the claim, is still to be checked. {finding?.next}
         </p>
       </div>
     </div>

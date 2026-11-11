@@ -35,6 +35,10 @@ export function Hero({ aw }: { aw: AppWorldResults }) {
   const pairRef = aw.paired_mcnemar.find(
     (p) => p.a === "Full ACRS" && p.b === "Reference agent"
   );
+  const noO3 = cfg(aw, "no_o3");
+  const fewerNoO3 = Math.round(
+    (100 * ((noO3.large_steps ?? 0) - (full.large_steps ?? 0))) / (noO3.large_steps ?? 1)
+  );
 
   return (
     <section id="top" className="relative overflow-hidden">
@@ -86,8 +90,8 @@ export function Hero({ aw }: { aw: AppWorldResults }) {
             )})`}
           />
           <Metric
-            value="Pending"
-            label="ablation without O3 and the per-step check that risky steps went to the 8B model"
+            value={`−${fewerNoO3}%`}
+            label={`calls to the 8B model against the same system without O3 (${full.large_steps} vs ${noO3.large_steps}); the per-step risk check is still pending`}
           />
         </div>
 

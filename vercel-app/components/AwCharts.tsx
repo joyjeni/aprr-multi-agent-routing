@@ -103,7 +103,7 @@ function RouterMix({ rows }: { rows: AwConfig[] }) {
   return (
     <ChartCard
       title="Which model wrote each step"
-      subtitle="Steps over all 57 tasks. With O3 active, 19–25% of steps go to the 4B model; episodes are also shorter, so full ACRS calls the 8B model 49% less often than the reference agent."
+      subtitle="Steps over all 57 tasks. With O3 active, 19–25% of steps go to the 4B model. Full ACRS calls the 8B model 21% less often than the same system without O3, and 49% less often than the reference agent, whose episodes are also longer."
       legend={[
         { label: "Qwen3-8B (large)", color: AW.accent },
         { label: "Qwen3-4B (small)", color: AW.accentSoft },
