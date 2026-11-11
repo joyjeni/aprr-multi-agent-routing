@@ -39,14 +39,22 @@ plt.rcParams.update({
     "grid.alpha": 0.25,
 })
 
+# APRR = blue accent, Oracle (upper bound) = amber, baselines = a grey ramp told apart by line style and
+# marker. No red or green: they read as "faulty" and "correct". Palette checked for colour-vision deficiency.
 ROUTER_COLORS = {
-    "Random":         "#9aa0a6",
-    "RoundRobin":     "#f9ab00",
-    "StaticSemantic": "#1a73e8",
-    "LLMRouter":      "#7e57c2",
-    "APRR":           "#d93025",
-    "Oracle":         "#0f9d58",
+    "Random":         "#b0afa7",
+    "RoundRobin":     "#8f8e88",
+    "StaticSemantic": "#6e6d68",
+    "LLMRouter":      "#4a4945",
+    "APRR":           "#2a78d6",
+    "Oracle":         "#c98500",
 }
+ROUTER_LS = {"Random": ":", "RoundRobin": "--", "StaticSemantic": "-.", "LLMRouter": "-",
+             "APRR": "-", "Oracle": (0, (4, 3))}
+ROUTER_MARKER = {"Random": "o", "RoundRobin": "s", "StaticSemantic": "D", "LLMRouter": "^",
+                 "APRR": "o", "Oracle": "*"}
+ROUTER_HATCH = {"Random": "", "RoundRobin": "//", "StaticSemantic": "..", "LLMRouter": "\\\\",
+                "APRR": "", "Oracle": ""}
 ROUTER_ORDER = ["Random","RoundRobin","StaticSemantic","LLMRouter","APRR","Oracle"]
 
 
@@ -64,8 +72,7 @@ def fig1_convergence_success(art, out: Path):
         xs = [r["iteration"] for r in art["convergence"][name]]
         ys = [r["success_rate"] for r in art["convergence"][name]]
         ax.plot(xs, ys, label=name, color=ROUTER_COLORS[name],
-                lw=1.8 if name == "APRR" else 1.1,
-                ls="--" if name == "Oracle" else "-")
+                lw=2.4 if name == "APRR" else 1.2, ls=ROUTER_LS[name])
     ax.set_xlabel("Iteration"); ax.set_ylabel("Success rate")
     ax.set_title("Fig. 1: Convergence of success rate")
     ax.set_ylim(0, 1.02); ax.legend(loc="lower right", ncol=2, frameon=True)
@@ -79,8 +86,7 @@ def fig2_convergence_latency(art, out: Path):
         xs = [r["iteration"] for r in art["convergence"][name]]
         ys = [r["mean_latency_ms"] for r in art["convergence"][name]]
         ax.plot(xs, ys, label=name, color=ROUTER_COLORS[name],
-                lw=1.8 if name == "APRR" else 1.1,
-                ls="--" if name == "Oracle" else "-")
+                lw=2.4 if name == "APRR" else 1.2, ls=ROUTER_LS[name])
     ax.set_xlabel("Iteration"); ax.set_ylabel("Mean episode latency (ms)")
     ax.set_title("Fig. 2: Convergence of mean latency")
     ax.legend(loc="upper right", ncol=2, frameon=True)
@@ -101,7 +107,7 @@ def fig3_affinity_evolution(art, out: Path):
     vmax = max(_mat(s).max() for s in snaps)
     for ax, i in zip(axes, idxs):
         W = _mat(snaps[i])
-        im = ax.imshow(W, cmap="viridis", vmin=0, vmax=vmax)
+        im = ax.imshow(W, cmap="Blues", vmin=0, vmax=vmax)
         ax.set_xticks(range(len(roles))); ax.set_xticklabels(roles, rotation=45, ha="right", fontsize=8)
         ax.set_yticks(range(len(roles))); ax.set_yticklabels(roles, fontsize=8)
         ax.set_title(f"iter {snaps[i]['iteration']}")
@@ -130,9 +136,11 @@ def fig4_per_split_breakdown(art, episodes, out: Path):
     for k, name in enumerate(ROUTER_ORDER):
         if name not in by: continue
         ys = [np.mean(by[name][s]) if by[name][s] else 0 for s in splits]
-        a1.bar(xs + (k - 2.5) * width, ys, width=width, color=ROUTER_COLORS[name], label=name)
+        a1.bar(xs + (k - 2.5) * width, ys, width=width, color=ROUTER_COLORS[name], label=name,
+               hatch=ROUTER_HATCH[name], edgecolor="white", linewidth=0.6)
         ys2 = [np.mean(lat[name][s]) if lat[name][s] else 0 for s in splits]
-        a2.bar(xs + (k - 2.5) * width, ys2, width=width, color=ROUTER_COLORS[name], label=name)
+        a2.bar(xs + (k - 2.5) * width, ys2, width=width, color=ROUTER_COLORS[name], label=name,
+               hatch=ROUTER_HATCH[name], edgecolor="white", linewidth=0.6)
     for ax in (a1, a2):
         ax.set_xticks(xs); ax.set_xticklabels(splits)
         ax.set_xlabel("ToolBench split")
@@ -149,8 +157,8 @@ def fig6_pareto(art, out: Path):
     for name in ROUTER_ORDER:
         if name not in agg: continue
         ax.scatter(agg[name]["mean_latency_ms"], agg[name]["success_rate"],
-                   s=120, color=ROUTER_COLORS[name], edgecolor="black",
-                   linewidth=0.6, label=name, zorder=3)
+                   s=170 if name in ("APRR", "Oracle") else 110, color=ROUTER_COLORS[name],
+                   marker=ROUTER_MARKER[name], edgecolor="white", linewidth=0.8, label=name, zorder=3)
         ax.annotate(name, (agg[name]["mean_latency_ms"], agg[name]["success_rate"]),
                     xytext=(6, 4), textcoords="offset points", fontsize=9)
     ax.set_xlabel("Mean episode latency (ms) — lower is better")
@@ -168,7 +176,8 @@ def fig7_hops(art, episodes, out: Path):
         if not hops: continue
         bins = np.arange(1.5, 9.5, 1)
         h, _ = np.histogram(hops, bins=bins, density=True)
-        ax.plot(np.arange(2, 9), h, marker="o", color=ROUTER_COLORS[name], label=name)
+        ax.plot(np.arange(2, 9), h, marker=ROUTER_MARKER[name], color=ROUTER_COLORS[name], label=name,
+                ls=ROUTER_LS[name], lw=2.2 if name == "APRR" else 1.2)
     ax.set_xlabel("Path length (hops)"); ax.set_ylabel("Density")
     ax.set_title("Fig. 6: Routed path-length distribution (converged)")
     ax.legend(loc="upper right", ncol=2, fontsize=8)

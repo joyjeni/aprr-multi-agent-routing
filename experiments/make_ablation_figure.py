@@ -28,22 +28,21 @@ def main(in_path="results/ablation.json", out_dir="figures"):
     for r in records:
         by_param[r["param"]].append(r)
 
-    fig, axes = plt.subplots(1, 4, figsize=(13, 3.3))
-    for ax, param in zip(axes, ["alpha", "beta", "lam", "gamma"]):
+    # Two rows of small multiples (success above, latency below) instead of a second y-axis.
+    fig, axes = plt.subplots(2, 4, figsize=(13, 5.2), sharex="col")
+    for j, param in enumerate(["alpha", "beta", "lam", "gamma"]):
         rs = sorted(by_param[param], key=lambda r: r["value"])
         xs = [r["value"] for r in rs]
         ys = [r["success_rate"] for r in rs]
         ls = [r["latency_ms"] for r in rs]
-        ax.plot(xs, ys, "o-", color="#d93025", lw=2, label="Success rate")
-        ax.set_xlabel(PARAM_LABELS[param])
-        ax.set_ylabel("Success rate", color="#d93025")
-        ax.tick_params(axis="y", labelcolor="#d93025")
-        ax.set_ylim(0.25, 0.55)
-        ax2 = ax.twinx()
-        ax2.plot(xs, ls, "s--", color="#1a73e8", lw=1.4, label="Latency")
-        ax2.set_ylabel("Latency (ms)", color="#1a73e8")
-        ax2.tick_params(axis="y", labelcolor="#1a73e8")
-        ax2.grid(False)
+        top, bottom = axes[0][j], axes[1][j]
+        top.plot(xs, ys, "o-", color="#2a78d6", lw=2)
+        top.set_ylim(0.25, 0.55)
+        bottom.plot(xs, ls, "s-", color="#6e6d68", lw=1.6)
+        bottom.set_xlabel(PARAM_LABELS[param])
+        if j == 0:
+            top.set_ylabel("Success rate")
+            bottom.set_ylabel("Latency (ms)")
     fig.suptitle("Fig. 7: APRR hyperparameter ablation")
     fig.tight_layout()
     out = Path(out_dir)
